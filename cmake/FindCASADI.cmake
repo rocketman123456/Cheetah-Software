@@ -1,7 +1,7 @@
 find_path(CASADI_INCLUDE_DIR
     casadi/casadi.hpp
     HINTS $ENV{CASADI_PREFIX}/include
-    )
+)
 
 if(CASADI_INCLUDE_DIR)
     set(CASADI_INCLUDE_DIR ${CASADI_INCLUDE_DIR} ${CASADI_INCLUDE_DIR}/casadi)
@@ -10,9 +10,12 @@ if(CASADI_INCLUDE_DIR)
 else()
     message(STATUS "Could not find CasADi include dir")
 endif()
+
 find_library(CASADI_LIBRARY
     NAMES casadi
-    HINTS ${CASADI_INCLUDE_DIR}/../lib $ENV{CASADI_PREFIX}/lib)
+    HINTS ${CASADI_INCLUDE_DIR}/../lib $ENV{CASADI_PREFIX}/lib
+)
+
 if(CASADI_LIBRARY)
     set(CASADI_LIBRARIES ${CASADI_LIBRARIES} ${CASADI_LIBRARY})
 endif()
