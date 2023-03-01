@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "mach.h": "c",
+        "clock.h": "c",
+        "pthread.h": "c"
+    }
+}

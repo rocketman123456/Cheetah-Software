@@ -1,0 +1,5 @@
+# add_subdirectory(gamepad)
+# add_subdirectory(lord_imu)
+add_subdirectory(qpOASES)
+# add_subdirectory(SOEM)
+add_subdirectory(vectornav)

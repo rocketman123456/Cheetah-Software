@@ -168,7 +168,7 @@ VnError VnEvent_waitUs(VnEvent *e, uint32_t timeoutUs)
 	pthread_mutex_lock(&e->mutex);
 
 	clock_serv_t cclock;
-	mach_struct timespec_t mts;
+	mach_timespec_t mts;
 	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
 	clock_get_time(cclock, &mts);
 	mach_port_deallocate(mach_task_self(), cclock);
