@@ -2,9 +2,7 @@
  * @file rt_vectornav.h
  * @brief VectorNav IMU communication
  */
-
-#ifndef _rt_vectornav
-#define _rt_vectornav
+#pragma once
 
 #ifdef linux
 
@@ -23,5 +21,4 @@ extern "C" {
 
 bool init_vectornav(VectorNavData* vd_data);
 
-#endif
 #endif
