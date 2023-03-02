@@ -27,8 +27,7 @@ public:
     int ParseError();
 
     // Get a string value from INI file, returning default_value if not found.
-    std::string Get(std::string section, std::string name,
-                    std::string default_value);
+    std::string Get(std::string section, std::string name, std::string default_value);
 
     // Get an integer (long) value from INI file, returning default_value if
     // not found or not a valid integer (decimal "1234", "-1234", or hex "0x4d2").
@@ -53,15 +52,14 @@ public:
     std::set<std::string> GetFields(std::string section) const;
 
 private:
-    int _error;
+    int                                _error;
     std::map<std::string, std::string> _values;
     // Because we want to retain the original casing in _fields, but
     // want lookups to be case-insensitive, we need both _fields and _values
-    std::set<std::string> _sections;
+    std::set<std::string>                         _sections;
     std::map<std::string, std::set<std::string>*> _fields;
-    static std::string MakeKey(std::string section, std::string name);
-    static int ValueHandler(void* user, const char* section, const char* name,
-                            const char* value);
+    static std::string                            MakeKey(std::string section, std::string name);
+    static int                                    ValueHandler(void* user, const char* section, const char* name, const char* value);
 };
 
-#endif  // __INIREADER_H__
+#endif // __INIREADER_H__

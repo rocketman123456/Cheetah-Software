@@ -1,16 +1,13 @@
 // Read an INI file into easy-to-access name/value pairs.
 
+#include "INIReader.h"
+#include "ini.h"
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
-#include "ini.h"
-#include "INIReader.h"
 using std::string;
 
-INIReader::INIReader(string filename)
-{
-    _error = ini_parse(filename.c_str(), ValueHandler, this);
-}
+INIReader::INIReader(string filename) { _error = ini_parse(filename.c_str(), ValueHandler, this); }
 
 INIReader::~INIReader()
 {
@@ -20,10 +17,7 @@ INIReader::~INIReader()
         delete fieldSetsIt->second;
 }
 
-int INIReader::ParseError()
-{
-    return _error;
-}
+int INIReader::ParseError() { return _error; }
 
 string INIReader::Get(string section, string name, string default_value)
 {
@@ -33,9 +27,9 @@ string INIReader::Get(string section, string name, string default_value)
 
 long INIReader::GetInteger(string section, string name, long default_value)
 {
-    string valstr = Get(section, name, "");
-    const char* value = valstr.c_str();
-    char* end;
+    string      valstr = Get(section, name, "");
+    const char* value  = valstr.c_str();
+    char*       end;
     // This parses "1234" (decimal) and also "0x4D2" (hex)
     long n = strtol(value, &end, 0);
     return end > value ? n : default_value;
@@ -43,10 +37,10 @@ long INIReader::GetInteger(string section, string name, long default_value)
 
 double INIReader::GetReal(string section, string name, double default_value)
 {
-    string valstr = Get(section, name, "");
-    const char* value = valstr.c_str();
-    char* end;
-    double n = strtod(value, &end);
+    string      valstr = Get(section, name, "");
+    const char* value  = valstr.c_str();
+    char*       end;
+    double      n = strtod(value, &end);
     return end > value ? n : default_value;
 }
 
@@ -63,17 +57,14 @@ bool INIReader::GetBoolean(string section, string name, bool default_value)
         return default_value;
 }
 
-std::set<std::string> INIReader::GetSections() const
-{
-    return _sections;
-}
+std::set<std::string> INIReader::GetSections() const { return _sections; }
 
 std::set<std::string> INIReader::GetFields(std::string section) const
 {
     string sectionKey = section;
     std::transform(sectionKey.begin(), sectionKey.end(), sectionKey.begin(), ::tolower);
     std::map<std::string, std::set<std::string>*>::const_iterator fieldSetIt = _fields.find(sectionKey);
-    if(fieldSetIt==_fields.end())
+    if (fieldSetIt == _fields.end())
         return std::set<std::string>();
     return *(fieldSetIt->second);
 }
@@ -86,8 +77,7 @@ string INIReader::MakeKey(string section, string name)
     return key;
 }
 
-int INIReader::ValueHandler(void* user, const char* section, const char* name,
-                            const char* value)
+int INIReader::ValueHandler(void* user, const char* section, const char* name, const char* value)
 {
     INIReader* reader = (INIReader*)user;
 
@@ -104,14 +94,16 @@ int INIReader::ValueHandler(void* user, const char* section, const char* name,
     string sectionKey = section;
     std::transform(sectionKey.begin(), sectionKey.end(), sectionKey.begin(), ::tolower);
 
-    std::set<std::string>* fieldsSet;
+    std::set<std::string>*                                  fieldsSet;
     std::map<std::string, std::set<std::string>*>::iterator fieldSetIt = reader->_fields.find(sectionKey);
-    if(fieldSetIt==reader->_fields.end())
+    if (fieldSetIt == reader->_fields.end())
     {
         fieldsSet = new std::set<std::string>();
-        reader->_fields.insert ( std::pair<std::string, std::set<std::string>*>(sectionKey,fieldsSet) );
-    } else {
-        fieldsSet=fieldSetIt->second;
+        reader->_fields.insert(std::pair<std::string, std::set<std::string>*>(sectionKey, fieldsSet));
+    }
+    else
+    {
+        fieldsSet = fieldSetIt->second;
     }
     fieldsSet->insert(name);
 
