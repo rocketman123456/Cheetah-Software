@@ -18,7 +18,4 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake
     ${CMAKE_SOURCE_DIR}/src/common/Configuration.h
 )
 
-include_directories("src/common")
-include_directories("src/robot")
-
 add_subdirectory(src)
