@@ -1,6 +1,6 @@
 #include "BodyPosTask.hpp"
 // (X, Y, Z)
-#include <Configuration.h>
+//#include <Configuration.h>
 #include <Dynamics/FloatingBaseModel.h>
 #include <Dynamics/Quadruped.h>
 #include <Utilities/Utilities_print.h>
@@ -13,8 +13,8 @@ BodyPosTask<T>::BodyPosTask(const FloatingBaseModel<T>* robot)
   TK::JtDotQdot_ = DVec<T>::Zero(TK::dim_task_);
 
   _Kp_kin = DVec<T>::Constant(TK::dim_task_, 1.);
-  _Kp = DVec<T>::Constant(TK::dim_task_, 50.);
-  _Kd = DVec<T>::Constant(TK::dim_task_, 1.0);
+  _Kp = DVec<T>::Constant(TK::dim_task_, 100.);//50.);//
+  _Kd = DVec<T>::Constant(TK::dim_task_, 10.0);//1.0);//
 }
 
 template <typename T>

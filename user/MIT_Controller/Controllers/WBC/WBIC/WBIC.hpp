@@ -6,6 +6,8 @@
 #include <WBC/ContactSpec.hpp>
 #include <WBC/Task.hpp>
 #include <WBC/WBC.hpp>
+//使用24Nm电机时打开此宏
+#define MOTOR24NM
 
 template <typename T>
 class WBIC_ExtraData {

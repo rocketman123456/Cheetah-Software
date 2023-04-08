@@ -74,16 +74,19 @@ FSM_StateName FSM_State_Passive<T>::checkTransition() {
     case K_JOINT_PD:
       // Requested switch to joint PD control
       this->nextStateName = FSM_StateName::JOINT_PD;
+      printf("PASSIVE -> JOINT_PD\n");
       break;
 
     case K_STAND_UP:
       // Requested switch to joint PD control
       this->nextStateName = FSM_StateName::STAND_UP;
+      printf("PASSIVE -> STAND_UP\n");
       break;
 
     case K_RECOVERY_STAND:
       // Requested switch to joint PD control
       this->nextStateName = FSM_StateName::RECOVERY_STAND;
+      printf("PASSIVE -> RECOVERY_STAND\n");
       break;
 
     default:
@@ -91,6 +94,7 @@ FSM_StateName FSM_State_Passive<T>::checkTransition() {
                 << K_PASSIVE << " to "
                 << this->_data->controlParameters->control_mode << std::endl;
   }
+  printf("check K_PASSIVE -> %f\n",this->_data->controlParameters->control_mode);
 
   // Get the next state
   return this->nextStateName;

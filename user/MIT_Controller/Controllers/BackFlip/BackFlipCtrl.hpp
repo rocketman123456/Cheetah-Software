@@ -13,7 +13,7 @@ class BackFlipCtrl : public DataReadCtrl<T> {
   virtual ~BackFlipCtrl();
 
   virtual void OneStep(float _curr_time, bool b_preparation, LegControllerCommand<T>* command);
-
+    int back_flip_times;
  protected:
   void _update_joint_command();
 

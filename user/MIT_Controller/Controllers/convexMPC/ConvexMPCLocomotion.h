@@ -120,6 +120,7 @@ private:
   // High speed running
   //float _body_height = 0.34;
   float _body_height = 0.29;
+  float step_height=0.1;
 
   float _body_height_running = 0.29;
   float _body_height_jumping = 0.36;
@@ -138,7 +139,7 @@ private:
   Vec3<float> f_ff[4];
   Vec4<float> swingTimes;
   FootSwingTrajectory<float> footSwingTrajectories[4];
-  OffsetDurationGait trotting, bounding, pronking, jumping, galloping, standing, trotRunning, walking, walking2, pacing;
+  OffsetDurationGait trotting, slowtrotting, bounding, pronking, jumping, galloping, standing, trotRunning, walking, walking2, pacing;
   MixedFrequncyGait random, random2;
   Mat3<float> Kp, Kd, Kp_stance, Kd_stance;
   bool firstRun = true;

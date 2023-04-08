@@ -1,4 +1,35 @@
 #include "BackFlipCtrl.hpp"
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+Vec3<float> kinematics(Vec3<float> q)
+{
+    float l1 =0.072;// quad._abadLinkLength;
+    float l2 =0.211;// quad._hipLinkLength;
+    float l3 =0.20;// quad._kneeLinkLength;
+    float l4 = 0.004;//quad._kneeLinkY_offset;
+    float sideSign =-1;// quad.getSideSign(leg);
+
+    float s1 = std::sin(q(0));
+    float s2 = std::sin(q(1));
+    float s3 = std::sin(q(2));
+
+    float c1 = std::cos(q(0));
+    float c2 = std::cos(q(1));
+    float c3 = std::cos(q(2));
+
+    float c23 = c2 * c3 - s2 * s3;
+    float s23 = s2 * c3 + c2 * s3;
+
+
+    Vec3<float> p;
+    p(0) = l3 * s23 + l2 * s2;
+    p(1) = (l1+l4) * sideSign * c1 + l3 * (s1 * c23) + l2 * c2 * s1;
+    p(2) = (l1+l4) * sideSign * s1 - l3 * (c1 * c23) - l2 * c1 * c2;
+    return p;
+}
 
 
 template <typename T>
@@ -32,22 +63,23 @@ void BackFlipCtrl<T>::_update_joint_command() {
   int tuck_iteration(600);
   int ramp_end_iteration(650);
 
-  this->_Kp_joint = {10.0, 10.0, 10.0};
-  this->_Kd_joint = {1.0, 1.0, 1.0};
+  this->_Kp_joint = {50.0, 50.0, 50.0};//{15.0, 15.0, 15.0};
+  this->_Kd_joint = {1.8, 1.8, 1.8};
 
   float tau_mult;
+
 
   DataCtrl::_des_jpos.setZero();
   DataCtrl::_des_jvel.setZero();
   DataCtrl::_jtorque.setZero();
 
-  if ( (DataCtrl::pre_mode_count <  pre_mode_duration) || DataCtrl::_b_Preparation) {  
+  if ( (DataCtrl::pre_mode_count <  pre_mode_duration) || DataCtrl::_b_Preparation) {
     // move to the initial configuration to prepare for
     // backfliping
     if (DataCtrl::pre_mode_count == 0) {
       printf("plan_timesteps: %d \n", DataCtrl::_data_reader->plan_timesteps);
     }
-    // printf("pre_mode_count: %d \n", pre_mode_count);
+     //printf("pre_mode_count: %d \n", DataCtrl::pre_mode_count);
 
     DataCtrl::pre_mode_count += DataCtrl::_key_pt_step;
     DataCtrl::current_iteration = 0;
@@ -58,7 +90,11 @@ void BackFlipCtrl<T>::_update_joint_command() {
   }
 
   if (DataCtrl::current_iteration > DataCtrl::_data_reader->plan_timesteps - 1) {
-    DataCtrl::current_iteration = DataCtrl::_data_reader->plan_timesteps - 1;
+      back_flip_times++;
+      if(back_flip_times<1)
+          DataCtrl::current_iteration=0;
+      else
+        DataCtrl::current_iteration = DataCtrl::_data_reader->plan_timesteps - 1;
   }
 
   float* current_step = DataCtrl::_data_reader->get_plan_at_time(DataCtrl::current_iteration);
@@ -78,9 +114,8 @@ void BackFlipCtrl<T>::_update_joint_command() {
   tau_front << 0.0, tau_mult * tau[0] / 2.0, tau_mult * tau[1] / 2.0;
   tau_rear << 0.0, tau_mult * tau[2] / 2.0, tau_mult * tau[3] / 2.0;
 
-  //pretty_print(tau_front, std::cout, "tau front");
-  //pretty_print(tau_rear, std::cout, "tau rear");
   float s(0.);
+
 
   if (DataCtrl::current_iteration >= tuck_iteration) {  // ramp to landing configuration
     qd_des_front << 0.0, 0.0, 0.0;
@@ -120,6 +155,7 @@ void BackFlipCtrl<T>::_update_joint_command() {
     q_des_rear = (1 - s) * q_des_rear_0 + s * q_des_rear_f;
     this->_Kp_joint = {25.0, 25.0, 25.0};
     this->_Kd_joint = {1.5, 1.5, 1.5};
+    //printf("tuck_iteration\n");
 
   }
 
@@ -168,3 +204,9 @@ void BackFlipCtrl<T>::_update_joint_command() {
 
 template class BackFlipCtrl<double>;
 template class BackFlipCtrl<float>;
+
+
+
+
+
+

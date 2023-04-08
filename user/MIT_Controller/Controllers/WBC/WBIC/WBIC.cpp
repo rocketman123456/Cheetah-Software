@@ -2,7 +2,7 @@
 #include <Utilities/Timer.h>
 #include <eigen3/Eigen/LU>
 #include <eigen3/Eigen/SVD>
-
+#include <Dynamics/Quadruped.h>
   template <typename T>
 WBIC<T>::WBIC(size_t num_qdot, const std::vector<ContactSpec<T>*>* contact_list,
     const std::vector<Task<T>*>* task_list)
@@ -87,7 +87,19 @@ void WBIC<T>::MakeTorque(DVec<T>& cmd, void* extra_input) {
   (void)f;
 
   // pretty_print(qddot_pre, std::cout, "qddot_cmd");
-  for (size_t i(0); i < _dim_floating; ++i) qddot_pre[i] += z[i];
+  for (size_t i(0); i < _dim_floating; ++i)
+      qddot_pre[i] += z[i];
+
+    for(size_t i=0;i< cheetah::dim_config;i++)
+    {
+        if(fabs(qddot_pre[i])>99999.)
+        {
+            std::cout<<"qddot_pre = DVec<T>::Zero(WB::num_qdot_);  !!!!!!!!!!!!"<<std::endl<<qddot_pre<<std::endl;
+            qddot_pre = DVec<T>::Zero(WB::num_qdot_);
+
+        }
+    }
+
   _GetSolution(qddot_pre, cmd);
 
   _data->_opt_result = DVec<T>(_dim_opt);
@@ -235,7 +247,24 @@ void WBIC<T>::_GetSolution(const DVec<T>& qddot, DVec<T>& cmd) {
     tot_tau = WB::A_ * qddot + WB::cori_ + WB::grav_;
   }
   _data->_qddot = qddot;
-  cmd = tot_tau.tail(WB::num_act_joint_);
+
+#ifdef MOTOR24NM
+  cmd = tot_tau.tail(WB::num_act_joint_)*1.0;
+#else
+    cmd = tot_tau.tail(WB::num_act_joint_)*1.0;
+#endif
+    for(int i =0;i<12;i++)
+    {
+        if(fabs(cmd[i])> 24)
+        {
+
+            printf("!!!!!!!!danger!!!!! WBC torque num %d\tout the limitation: %f.2f ",i,cmd[i]);
+            cmd[i]=cmd[i]/fabs(cmd[i])*24.0;
+            std::cout<< "  edit to "<<cmd[i]<<std::endl;
+        }
+    }
+
+
 
   // Torque check
   // DVec<T> delta_tau = DVec<T>::Zero(WB::num_qdot_);

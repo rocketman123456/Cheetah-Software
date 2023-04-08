@@ -46,13 +46,16 @@ void FSM_State_BalanceStand<T>::onEnter() {
   _ini_body_pos = (this->_data->_stateEstimator->getResult()).position;
 
   if(_ini_body_pos[2] < 0.2) {
-    _ini_body_pos[2] = 0.3;
+    _ini_body_pos[2] = 0.25;
   }
+   //   _ini_body_pos[2]=0.26;
+
 
   last_height_command = _ini_body_pos[2];
 
   _ini_body_ori_rpy = (this->_data->_stateEstimator->getResult()).rpy;
   _body_weight = this->_data->_quadruped->_bodyMass * 9.81;
+
 }
 
 /**
@@ -131,6 +134,21 @@ FSM_StateName FSM_State_BalanceStand<T>::checkTransition() {
       this->transitionDuration = 0.0;
       break;
 
+    case K_FRONTJUMP:
+          this->nextStateName = FSM_StateName::FRONTJUMP;
+          this->transitionDuration = 0.;
+          break;
+
+    case K_FRONTJUMP2:
+          this->nextStateName = FSM_StateName::FRONTJUMP2;
+          this->transitionDuration = 0.;
+          break;
+
+    case K_FRONTFLIP:
+          this->nextStateName = FSM_StateName::FRONTFLIP;
+          this->transitionDuration = 0.;
+          break;
+
     case K_RECOVERY_STAND:
       this->nextStateName = FSM_StateName::RECOVERY_STAND;
       // Transition time is immediate
@@ -142,7 +160,9 @@ FSM_StateName FSM_State_BalanceStand<T>::checkTransition() {
       this->transitionDuration = 0.;
       break;
 
-    default:
+
+
+      default:
       std::cout << "[CONTROL FSM] Bad Request: Cannot transition from "
                 << K_BALANCE_STAND << " to "
                 << this->_data->controlParameters->control_mode << std::endl;
@@ -182,6 +202,18 @@ TransitionData<T> FSM_State_BalanceStand<T>::transition() {
     case FSM_StateName::RECOVERY_STAND:
       this->transitionData.done = true;
       break;
+
+    case FSM_StateName::FRONTJUMP:
+          this->transitionData.done = true;
+          break;
+
+    case FSM_StateName::FRONTJUMP2:
+          this->transitionData.done = true;
+          break;
+
+     case FSM_StateName::FRONTFLIP:
+          this->transitionData.done = true;
+          break;
 
     case FSM_StateName::BACKFLIP:
       this->transitionData.done = true;
@@ -230,16 +262,17 @@ void FSM_State_BalanceStand<T>::BalanceStandStep() {
     _wbc_data->pBody_des[2] += 0.12 * rc_cmd->height_variation;
   }else{
     // Orientation
-    _wbc_data->pBody_RPY_des[0] = 
+    _wbc_data->pBody_RPY_des[0] =
      0.6* this->_data->_desiredStateCommand->gamepadCommand->leftStickAnalog[0];
-     _wbc_data->pBody_RPY_des[1] = 
-      0.6*this->_data->_desiredStateCommand->gamepadCommand->rightStickAnalog[0];
-    _wbc_data->pBody_RPY_des[2] -= 
-      this->_data->_desiredStateCommand->gamepadCommand->rightStickAnalog[1];
-    
+     _wbc_data->pBody_RPY_des[1] =
+      0.4*this->_data->_desiredStateCommand->gamepadCommand->leftStickAnalog[1];//rightStickAnalog[0];
+    _wbc_data->pBody_RPY_des[2] -=
+      0.6*this->_data->_desiredStateCommand->gamepadCommand->rightStickAnalog[1];
+
     // Height
-    _wbc_data->pBody_des[2] += 
-      0.12 * this->_data->_desiredStateCommand->gamepadCommand->rightStickAnalog[0];
+    _wbc_data->pBody_des[2] +=
+      0.1 * this->_data->_desiredStateCommand->gamepadCommand->rightStickAnalog[0];
+
   }
   _wbc_data->vBody_Ori_des.setZero();
 
@@ -251,8 +284,9 @@ void FSM_State_BalanceStand<T>::BalanceStandStep() {
     _wbc_data->Fr_des[i][2] = _body_weight/4.;
     _wbc_data->contact_state[i] = true;
   }
-  
-  if(this->_data->_desiredStateCommand->trigger_pressed) {
+
+    if(this->_data->_desiredStateCommand->trigger_pressed)
+       {
     _wbc_data->pBody_des[2] = 0.05;
 
     if(last_height_command - _wbc_data->pBody_des[2] > 0.001) {
@@ -263,6 +297,8 @@ void FSM_State_BalanceStand<T>::BalanceStandStep() {
 
   _wbc_ctrl->run(_wbc_data, *this->_data);
 }
+
+
 
 // template class FSM_State_BalanceStand<double>;
 template class FSM_State_BalanceStand<float>;

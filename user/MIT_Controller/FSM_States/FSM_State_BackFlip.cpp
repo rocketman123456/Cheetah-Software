@@ -6,6 +6,7 @@
 
 #include "FSM_State_BackFlip.h"
 #include <Utilities/Utilities_print.h>
+#include <fstream>
 
 
 /**
@@ -26,7 +27,8 @@ FSM_State_BackFlip<T>::FSM_State_BackFlip(ControlFSMData<T>* _controlFSMData)
   this->checkForceFeedForward = false;
 
   zero_vec3.setZero();
-  f_ff << 0.f, 0.f, -25.f;
+ // f_ff << 0.f, 0.f, -25.f;
+    f_ff << 0.f, 0.f, -30.f;
 
   _data_reader = new DataReader(this->_data->_quadruped->_robotType, FSM_StateName::BACKFLIP);
 
@@ -56,6 +58,7 @@ void FSM_State_BackFlip<T>::onEnter() {
   for(size_t i(0); i < 4; ++i) {
     initial_jpos[i] = this->_data->_legController->datas[i].q;
   }
+    backflip_ctrl_->back_flip_times=0;
 
 }
 
@@ -70,6 +73,9 @@ void FSM_State_BackFlip<T>::run() {
     if (!_Initialization()) {
       ComputeCommand();
     }
+//    printf("back kp kd:%.2f\t%.2f\t%.2f\n",this->_data->_legController->commands[1].kpJoint(0,0),
+//           this->_data->_legController->commands[1].kpJoint(1,1),
+//           this->_data->_legController->commands[1].kpJoint(2,2));
   } else {
     _SafeCommand();
   }
@@ -77,6 +83,82 @@ void FSM_State_BackFlip<T>::run() {
   ++_count;
   _curr_time += this->_data->controlParameters->controller_dt;
 
+
+    static std::ofstream log_backlip("/home/user/log/log_backflip.csv");
+    log_backlip<< this->_data->_legController->datas[0].q[0]<<",";
+    log_backlip<< this->_data->_legController->datas[0].q[1]<<",";
+    log_backlip<< this->_data->_legController->datas[0].q[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[0].qd[0]<<",";
+    log_backlip<< this->_data->_legController->datas[0].qd[1]<<",";
+    log_backlip<< this->_data->_legController->datas[0].qd[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[0].tauActuatual[0]<<",";
+    log_backlip<< this->_data->_legController->datas[0].tauActuatual[1]<<",";
+    log_backlip<< this->_data->_legController->datas[0].tauActuatual[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[0].p[0]<<",";
+    log_backlip<< this->_data->_legController->datas[0].p[1]<<",";
+    log_backlip<< this->_data->_legController->datas[0].p[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[3].q[0]<<",";
+    log_backlip<< this->_data->_legController->datas[3].q[1]<<",";
+    log_backlip<< this->_data->_legController->datas[3].q[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[3].qd[0]<<",";
+    log_backlip<< this->_data->_legController->datas[3].qd[1]<<",";
+    log_backlip<< this->_data->_legController->datas[3].qd[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[3].tauActuatual[0]<<",";
+    log_backlip<< this->_data->_legController->datas[3].tauActuatual[1]<<",";
+    log_backlip<< this->_data->_legController->datas[3].tauActuatual[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[3].p[0]<<",";
+    log_backlip<< this->_data->_legController->datas[3].p[1]<<",";
+    log_backlip<< this->_data->_legController->datas[3].p[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[1].q[0]<<",";
+    log_backlip<< this->_data->_legController->datas[1].q[1]<<",";
+    log_backlip<< this->_data->_legController->datas[1].q[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[1].qd[0]<<",";
+    log_backlip<< this->_data->_legController->datas[1].qd[1]<<",";
+    log_backlip<< this->_data->_legController->datas[1].qd[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[1].tauActuatual[0]<<",";
+    log_backlip<< this->_data->_legController->datas[1].tauActuatual[1]<<",";
+    log_backlip<< this->_data->_legController->datas[1].tauActuatual[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[1].p[0]<<",";
+    log_backlip<< this->_data->_legController->datas[1].p[1]<<",";
+    log_backlip<< this->_data->_legController->datas[1].p[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[2].q[0]<<",";
+    log_backlip<< this->_data->_legController->datas[2].q[1]<<",";
+    log_backlip<< this->_data->_legController->datas[2].q[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[2].qd[0]<<",";
+    log_backlip<< this->_data->_legController->datas[2].qd[1]<<",";
+    log_backlip<< this->_data->_legController->datas[2].qd[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[2].tauActuatual[0]<<",";
+    log_backlip<< this->_data->_legController->datas[2].tauActuatual[1]<<",";
+    log_backlip<< this->_data->_legController->datas[2].tauActuatual[2]<<",";
+    log_backlip<<",";
+    log_backlip<< this->_data->_legController->datas[2].p[0]<<",";
+    log_backlip<< this->_data->_legController->datas[2].p[1]<<",";
+    log_backlip<< this->_data->_legController->datas[2].p[2]<<",";
+    log_backlip<<",";
+    log_backlip<<this->_data->_legController->commands[0].qDes[0]<<",";
+    log_backlip<<this->_data->_legController->commands[0].qDes[1]<<",";
+    log_backlip<<this->_data->_legController->commands[0].qDes[2]<<",";
+    log_backlip<<",";
+    log_backlip<<this->_data->_legController->commands[3].qDes[0]<<",";
+    log_backlip<<this->_data->_legController->commands[3].qDes[1]<<",";
+    log_backlip<<this->_data->_legController->commands[3].qDes[2]<<",";
+    log_backlip<<",";
+
+    log_backlip<<std::endl;
 }
 
 
@@ -93,8 +175,8 @@ bool FSM_State_BackFlip<T>::_Initialization() { // do away with this?
       for (int jidx = 0; jidx < 3; ++jidx) {
         this->_data->_legController->commands[leg].tauFeedForward[jidx] = 0.;
         this->_data->_legController->commands[leg].qdDes[jidx] = 0.;
-        this->_data->_legController->commands[leg].kpJoint(jidx,jidx) = 20.;
-        this->_data->_legController->commands[leg].kdJoint(jidx,jidx) = 2.;
+        this->_data->_legController->commands[leg].kpJoint(jidx,jidx) = 60.;//20.;
+        this->_data->_legController->commands[leg].kdJoint(jidx,jidx) = 5.;//2.;
       }
     }
     return true;

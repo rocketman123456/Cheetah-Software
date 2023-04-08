@@ -8,6 +8,7 @@
  * frame").
  */
 
+#include <fstream>
 #include "Controllers/LegController.h"
 
 /*!
@@ -93,13 +94,30 @@ void LegController<T>::updateData(const SpiData* spiData) {
     datas[leg].qd(1) = spiData->qd_hip[leg];
     datas[leg].qd(2) = spiData->qd_knee[leg];
 
-    // J and p
+    datas[leg].tauActuatual(0)= spiData->tau_abad[leg];
+    datas[leg].tauActuatual(1) = spiData->tau_hip[leg];
+    datas[leg].tauActuatual(2) = spiData->tau_knee[leg];
+//    if(leg == 3)
+//        printf("leg tau: %.2f\t%.2f\t%.2f\n",datas[leg].tauActuatual(0),datas[leg].tauActuatual(1),datas[leg].tauActuatual(2));
+//    // J and p
     computeLegJacobianAndPosition<T>(_quadruped, datas[leg].q, &(datas[leg].J),
                                      &(datas[leg].p), leg);
 
     // v
     datas[leg].v = datas[leg].J * datas[leg].qd;
+
+    Mat3<T> inv_JT = datas[leg].J.transpose().inverse();
+    datas[leg].footforceDesired = inv_JT*commands[leg].tauFeedForward;
+    datas[leg].footforceActuatual = inv_JT*datas[leg].tauActuatual;
+//    if(leg == 3)
+//        printf("fxyz : %.2f\t%.2f\t%.2f\n",datas[leg].footforceActuatual(0),datas[leg].footforceActuatual(1),datas[leg].footforceActuatual(2));
+
   }
+ //   std::cout<<"datas[leg].qd:"<<datas[0].qd<<std::endl;
+// static int v0times=0;
+//  v0times++;
+//  if(v0times%100==0)
+//    std::cout<<"leg v0:"<<datas[0].v<<std::endl;
 }
 
 /*!
@@ -173,8 +191,12 @@ void LegController<T>::updateCommand(SpiCommand* spiCommand) {
         legTorque +
         commands[leg].kpJoint * (commands[leg].qDes - datas[leg].q) +
         commands[leg].kdJoint * (commands[leg].qdDes - datas[leg].qd);
+    //添加电机最大输出扭矩约束
+    for (int mx=0;mx<3;mx++)
+        if(fabs(datas[leg].tauEstimate[mx]))
+            datas[leg].tauEstimate[mx]=datas[leg].tauEstimate[mx]/fabs(datas[leg].tauEstimate[mx])*18.0;
 
-    spiCommand->flags[leg] = _legsEnabled ? 1 : 0;
+      spiCommand->flags[leg] = _legsEnabled ? 1 : 0;
   }
 }
 
@@ -232,7 +254,11 @@ void LegController<T>::setLcm(leg_control_data_lcmt *lcmData, leg_control_comman
             lcmData->qd[idx] = datas[leg].qd[axis];
             lcmData->p[idx] = datas[leg].p[axis];
             lcmData->v[idx] = datas[leg].v[axis];
-            lcmData->tau_est[idx] = datas[leg].tauEstimate[axis];
+//            lcmData->tau_est[idx] = datas[leg].tauEstimate[axis];
+            lcmData->tau_est[idx] = datas[leg].tauActuatual[axis];
+
+//            if(leg == 3 && axis==2)
+//printf("datas[leg].tauActuatual[axis] %.2f\n",lcmData->tau_est[idx]);
 
             lcmCommand->tau_ff[idx] = commands[leg].tauFeedForward[axis];
             lcmCommand->f_ff[idx] = commands[leg].forceFeedForward[axis];

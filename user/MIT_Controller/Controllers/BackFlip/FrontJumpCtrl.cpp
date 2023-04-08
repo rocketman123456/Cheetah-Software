@@ -29,7 +29,7 @@ void FrontJumpCtrl<T>::OneStep(float _curr_time, bool b_preparation, LegControll
 template <typename T>
 void FrontJumpCtrl<T>::_update_joint_command() {
   int pre_mode_duration(700);
-  int leg_clearance_iteration_front(240) ; 
+  int leg_clearance_iteration_front(340) ;
   //int leg_clearance_iteration_front(180) ; 
   int leg_clearance_iteration(600);
   int leg_ramp_iteration(610);
@@ -45,14 +45,9 @@ void FrontJumpCtrl<T>::_update_joint_command() {
   DataCtrl::_Kp_joint={10.0, 10.0, 10.0};
   DataCtrl::_Kd_joint={1.0, 1.0, 1.0};
 
-  //DataCtrl::_Kp_joint={20.0, 20.0, 20.0};
-  //DataCtrl::_Kd_joint={3.0, 3.0, 3.0};
-
-
-  // PRE JUMP PREPATATION - CROUCH (FOLLOWS PREMODE DURATION TIMESTEPS) 
+  // PRE JUMP PREPATATION - CROUCH (FOLLOWS PREMODE DURATION TIMESTEPS)
   if ( (DataCtrl::pre_mode_count <  pre_mode_duration) || DataCtrl::_b_Preparation) {  
-    // move to the initial configuration to prepare for
-    // FrontJumping
+    // move to the initial configuration to prepare for FrontJumping
     if (DataCtrl::pre_mode_count == 0) {
       printf("plan_timesteps: %d \n", DataCtrl::_data_reader->plan_timesteps);
     }
@@ -71,12 +66,14 @@ void FrontJumpCtrl<T>::_update_joint_command() {
 
   
   // OBTAIN TIMSTEP DATA FROM THE DATA FILE 
-  if (DataCtrl::current_iteration > DataCtrl::_data_reader->plan_timesteps - 1) {
+  if (DataCtrl::current_iteration > DataCtrl::_data_reader->plan_timesteps - 1) { //执行完停留在最后时刻
     DataCtrl::current_iteration = DataCtrl::_data_reader->plan_timesteps - 1;
   }
 
-  // OBTAIN DATA FROM THE JUMP_DATA FILE GENERATED IN MATLAB 
-  float* current_step = DataCtrl::_data_reader->get_plan_at_time(DataCtrl::current_iteration);
+  // OBTAIN DATA FROM THE JUMP_DATA FILE GENERATED IN MATLAB
+  float* current_step = DataCtrl::_data_reader->get_plan_at_time(DataCtrl::current_iteration); //当前
+//  printf("%.2f\t,%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",current_step[0],current_step[1],current_step[2],current_step[3],
+//          current_step[4],current_step[5],current_step[6] );
   float* tau = current_step + tau_offset;
 
   // INITIALIZE JOINT PARAMETERS AND TORQUES 
@@ -108,7 +105,8 @@ void FrontJumpCtrl<T>::_update_joint_command() {
   
   // CONTROL LEG_CLEARANCE_ITERATION_FRONT
   if (DataCtrl::current_iteration >= leg_clearance_iteration_front &&
-      DataCtrl::current_iteration <=leg_clearance_iteration){
+      DataCtrl::current_iteration <= leg_clearance_iteration){
+      printf("leg_clearance_iteration_front\n");
     q_des_front << 0.0, current_step[3], current_step[4];
 
     current_step = DataCtrl::_data_reader->get_plan_at_time(leg_clearance_iteration_front);
@@ -120,9 +118,10 @@ void FrontJumpCtrl<T>::_update_joint_command() {
   
   // implement another controller to keep the legs in
   
-  // CONTROL LEG_CLEARNACE ITERATION 
+  // CONTROL LEG_CLEARNACE ITERATION  600-610
   if (DataCtrl::current_iteration >= leg_clearance_iteration 
       && DataCtrl::current_iteration < tuck_iteration) {  // ramp to leg clearance for obstacle
+      printf("leg_clearance_iteration\n");
     qd_des_front << 0.0, 0.0, 0.0;
     qd_des_rear << 0.0, 0.0, 0.0;
     tau_front << 0.0, 0.0, 0.0;
@@ -150,13 +149,16 @@ void FrontJumpCtrl<T>::_update_joint_command() {
     q_des_front_f << 0.0, -2.3, 2.5;
     q_des_rear_f << 0.0, -1.25, 2.5;
 
+
     // linear interpolation for the ramp 
     q_des_front = (1 - s) * q_des_front_0 + s * q_des_front_f;
     q_des_rear = (1 - s) * q_des_rear_0 + s * q_des_rear_f;
     
 
-  } else if (DataCtrl::current_iteration >= tuck_iteration) { // ramp to landing configuration
-    qd_des_front << 0.0, 0.0, 0.0;
+  }
+  else if (DataCtrl::current_iteration >= tuck_iteration) { // ramp to landing configuration
+    printf("tuck_iteration\n");
+      qd_des_front << 0.0, 0.0, 0.0;
     qd_des_rear << 0.0, 0.0, 0.0;
     tau_front << 0.0, 0.0, 0.0;
     tau_rear << 0.0, 0.0, 0.0;
@@ -183,14 +185,14 @@ void FrontJumpCtrl<T>::_update_joint_command() {
     // q_des_front_f << 0.0, current_step[3], current_step[4];
     // q_des_rear_f << 0.0, current_step[5], current_step[6];
     //q_des_front_f << 0.0, -0.9, 1.8;
-    //q_des_front_f << 0.0, -1.0, 2.05;
+    q_des_front_f << 0.0, -1.35, 2.65;
     //q_des_front_f << 0.0, -0.85, 1.9;
-    q_des_front_f << 0.0, -0.45, 1.3;
+    //q_des_front_f << 0.0, -0.45, 1.3;
     
     //q_des_rear_f << 0.0, -0.8, 1.2;
     //q_des_rear_f << 0.0, -0.8, 1.6;
-    //q_des_rear_f << 0.0, -1.0, 2.05;
-    q_des_rear_f << 0.0, -0.45, 1.3;
+    q_des_rear_f << 0.0, -1.35, 2.65;
+    //q_des_rear_f << 0.0, -0.45, 1.3;
     //q_des_rear_f << 0.0, -0.9, 1.8;
    //q_des_front_f << 0.0, -1.2, 2.4;
     //q_des_rear_f << 0.0, -1.2, 2.4;

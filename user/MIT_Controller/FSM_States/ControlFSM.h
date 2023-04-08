@@ -21,6 +21,9 @@
 #include "../FSM_States/FSM_State_Vision.h"
 #include "../FSM_States/FSM_State_BackFlip.h"
 #include "../FSM_States/FSM_State_FrontJump.h"
+#include "../FSM_States/FSM_State_FrontFlip.h"
+#include "../FSM_States/FSM_State_FrontJump2.h"
+#include "../FSM_States/FSM_State_RecoverySitDown.h"// test 2020.12 @ehl
 
 /**
  * Enumerate all of the operating modes
@@ -43,7 +46,10 @@ struct FSM_StatesList {
   FSM_State_RecoveryStand<T>* recoveryStand;
   FSM_State_Vision<T>* vision;
   FSM_State_BackFlip<T>* backflip;
+  FSM_State_FrontFlip<T>* frontflip;
   FSM_State_FrontJump<T>* frontJump;
+  FSM_State_FrontJump2<T>* frontJump2;
+  FSM_State_RecoverySitDown<T>* recoverySitDown; 
 };
 
 
@@ -63,6 +69,7 @@ class ControlFSM {
  public:
   ControlFSM(Quadruped<T>* _quadruped,
              StateEstimatorContainer<T>* _stateEstimator,
+             StateEstimatorContainer<T>* _t265stateEstimator,
              LegController<T>* _legController, GaitScheduler<T>* _gaitScheduler,
              DesiredStateCommand<T>* _desiredStateCommand,
              RobotControlParameters* controlParameters,

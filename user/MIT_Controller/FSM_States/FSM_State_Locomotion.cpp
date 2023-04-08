@@ -24,12 +24,13 @@ FSM_State_Locomotion<T>::FSM_State_Locomotion(ControlFSMData<T>* _controlFSMData
     cMPCOld = new ConvexMPCLocomotion(_controlFSMData->controlParameters->controller_dt,
         //30 / (1000. * _controlFSMData->controlParameters->controller_dt),
         //22 / (1000. * _controlFSMData->controlParameters->controller_dt),
-        27 / (1000. * _controlFSMData->controlParameters->controller_dt),
+        30/ (1000. * _controlFSMData->controlParameters->controller_dt),
         _controlFSMData->userParameters);
 
   }else if(_controlFSMData->_quadruped->_robotType == RobotType::CHEETAH_3){
     cMPCOld = new ConvexMPCLocomotion(_controlFSMData->controlParameters->controller_dt,
-        33 / (1000. * _controlFSMData->controlParameters->controller_dt),
+//        33 / (1000. * _controlFSMData->controlParameters->controller_dt),
+        25 / (1000. * _controlFSMData->controlParameters->controller_dt),
         _controlFSMData->userParameters);
 
   }else{
@@ -37,7 +38,8 @@ FSM_State_Locomotion<T>::FSM_State_Locomotion(ControlFSMData<T>* _controlFSMData
   }
 
 
-  this->turnOnAllSafetyChecks();
+//  this->turnOnAllSafetyChecks();
+   this-> turnOffAllSafetyChecks();////////////////////////////////////////////////////////////////////////////
   // Turn off Foot pos command since it is set in WBC as operational task
   this->checkPDesFoot = false;
 
@@ -63,8 +65,35 @@ void FSM_State_Locomotion<T>::onEnter() {
 /**
  * Calls the functions to be executed on each control loop iteration.
  */
+
 template <typename T>
 void FSM_State_Locomotion<T>::run() {
+    //Billchen
+    //左侧LT按下，站立状态
+    if(this->_data->_desiredStateCommand->returnBackGamepad()->leftTriggerAnalog)
+        this->_data->userParameters->cmpc_gait=4; //
+    //右侧T按下，PASSRIVE状态
+    if(this->_data->_desiredStateCommand->returnBackGamepad()->rightTriggerAnalog)
+        this->nextStateName = FSM_StateName::PASSIVE;
+    //左侧LB按下，Trot步态
+    if(this->_data->_desiredStateCommand->returnBackGamepad()->leftBumper)
+        this->_data->userParameters->cmpc_gait=9;
+    //右侧RB按下，flying trot
+    if(this->_data->_desiredStateCommand->returnBackGamepad()->rightBumper)
+        this->_data->userParameters->cmpc_gait=5;
+    // bound
+    if(this->_data->_desiredStateCommand->returnBackGamepad()->y)
+        this->_data->userParameters->cmpc_gait=1;
+    // pronk
+    if(this->_data->_desiredStateCommand->returnBackGamepad()->a)
+        this->_data->userParameters->cmpc_gait=2;
+    // slow trot
+    if(this->_data->_desiredStateCommand->returnBackGamepad()->b)
+        this->_data->userParameters->cmpc_gait=3;
+    // walking
+    if(this->_data->_desiredStateCommand->returnBackGamepad()->x)
+        this->_data->userParameters->cmpc_gait=6;
+    //Billchen
   // Call the locomotion control logic for this iteration
   LocomotionControlStep();
 }
@@ -83,7 +112,8 @@ FSM_StateName FSM_State_Locomotion<T>::checkTransition() {
   iter++;
 
   // Switch FSM control mode
-  if(locomotionSafe()) {
+  if(locomotionSafe())
+       {
     switch ((int)this->_data->controlParameters->control_mode) {
       case K_LOCOMOTION:
         break;
@@ -130,6 +160,7 @@ FSM_StateName FSM_State_Locomotion<T>::checkTransition() {
     this->nextStateName = FSM_StateName::RECOVERY_STAND;
     this->transitionDuration = 0.;
     rc_control.mode = RC_mode::RECOVERY_STAND;
+    printf("BILLCHEN RINTF: locomotion force to RECOVERY_STAND\n");
   }
 
 
@@ -153,6 +184,7 @@ TransitionData<T> FSM_State_Locomotion<T>::transition() {
       iter++;
       if (iter >= this->transitionDuration * 1000) {
         this->transitionData.done = true;
+          printf("BILLCHEN RINTF: transitionDuration iter: %d\t%d\n",iter, int(this->transitionDuration*1000));
       } else {
         this->transitionData.done = false;
       }
@@ -172,6 +204,7 @@ TransitionData<T> FSM_State_Locomotion<T>::transition() {
 
     case FSM_StateName::RECOVERY_STAND:
       this->transitionData.done = true;
+          printf("BILLCHEN RINTF: transitionData.done = true \n");
       break;
 
     case FSM_StateName::VISION:
@@ -192,8 +225,8 @@ template<typename T>
 bool FSM_State_Locomotion<T>::locomotionSafe() {
   auto& seResult = this->_data->_stateEstimator->getResult();
 
-  const T max_roll = 40;
-  const T max_pitch = 40;
+  const T max_roll = 80;//40;
+  const T max_pitch = 80;//40;
 
   if(std::fabs(seResult.rpy[0]) > ori::deg2rad(max_roll)) {
     printf("Unsafe locomotion: roll is %.3f degrees (max %.3f)\n", ori::rad2deg(seResult.rpy[0]), max_roll);
@@ -212,13 +245,14 @@ bool FSM_State_Locomotion<T>::locomotionSafe() {
       return false;
     }
 
-    if(std::fabs(p_leg[1] > 0.18)) {
+    if(std::fabs(p_leg[1] > 0.28))//0.18))
+    {
       printf("Unsafe locomotion: leg %d's y-position is bad (%.3f m)\n", leg, p_leg[1]);
       return false;
     }
 
     auto v_leg = this->_data->_legController->datas[leg].v.norm();
-    if(std::fabs(v_leg) > 9.) {
+    if(std::fabs(v_leg) > 19.) {
       printf("Unsafe locomotion: leg %d is moving too quickly (%.3f m/s)\n", leg, v_leg);
       return false;
     }
@@ -248,6 +282,7 @@ void FSM_State_Locomotion<T>::LocomotionControlStep() {
 
   // Contact state logic
   // estimateContact();
+
 
   cMPCOld->run<T>(*this->_data);
   Vec3<T> pDes_backup[4];
@@ -285,6 +320,7 @@ void FSM_State_Locomotion<T>::LocomotionControlStep() {
     //this->_data->_legController->commands[leg].kpCartesian = Kp_backup[leg];
     this->_data->_legController->commands[leg].kdCartesian = Kd_backup[leg];
   }
+
 
 }
 

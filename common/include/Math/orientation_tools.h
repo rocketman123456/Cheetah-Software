@@ -183,7 +183,9 @@ Mat3<typename T::Scalar> quaternionToRotationMatrix(
       1 - 2 * (e1 * e1 + e3 * e3), 2 * (e2 * e3 - e0 * e1),
       2 * (e1 * e3 - e0 * e2), 2 * (e2 * e3 + e0 * e1),
       1 - 2 * (e1 * e1 + e2 * e2);
+//  std::cout<<"R"<<std::endl<<R<<std::endl;
   R.transposeInPlace();
+//        std::cout<<"RT"<<std::endl<<R<<std::endl;
   return R;
 }
 

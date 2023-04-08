@@ -50,6 +50,9 @@ void RobotRunner::init() {
   _stateEstimator = new StateEstimatorContainer<float>(
       cheaterState, vectorNavData, _legController->datas,
       &_stateEstimate, controlParameters);
+  _t265stateEstimator = new StateEstimatorContainer<float>(
+            cheaterState, vectorNavData, _legController->datas,
+            &_t265stateEstimate, controlParameters);
   initializeStateEstimator(false);
 
   memset(&rc_control, 0, sizeof(rc_control_settings));
@@ -66,6 +69,7 @@ void RobotRunner::init() {
   _robot_ctrl->_quadruped = &_quadruped;
   _robot_ctrl->_legController = _legController;
   _robot_ctrl->_stateEstimator = _stateEstimator;
+  _robot_ctrl->_t265stateEstimator = _t265stateEstimator; //添加t265
   _robot_ctrl->_stateEstimate = &_stateEstimate;
   _robot_ctrl->_visualizationData= visualizationData;
   _robot_ctrl->_robotType = robotType;
@@ -80,8 +84,12 @@ void RobotRunner::init() {
 /**
  * Runs the overall robot control system by calling each of the major components
  * to run each of their respective steps.
+ *
  */
 void RobotRunner::run() {
+//    clock_gettime(CLOCK_MONOTONIC, &now); //当前到时间
+//   std::cout<<"timer"<< ((int64_t)(now.tv_nsec - _startTime.tv_nsec) + 1000000000 * (now.tv_sec - _startTime.tv_sec))/ 1.e6<<std::endl;
+
   // Run the state estimator step
   //_stateEstimator->run(cheetahMainVisualization);
   _stateEstimator->run();
@@ -110,7 +118,8 @@ void RobotRunner::run() {
       _robot_ctrl->Estop();
     }else {
       // Controller
-      if (!_jpos_initializer->IsInitialized(_legController)) {
+      if (0)// !_jpos_initializer->IsInitialized(_legController))
+          {
         Mat3<float> kpMat;
         Mat3<float> kdMat;
         // Update the jpos feedback gains
@@ -141,21 +150,27 @@ void RobotRunner::run() {
 
   }
 
-
-
   // Visualization (will make this into a separate function later)
   for (int leg = 0; leg < 4; leg++) {
     for (int joint = 0; joint < 3; joint++) {
-      cheetahMainVisualization->q[leg * 3 + joint] =
-        _legController->datas[leg].q[joint];
+      cheetahMainVisualization->q[leg * 3 + joint] = _legController->datas[leg].q[joint];
     }
   }
-  cheetahMainVisualization->p.setZero();
-  cheetahMainVisualization->p = _stateEstimate.position;
-  cheetahMainVisualization->quat = _stateEstimate.orientation;
+    cheetahMainVisualization->p.setZero();
+    cheetahMainVisualization->p = _stateEstimate.position;
+    cheetahMainVisualization->quat = _stateEstimate.orientation;
 
   // Sets the leg controller commands for the robot appropriate commands
   finalizeStep();
+
+//
+//  clock_gettime(CLOCK_MONOTONIC, &_startTime);
+//  static long time_c=0;
+//  time_c++;
+//  if (time_c%50==0)
+//  std::cout<<"timer  "<< ((int64_t)(_startTime.tv_nsec - now.tv_nsec) + 1000000000 * (_startTime.tv_sec - now.tv_sec))/ 1.e6<<std::endl;
+////
+
 }
 
 /*!
@@ -214,6 +229,14 @@ void RobotRunner::finalizeStep() {
   _lcm.publish("leg_control_command", &leg_control_command_lcm);
   _lcm.publish("leg_control_data", &leg_control_data_lcm);
   _lcm.publish("state_estimator", &state_estimator_lcm);
+
+    global_to_robot_lcmt.rpy[0] = state_estimator_lcm.rpy[0];
+    global_to_robot_lcmt.rpy[1] = state_estimator_lcm.rpy[1];
+    global_to_robot_lcmt.rpy[2] = state_estimator_lcm.rpy[2];
+    global_to_robot_lcmt.xyz[0] = state_estimator_lcm.p[0];
+    global_to_robot_lcmt.xyz[1] = state_estimator_lcm.p[1];
+    global_to_robot_lcmt.xyz[2] = state_estimator_lcm.p[2];
+  _lcm.publish("global_to_robot", &global_to_robot_lcmt);
   _iterations++;
 }
 

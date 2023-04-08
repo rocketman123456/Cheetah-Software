@@ -25,6 +25,7 @@ template <typename T>
 void DesiredStateCommand<T>::convertToStateCommands() {
   data.zero();
   Vec2<float> joystickLeft, joystickRight;
+  float roll_showup=0;
 
   //T height_cmd(0.3);
 
@@ -42,6 +43,7 @@ void DesiredStateCommand<T>::convertToStateCommands() {
       joystickLeft[1] = rcCommand->v_des[0]; // X
       joystickRight[0] = rcCommand->omega_des[2]; // Yaw
       joystickRight[1] = rcCommand->omega_des[1]; // Pitch
+        roll_showup=rcCommand->rpy_des[0];
       //height_cmd = rcCommand->height_variation;
 
     }else if(rcCommand->mode == RC_mode::TWO_LEG_STANCE){ // Two Contact Stand
@@ -80,7 +82,7 @@ void DesiredStateCommand<T>::convertToStateCommands() {
   data.stateDes(9) = 0.0;  // Roll rate
   data.stateDes(10) = 0.0;  // Pitch rate
   data.stateDes(11) = deadband(rightAnalogStick[0], minTurnRate, maxTurnRate);  // Yaw turn rate
-  data.stateDes(3) = 0.0; // Roll
+  data.stateDes(3) =roll_showup;// deadband(rightAnalogStick[0], minRoll, maxRoll);//0.0; // Roll
   data.stateDes(4) = deadband(rightAnalogStick[1], minPitch, maxPitch);  // Pitch
   data.stateDes(5) = dt * data.stateDes(11);  // Yaw
 }

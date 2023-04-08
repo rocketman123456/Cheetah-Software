@@ -69,20 +69,20 @@ void FSM_State_RecoveryStand<T>::onEnter() {
   _flag = FoldLegs;
   if( !_UpsideDown() ) { // Proper orientation
     if (  (0.2 < body_height) && (body_height < 0.45) ){
-      printf("[Recovery Balance] body height is %f; Stand Up \n", body_height);
+      printf("[Recovery Stand] body height is %f; Stand Up \n", body_height);
       _flag = StandUp;
     }else{
-      printf("[Recovery Balance] body height is %f; Folding legs \n", body_height);
+      printf("[Recovery Stand] body height is %f; Folding legs \n", body_height);
     }
   }else{
-      printf("[Recovery Balance] UpsideDown (%d) \n", _UpsideDown() );
+      printf("[Recovery Stand] UpsideDown (%d) \n", _UpsideDown() );
   }
   _motion_start_iter = 0;
 }
 
 template <typename T>
 bool FSM_State_RecoveryStand<T>::_UpsideDown(){
-  //pretty_print(this->_data->_stateEstimator->getResult().rBody, std::cout, "Rot");
+ // pretty_print(this->_data->_stateEstimator->getResult().rBody, std::cout, "Rot");
   //if(this->_data->_stateEstimator->getResult().aBody[2] < 0){
   if(this->_data->_stateEstimator->getResult().rBody(2,2) < 0){
     return true;
@@ -177,7 +177,7 @@ void FSM_State_RecoveryStand<T>::_StandUp(const int & curr_iter){
     _flag = FoldLegs;
     _motion_start_iter = _state_iter+1;
 
-    printf("[Recovery Balance - Warning] body height is still too low (%f) or UpsideDown (%d); Folding legs \n", 
+    printf("[Recovery Stand - Warning] body height is still too low (%f) or UpsideDown (%d); Folding legs \n", 
         body_height, _UpsideDown() );
 
   }else{
@@ -230,24 +230,33 @@ FSM_StateName FSM_State_RecoveryStand<T>::checkTransition() {
     case K_RECOVERY_STAND:
       break;
 
+    case K_SIT_DOWN:
+      this->nextStateName = FSM_StateName::SIT_DOWN;
+      printf("RECOVERY_STAND -> SIT_DOWN\n");
+      break;
     case K_LOCOMOTION:
       this->nextStateName = FSM_StateName::LOCOMOTION;
+      printf("RECOVERY_STAND -> LOCOMOTION\n");
       break;
 
     case K_PASSIVE:  // normal c
       this->nextStateName = FSM_StateName::PASSIVE;
+      printf("RECOVERY_STAND -> PASSIVE\n");
       break;
 
     case K_BALANCE_STAND: 
       this->nextStateName = FSM_StateName::BALANCE_STAND;
+      printf("RECOVERY_STAND -> BALANCE_STAND\n");
       break;
 
     case K_BACKFLIP: 
       this->nextStateName = FSM_StateName::BACKFLIP;
+      printf("RECOVERY_STAND -> BACKFLIP\n");
       break;
 
     case K_FRONTJUMP: 
       this->nextStateName = FSM_StateName::FRONTJUMP;
+      printf("RECOVERY_STAND -> FRONTJUMP\n");
       break;
 
     case K_VISION: 
@@ -276,10 +285,17 @@ TransitionData<T> FSM_State_RecoveryStand<T>::transition() {
   switch (this->nextStateName) {
     case FSM_StateName::PASSIVE:  // normal
       this->transitionData.done = true;
+      printf("RECOVERY_STAND -> Passive\n");
+      break;
+
+    case FSM_StateName::SIT_DOWN:
+      this->transitionData.done = true;
+      printf("RECOVERY_STAND -> SIT_DOWN\n");
       break;
 
     case FSM_StateName::BALANCE_STAND:
       this->transitionData.done = true;
+      printf("RECOVERY_STAND -> BALANCE_STAND\n");
       break;
 
     case FSM_StateName::LOCOMOTION:
@@ -302,6 +318,7 @@ TransitionData<T> FSM_State_RecoveryStand<T>::transition() {
       std::cout << "[CONTROL FSM] Something went wrong in transition"
                 << std::endl;
   }
+  printf("RECOVERY_STAND -> %f\n",this->_data->controlParameters->control_mode);
 
   // Return the transition data to the FSM
   return this->transitionData;
