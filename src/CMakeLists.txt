@@ -1,8 +1,3 @@
-include_directories("common")
-include_directories("robot")
-include_directories("user")
+include_directories("spi-test")
 
-add_subdirectory(3rdparty)
-add_subdirectory(common)
-add_subdirectory(robot)
-add_subdirectory(user)
+add_subdirectory(spi-test)

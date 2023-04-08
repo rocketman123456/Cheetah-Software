@@ -1,4 +1,0 @@
-add_subdirectory(Leg_Control)
-add_subdirectory(Joint_Controller)
-add_subdirectory(MiniCheetahSpi_Controller)
-add_subdirectory(MIT_Controller)
