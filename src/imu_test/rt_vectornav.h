@@ -4,13 +4,11 @@
  */
 #pragma once
 
-#ifdef linux
-
-#include <lcm/lcm-cpp.hpp>
-#include "SimUtilities/IMUTypes.h"
+#include "IMUTypes.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include "vn/sensors.h"
@@ -19,6 +17,12 @@ extern "C" {
 }
 #endif
 
-bool init_vectornav(VectorNavData* vd_data);
+class vectornav_lcmt
+{
+public:
+    float q[4];
+    float w[3];
+    float a[3];
+}
 
-#endif
+bool init_vectornav(VectorNavData* vd_data);

@@ -3,27 +3,23 @@
  * @brief VectorNav IMU communication
  */
 
-#ifdef linux
-
 #include <inttypes.h>
 #include <pthread.h>
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
 
-#include <lcm/lcm-cpp.hpp>
-
-#include "SimUtilities/IMUTypes.h"
-#include "Utilities/utilities.h"
+#include "IMUTypes.h"
 #include "rt/rt_vectornav.h"
-#include "vectornav_lcmt.hpp"
+#include "utilities.h"
 
 #define K_MINI_CHEETAH_VECTOR_NAV_SERIAL "/dev/ttyS0"
 
-// #define PRINT_VECTORNAV_DEBUG
+#define PRINT_VECTORNAV_DEBUG
 
 int  processErrorReceived(const std::string& errorMessage, VnError errorCode);
 void vectornav_handler(void* userData, VnUartPacket* packet, size_t running_index);
+
 /*!
  * VectorNav Driver data
  */
@@ -35,7 +31,6 @@ typedef struct
 
 vn_sensor vn;
 
-static lcm::LCM*      vectornav_lcm;
 vectornav_lcmt        vectornav_lcm_data;
 static VectorNavData* g_vn_data = nullptr;
 
@@ -139,14 +134,14 @@ bool init_vectornav(VectorNavData* vn_data)
         printf("[rt_vectornav] VnSensor_readGyroCompensation failed.\n");
     }
     printf("[rt_vectornav] AccelWindow: %d\n", filtReg.accelWindowSize);
-    //        filtReg.accelWindowSize = 4;    // We're sampling at 200 hz, but the
-    //        imu samples at 800 hz. filtReg.accelFilterMode = 3; if((error =
-    //        VnSensor_writeImuFilteringConfiguration(&(vn.vs), filtReg, true)) !=
-    //        E_NONE)
-    //        {
-    //            printf("[rt_vectornav] VnSensor_writeGyroCompensation
-    //            failed.\n");
-    //        }
+
+    // filtReg.accelWindowSize = 4;    // We're sampling at 200 hz, but the imu samples at 800 hz.
+    // filtReg.accelFilterMode = 3;
+    // if((error = VnSensor_writeImuFilteringConfiguration(&(vn.vs), filtReg, true)) != E_NONE)
+    // {
+    //     printf("[rt_vectornav] VnSensor_writeGyroCompensation
+    //     failed.\n");
+    // }
 
     // setup binary output message type
     BinaryOutputRegister_initialize(&(vn.bor),
@@ -223,7 +218,7 @@ void vectornav_handler(void* userData, VnUartPacket* packet, size_t running_inde
         g_vn_data->accelerometer[i] = a.c[i];
     }
 
-    vectornav_lcm->publish("hw_vectornav", &vectornav_lcm_data);
+    //vectornav_lcm->publish("hw_vectornav", &vectornav_lcm_data);
 
 #ifdef PRINT_VECTORNAV_DEBUG
     char strConversions[50];
@@ -248,4 +243,3 @@ int processErrorReceived(const std::string& errorMessage, VnError errorCode)
     printf("%s\nVECTORNAV ERROR: %s\n", errorMessage.c_str(), errorCodeStr);
     return -1;
 }
-#endif

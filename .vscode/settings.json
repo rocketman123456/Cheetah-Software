@@ -3,6 +3,7 @@
         "mach.h": "c",
         "clock.h": "c",
         "pthread.h": "c",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "string": "cpp"
     }
 }
