@@ -10,7 +10,7 @@
 #include <string>
 
 #include "IMUTypes.h"
-#include "rt/rt_vectornav.h"
+#include "rt_vectornav.h"
 #include "utilities.h"
 
 #define K_MINI_CHEETAH_VECTOR_NAV_SERIAL "/dev/ttyS0"
@@ -41,7 +41,7 @@ bool init_vectornav(VectorNavData* vn_data)
 {
     g_vn_data = vn_data;
     printf("[Simulation] Setup LCM...\n");
-    vectornav_lcm = new lcm::LCM(getLcmUrl(255));
+    //vectornav_lcm = new lcm::LCM(getLcmUrl(255));
     if (!vectornav_lcm->good())
     {
         printf("[ERROR] Failed to set up LCM\n");
