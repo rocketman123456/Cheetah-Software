@@ -78,13 +78,6 @@ typedef struct // 60
     int32_t checksum;
 } spine_data_t;
 
-typedef struct // 48
-{
-    float tau_abad[4];
-    float tau_hip[4];
-    float tau_knee[4];
-} spi_torque_t;
-
 typedef struct // 256
 {
     float q_des_abad[4] = {0};
@@ -122,6 +115,13 @@ typedef struct // 164
     float tau_hip[4] = {0};
     float tau_knee[4] = {0};
 } spi_data_t;
+
+typedef struct // 48
+{
+    float tau_abad[4];
+    float tau_hip[4];
+    float tau_knee[4];
+} spi_torque_t;
 
 extern spi_command_t spi_command_drv;
 extern spi_data_t    spi_data_drv;

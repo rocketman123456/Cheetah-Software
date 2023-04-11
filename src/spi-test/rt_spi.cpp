@@ -305,9 +305,9 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
         memset(rx_buf, 0, K_WORDS_PER_MESSAGE * sizeof(uint16_t));
 
         // copy into tx buffer flipping bytes
+        // tx_buf[i] = __bswap_16(cmd_d[i]);
         for (int i = 0; i < K_WORDS_PER_MESSAGE; i++)
             tx_buf[i] = (cmd_d[i] >> 8) + ((cmd_d[i] & 0xff) << 8);
-        // tx_buf[i] = __bswap_16(cmd_d[i]);
 
         // each word is two bytes long
         size_t word_len = 2; // 16 bit word
@@ -334,9 +334,9 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
         (void)rv;
 
         // flip bytes the other way
-        for (int i = 0; i < 42; i++)
-            data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
         // data_d[i] = __bswap_16(rx_buf[i]);
+        for (int i = 0; i < 30; i++) // 42
+            data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
 
         // copy back to data
         spine_to_spi(data, &g_spine_data, spi_board * 2);
