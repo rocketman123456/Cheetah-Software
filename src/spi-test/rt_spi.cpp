@@ -335,7 +335,7 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
 
         // flip bytes the other way
         // data_d[i] = __bswap_16(rx_buf[i]);
-        for (int i = 0; i < 30; i++) // 42
+        for (int i = 0; i < 42; i++)
             data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
 
         // copy back to data
