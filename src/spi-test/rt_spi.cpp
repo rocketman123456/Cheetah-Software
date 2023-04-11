@@ -263,8 +263,12 @@ void spine_to_spi(spi_data_t* data, spine_data_t* spine_data, int leg_0)
         data->flags[i + leg_0] = spine_data->flags[i];
 
         printf("%f %f %f, %f %f %f, %d\n", 
-            data->q_abad[i + leg_0], data->q_hip[i + leg_0], data->q_knee[i + leg_0],
-            data->qd_abad[i + leg_0], data->qd_hip[i + leg_0], data->qd_knee[i + leg_0],
+            data->q_abad[i + leg_0] / M_PI * 180.0,
+            data->q_hip[i + leg_0] / M_PI * 180.0,
+            data->q_knee[i + leg_0] / M_PI * 180.0,
+            data->qd_abad[i + leg_0],
+            data->qd_hip[i + leg_0],
+            data->qd_knee[i + leg_0],
             data->flags[i + leg_0]
         );
     }
