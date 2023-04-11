@@ -36,14 +36,6 @@ extern "C"
     (byte & 0x80 ? '1' : '0'), (byte & 0x40 ? '1' : '0'), (byte & 0x20 ? '1' : '0'), (byte & 0x10 ? '1' : '0'), (byte & 0x08 ? '1' : '0'), \
         (byte & 0x04 ? '1' : '0'), (byte & 0x02 ? '1' : '0'), (byte & 0x01 ? '1' : '0')
 
-void init_spi();
-
-void spi_send_receive(spi_command_t* command, spi_data_t* data);
-void spi_driver_run();
-
-spi_data_t*    get_spi_data();
-spi_command_t* get_spi_command();
-
 /*!
  * SPI command message
  */
@@ -87,7 +79,6 @@ typedef struct
 
 typedef struct
 {
-public:
     float q_des_abad[4];
     float q_des_hip[4];
     float q_des_knee[4];
@@ -113,7 +104,6 @@ public:
 
 typedef struct
 {
-public:
     float q_abad[4];
     float q_hip[4];
     float q_knee[4];
@@ -133,7 +123,6 @@ public:
 
 typedef struct
 {
-public:
     float tau_abad[4];
     float tau_hip[4];
     float tau_knee[4];
@@ -142,3 +131,11 @@ public:
 extern spi_command_t spi_command_drv;
 extern spi_data_t    spi_data_drv;
 extern spi_torque_t  spi_torque;
+
+void init_spi();
+
+void spi_send_receive(spi_command_t* command, spi_data_t* data);
+void spi_driver_run();
+
+spi_data_t*    get_spi_data();
+spi_command_t* get_spi_command();
