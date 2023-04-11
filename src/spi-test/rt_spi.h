@@ -20,9 +20,6 @@ extern "C"
 }
 #endif
 
-#include <spi_command_t.hpp>
-#include <spi_data_t.hpp>
-#include <spi_torque_t.hpp>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
