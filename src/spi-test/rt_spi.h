@@ -40,7 +40,7 @@ extern "C"
 /*!
  * SPI command message
  */
-typedef struct
+typedef struct // 132
 {
     float   q_des_abad[2];
     float   q_des_hip[2];
@@ -64,7 +64,7 @@ typedef struct
 /*!
  * SPI data message
  */
-typedef struct
+typedef struct // 60
 {
     float   q_abad[2];
     float   q_hip[2];
@@ -76,14 +76,14 @@ typedef struct
     int32_t checksum;
 } spine_data_t;
 
-typedef struct
+typedef struct // 48
 {
     float tau_abad[4];
     float tau_hip[4];
     float tau_knee[4];
 } spi_torque_t;
 
-typedef struct
+typedef struct // 256
 {
     float q_des_abad[4] = {0};
     float q_des_hip[4] = {0};
@@ -103,7 +103,7 @@ typedef struct
     int32_t flags[4] = {0};
 } spi_command_t;
 
-typedef struct
+typedef struct // 164
 {
     float q_abad[4] = {0};
     float q_hip[4] = {0};
@@ -126,6 +126,9 @@ extern spi_data_t    spi_data_drv;
 extern spi_torque_t  spi_torque;
 
 void init_spi();
+
+void spi_to_spine(spi_command_t* cmd, spine_cmd_t* spine_cmd, int leg_0);
+void spine_to_spi(spi_data_t* data, spine_data_t* spine_data, int leg_0);
 
 void spi_send_receive(spi_command_t* command, spi_data_t* data);
 void spi_driver_run();
