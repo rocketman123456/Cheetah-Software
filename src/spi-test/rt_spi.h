@@ -85,7 +85,7 @@ typedef struct
 
 } spine_data_t;
 
-class spi_command_t
+typedef struct
 {
 public:
     float q_des_abad[4];
@@ -109,9 +109,9 @@ public:
     float tau_knee_ff[4];
 
     int32_t flags[4];
-};
+} spi_command_t;
 
-class spi_data_t
+typedef struct
 {
 public:
     float q_abad[4];
@@ -129,15 +129,15 @@ public:
     float tau_abad[4];
     float tau_hip[4];
     float tau_knee[4];
-};
+} spi_data_t;
 
-class spi_torque_t
+typedef struct
 {
 public:
     float tau_abad[4];
     float tau_hip[4];
     float tau_knee[4];
-};
+} spi_torque_t;
 
 extern spi_command_t spi_command_drv;
 extern spi_data_t    spi_data_drv;
