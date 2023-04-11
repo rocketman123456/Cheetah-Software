@@ -3,13 +3,14 @@
  * @brief SPI communication to spine board
  */
 
+#include "rt_spi.h"
+
 #include <byteswap.h>
 #include <math.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "rt_spi.h"
 #include <linux/spi/spidev.h>
 
 unsigned char spi_mode          = SPI_MODE_0; // 时钟极性0,时钟相位0
@@ -215,12 +216,9 @@ void spi_to_spine(spi_command_t* cmd, spine_cmd_t* spine_cmd, int leg_0)
 {
     for (int i = 0; i < 2; i++)
     {
-        // spine_cmd->q_des_abad[i] = (cmd->q_des_abad[i+leg_0] +
-        // abad_offset[i+leg_0]) * abad_side_sign[i+leg_0]; spine_cmd->q_des_hip[i]
-        // = (cmd->q_des_hip[i+leg_0] + hip_offset[i+leg_0]) *
-        // hip_side_sign[i+leg_0]; spine_cmd->q_des_knee[i] =
-        // (cmd->q_des_knee[i+leg_0] + knee_offset[i+leg_0]) /
-        // knee_side_sign[i+leg_0];
+        // spine_cmd->q_des_abad[i] = (cmd->q_des_abad[i+leg_0] + abad_offset[i+leg_0]) * abad_side_sign[i+leg_0];
+        // spine_cmd->q_des_hip[i] = (cmd->q_des_hip[i+leg_0] + hip_offset[i+leg_0]) * hip_side_sign[i+leg_0];
+        // spine_cmd->q_des_knee[i] =(cmd->q_des_knee[i+leg_0] + knee_offset[i+leg_0]) / knee_side_sign[i+leg_0];
         spine_cmd->q_des_abad[i] = (cmd->q_des_abad[i + leg_0] * abad_side_sign[i + leg_0]) + abad_offset[i + leg_0];
         spine_cmd->q_des_hip[i]  = (cmd->q_des_hip[i + leg_0] * hip_side_sign[i + leg_0]) + hip_offset[i + leg_0];
         spine_cmd->q_des_knee[i] = (cmd->q_des_knee[i + leg_0] / knee_side_sign[i + leg_0]) + knee_offset[i + leg_0];
@@ -341,10 +339,10 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
 void spi_driver_run()
 {
     // do spi board calculations  模拟计算一下spiboard咋计算的?好像没什么用啊
-    for (int i = 0; i < 4; i++)
-    {
-        fake_spine_control(&spi_command_drv, &spi_data_drv, &spi_torque, i);
-    }
+    // for (int i = 0; i < 4; i++)
+    //{
+    //    fake_spine_control(&spi_command_drv, &spi_data_drv, &spi_torque, i);
+    //}
 
     // in here, the driver is good
     pthread_mutex_lock(&spi_mutex);

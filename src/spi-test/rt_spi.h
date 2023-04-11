@@ -28,7 +28,8 @@ extern "C"
 
 #define K_EXPECTED_COMMAND_SIZE 256
 #define K_WORDS_PER_MESSAGE 66
-#define K_EXPECTED_DATA_SIZE 116
+//#define K_EXPECTED_DATA_SIZE 116
+#define K_EXPECTED_DATA_SIZE 164
 #define K_KNEE_OFFSET_POS 4.35f
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
@@ -58,7 +59,6 @@ typedef struct
     float   tau_knee_ff[2];
     int32_t flags[2];
     int32_t checksum;
-
 } spine_cmd_t;
 
 /*!
@@ -74,52 +74,7 @@ typedef struct
     float   qd_knee[2];
     int32_t flags[2];
     int32_t checksum;
-
 } spine_data_t;
-
-typedef struct
-{
-    float q_des_abad[4];
-    float q_des_hip[4];
-    float q_des_knee[4];
-
-    float qd_des_abad[4];
-    float qd_des_hip[4];
-    float qd_des_knee[4];
-
-    float kp_abad[4];
-    float kp_hip[4];
-    float kp_knee[4];
-
-    float kd_abad[4];
-    float kd_hip[4];
-    float kd_knee[4];
-
-    float tau_abad_ff[4];
-    float tau_hip_ff[4];
-    float tau_knee_ff[4];
-
-    int32_t flags[4];
-} spi_command_t;
-
-typedef struct
-{
-    float q_abad[4];
-    float q_hip[4];
-    float q_knee[4];
-
-    float qd_abad[4];
-    float qd_hip[4];
-    float qd_knee[4];
-
-    int32_t flags[4];
-
-    int32_t spi_driver_status;
-
-    float tau_abad[4];
-    float tau_hip[4];
-    float tau_knee[4];
-} spi_data_t;
 
 typedef struct
 {
@@ -127,6 +82,44 @@ typedef struct
     float tau_hip[4];
     float tau_knee[4];
 } spi_torque_t;
+
+typedef struct
+{
+    float q_des_abad[4] = {0};
+    float q_des_hip[4] = {0};
+    float q_des_knee[4] = {0};
+    float qd_des_abad[4] = {0};
+    float qd_des_hip[4] = {0};
+    float qd_des_knee[4] = {0};
+    float kp_abad[4] = {0};
+    float kp_hip[4] = {0};
+    float kp_knee[4] = {0};
+    float kd_abad[4] = {0};
+    float kd_hip[4] = {0};
+    float kd_knee[4] = {0};
+    float tau_abad_ff[4] = {0};
+    float tau_hip_ff[4] = {0};
+    float tau_knee_ff[4] = {0};
+    int32_t flags[4] = {0};
+} spi_command_t;
+
+typedef struct
+{
+    float q_abad[4] = {0};
+    float q_hip[4] = {0};
+    float q_knee[4] = {0};
+    float qd_abad[4] = {0};
+    float qd_hip[4] = {0};
+    float qd_knee[4] = {0};
+
+    int32_t flags[4] = {0};
+
+    int32_t spi_driver_status = 0;
+
+    float tau_abad[4] = {0};
+    float tau_hip[4] = {0};
+    float tau_knee[4] = {0};
+} spi_data_t;
 
 extern spi_command_t spi_command_drv;
 extern spi_data_t    spi_data_drv;
