@@ -40,7 +40,8 @@ const float hip_side_sign[4]  = {-1.f, 1.f, -1.f, 1.f};
 const float knee_side_sign[4] = {-.6429f, .6429f, -.6429f, .6429f};
 
 // only used for actual robot
-const float abad_offset[4] = {0.f, 0.f, 0.f, 0.f};
+// const float abad_offset[4] = {0.f, 0.f, 0.f, 0.f};
+const float abad_offset[4] = {0.05f, -0.05f, -0.07f, 0.07f};
 const float hip_offset[4]  = {M_PI / 2.f, -M_PI / 2.f, -M_PI / 2.f, M_PI / 2.f};
 const float knee_offset[4] = {K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS, K_KNEE_OFFSET_POS};
 
@@ -263,18 +264,17 @@ void spine_to_spi(spi_data_t* data, spine_data_t* spine_data, int leg_0)
         data->flags[i + leg_0] = spine_data->flags[i];
 
         data->tau_abad[i + leg_0] = spine_data->tau_abad[i] * abad_side_sign[i + leg_0];
-        data->tau_hip[i + leg_0] = spine_data->tau_hip[i] * hip_side_sign[i + leg_0];
+        data->tau_hip[i + leg_0]  = spine_data->tau_hip[i] * hip_side_sign[i + leg_0];
         data->tau_knee[i + leg_0] = spine_data->tau_knee[i] / knee_side_sign[i + leg_0];
 
-        printf("%f %f %f, %f %f %f, %d\n", 
-            data->q_abad[i + leg_0] / M_PI * 180.0,
-            data->q_hip[i + leg_0] / M_PI * 180.0 ,
-            data->q_knee[i + leg_0] / M_PI * 180.0,
-            data->qd_abad[i + leg_0],
-            data->qd_hip[i + leg_0],
-            data->qd_knee[i + leg_0],
-            data->flags[i + leg_0]
-        );
+        printf("%f %f %f, %f %f %f, %d\n",
+               data->q_abad[i + leg_0] / M_PI * 180.0,
+               data->q_hip[i + leg_0] / M_PI * 180.0,
+               data->q_knee[i + leg_0] / M_PI * 180.0,
+               data->qd_abad[i + leg_0],
+               data->qd_hip[i + leg_0],
+               data->qd_knee[i + leg_0],
+               data->flags[i + leg_0]);
     }
 
     uint32_t calc_checksum = xor_checksum((uint32_t*)spine_data, 14);
@@ -314,7 +314,7 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
             tx_buf[i] = (cmd_d[i] >> 8) + ((cmd_d[i] & 0xff) << 8);
 
         // each word is two bytes long
-        size_t word_len = 2; // 16 bit word
+        const size_t word_len = 2; // 16 bit word
 
         // spi message struct
         struct spi_ioc_transfer spi_message[1];
@@ -353,10 +353,10 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
 void spi_driver_run()
 {
     // do spi board calculations  模拟计算一下spiboard咋计算的?好像没什么用啊
-    // for (int i = 0; i < 4; i++)
-    //{
-    //    fake_spine_control(&spi_command_drv, &spi_data_drv, &spi_torque, i);
-    //}
+    for (int i = 0; i < 4; i++)
+    {
+        fake_spine_control(&spi_command_drv, &spi_data_drv, &spi_torque, i);
+    }
 
     // in here, the driver is good
     pthread_mutex_lock(&spi_mutex);

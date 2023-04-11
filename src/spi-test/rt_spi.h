@@ -72,12 +72,13 @@ typedef struct // 84
     float qd_abad[2];
     float qd_hip[2];
     float qd_knee[2];
-    float tau_abad[2];
-    float tau_hip[2];
-    float tau_knee[2];
 
     int32_t flags[2];
     int32_t checksum;
+
+    float tau_abad[2];
+    float tau_hip[2];
+    float tau_knee[2];
 } spine_data_t;
 
 typedef struct // 256
