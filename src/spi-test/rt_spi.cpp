@@ -264,7 +264,7 @@ void spine_to_spi(spi_data_t* data, spine_data_t* spine_data, int leg_0)
 
         printf("%f %f %f, %f %f %f, %d\n", 
             data->q_abad[i + leg_0] / M_PI * 180.0,
-            data->q_hip[i + leg_0] / M_PI * 180.0,
+            data->q_hip[i + leg_0] / M_PI * 180.0 ,
             data->q_knee[i + leg_0] / M_PI * 180.0,
             data->qd_abad[i + leg_0],
             data->qd_hip[i + leg_0],
@@ -334,7 +334,7 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
         (void)rv;
 
         // flip bytes the other way
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < 42; i++)
             data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
         // data_d[i] = __bswap_16(rx_buf[i]);
 
