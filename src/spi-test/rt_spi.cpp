@@ -301,6 +301,8 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
 
     for (int spi_board = 0; spi_board < 2; spi_board++)
     {
+        printf("[SPI] read spi_board : %d \n", spi_board);
+
         // copy command into spine type:
         spi_to_spine(command, &g_spine_cmd, spi_board * 2);
 
