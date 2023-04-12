@@ -42,22 +42,22 @@ extern "C"
  */
 typedef struct // 132
 {
-    float   q_des_abad[2];
-    float   q_des_hip[2];
-    float   q_des_knee[2];
-    float   qd_des_abad[2];
-    float   qd_des_hip[2];
-    float   qd_des_knee[2];
-    float   kp_abad[2];
-    float   kp_hip[2];
-    float   kp_knee[2];
-    float   kd_abad[2];
-    float   kd_hip[2];
-    float   kd_knee[2];
-    float   tau_abad_ff[2];
-    float   tau_hip_ff[2];
-    float   tau_knee_ff[2];
-    int32_t flags[2];
+    float   q_des_abad[2]  = {0};
+    float   q_des_hip[2]   = {0};
+    float   q_des_knee[2]  = {0};
+    float   qd_des_abad[2] = {0};
+    float   qd_des_hip[2]  = {0};
+    float   qd_des_knee[2] = {0};
+    float   kp_abad[2]     = {0};
+    float   kp_hip[2]      = {0};
+    float   kp_knee[2]     = {0};
+    float   kd_abad[2]     = {0};
+    float   kd_hip[2]      = {0};
+    float   kd_knee[2]     = {0};
+    float   tau_abad_ff[2] = {0};
+    float   tau_hip_ff[2]  = {0};
+    float   tau_knee_ff[2] = {0};
+    int32_t flags[2]       = {0};
     int32_t checksum;
 } spine_cmd_t;
 
@@ -66,19 +66,19 @@ typedef struct // 132
  */
 typedef struct // 84
 {
-    float q_abad[2];
-    float q_hip[2];
-    float q_knee[2];
-    float qd_abad[2];
-    float qd_hip[2];
-    float qd_knee[2];
+    float q_abad[2]  = {0};
+    float q_hip[2]   = {0};
+    float q_knee[2]  = {0};
+    float qd_abad[2] = {0};
+    float qd_hip[2]  = {0};
+    float qd_knee[2] = {0};
 
-    int32_t flags[2];
+    int32_t flags[2] = {0};
     int32_t checksum;
 
-    float tau_abad[2];
-    float tau_hip[2];
-    float tau_knee[2];
+    float tau_abad[2] = {0};
+    float tau_hip[2]  = {0};
+    float tau_knee[2] = {0};
 } spine_data_t;
 
 typedef struct // 256
