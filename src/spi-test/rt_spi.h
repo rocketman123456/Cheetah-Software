@@ -64,7 +64,7 @@ typedef struct // 132
 /*!
  * SPI data message
  */
-typedef struct // 84
+typedef struct // 84 / 
 {
     float q_abad[2]  = {0};
     float q_hip[2]   = {0};
@@ -76,9 +76,9 @@ typedef struct // 84
     int32_t flags[2] = {0};
     int32_t checksum;
 
-    float tau_abad[2] = {0};
-    float tau_hip[2]  = {0};
-    float tau_knee[2] = {0};
+    //float tau_abad[2] = {0};
+    //float tau_hip[2]  = {0};
+    //float tau_knee[2] = {0};
 } spine_data_t;
 
 typedef struct // 256

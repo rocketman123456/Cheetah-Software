@@ -261,9 +261,9 @@ void spine_to_spi(spi_data_t* data, spine_data_t* spine_data, int leg_0)
         data->qd_hip[i + leg_0]  = spine_data->qd_hip[i] * hip_side_sign[i + leg_0];
         data->qd_knee[i + leg_0] = spine_data->qd_knee[i] * knee_side_sign[i + leg_0];
 
-        data->tau_abad[i + leg_0] = spine_data->tau_abad[i] * abad_side_sign[i + leg_0];
-        data->tau_hip[i + leg_0]  = spine_data->tau_hip[i] * hip_side_sign[i + leg_0];
-        data->tau_knee[i + leg_0] = spine_data->tau_knee[i] / knee_side_sign[i + leg_0];
+        //data->tau_abad[i + leg_0] = spine_data->tau_abad[i] * abad_side_sign[i + leg_0];
+        //data->tau_hip[i + leg_0]  = spine_data->tau_hip[i] * hip_side_sign[i + leg_0];
+        //data->tau_knee[i + leg_0] = spine_data->tau_knee[i] / knee_side_sign[i + leg_0];
 
         data->flags[i + leg_0] = spine_data->flags[i];
 
@@ -344,7 +344,7 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
 
         // flip bytes the other way
         // data_d[i] = __bswap_16(rx_buf[i]);
-        for (int i = 0; i < 42; i++)
+        for (int i = 0; i < 30; i++)
             data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
 
         // copy back to data
