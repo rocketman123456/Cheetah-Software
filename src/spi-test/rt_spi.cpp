@@ -85,6 +85,7 @@ void fake_spine_control(spi_command_t* cmd, spi_data_t* data, spi_torque_t* torq
         else
             torque_limits = max_torque;
     }
+
     // 限幅
     if (torque_out->tau_abad[board_num] > torque_limits[0])
         torque_out->tau_abad[board_num] = torque_limits[0];
@@ -142,7 +143,7 @@ void init_spi()
 int spi_open()
 {
     int rv = 0; // receive value
-    // 通过打开文件的方式打开设备吗? fd=file device?
+    // 通过打开文件的方式打开设备吗? fd=file device
     spi_1_fd = open("/dev/spidev2.0", O_RDWR); // O_RDWR :文件可读可写
     if (spi_1_fd < 0)
         perror("[ERROR] Couldn't open spidev 2.0");
@@ -154,7 +155,6 @@ int spi_open()
     rv = ioctl(spi_1_fd, SPI_IOC_WR_MODE, &spi_mode);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_wr_mode (1)");
-
     rv = ioctl(spi_2_fd, SPI_IOC_WR_MODE, &spi_mode);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_wr_mode (2)");
@@ -162,7 +162,6 @@ int spi_open()
     rv = ioctl(spi_1_fd, SPI_IOC_RD_MODE, &spi_mode);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_mode (1)");
-
     rv = ioctl(spi_2_fd, SPI_IOC_RD_MODE, &spi_mode);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_mode (2)");
@@ -170,7 +169,6 @@ int spi_open()
     rv = ioctl(spi_1_fd, SPI_IOC_WR_BITS_PER_WORD, &spi_bits_per_word);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_wr_bits_per_word (1)");
-
     rv = ioctl(spi_2_fd, SPI_IOC_WR_BITS_PER_WORD, &spi_bits_per_word);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_wr_bits_per_word (2)");
@@ -178,7 +176,6 @@ int spi_open()
     rv = ioctl(spi_1_fd, SPI_IOC_RD_BITS_PER_WORD, &spi_bits_per_word);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_bits_per_word (1)");
-
     rv = ioctl(spi_2_fd, SPI_IOC_RD_BITS_PER_WORD, &spi_bits_per_word);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_bits_per_word (2)");
@@ -200,10 +197,10 @@ int spi_open()
     rv = ioctl(spi_1_fd, SPI_IOC_RD_LSB_FIRST, &lsb);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_lsb_first (1)");
-
     rv = ioctl(spi_2_fd, SPI_IOC_RD_LSB_FIRST, &lsb);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_lsb_first (2)");
+
     return rv;
 }
 
@@ -261,9 +258,9 @@ void spine_to_spi(spi_data_t* data, spine_data_t* spine_data, int leg_0)
         data->qd_hip[i + leg_0]  = spine_data->qd_hip[i] * hip_side_sign[i + leg_0];
         data->qd_knee[i + leg_0] = spine_data->qd_knee[i] * knee_side_sign[i + leg_0];
 
-        //data->tau_abad[i + leg_0] = spine_data->tau_abad[i] * abad_side_sign[i + leg_0];
-        //data->tau_hip[i + leg_0]  = spine_data->tau_hip[i] * hip_side_sign[i + leg_0];
-        //data->tau_knee[i + leg_0] = spine_data->tau_knee[i] / knee_side_sign[i + leg_0];
+        // data->tau_abad[i + leg_0] = spine_data->tau_abad[i] * abad_side_sign[i + leg_0];
+        // data->tau_hip[i + leg_0]  = spine_data->tau_hip[i] * hip_side_sign[i + leg_0];
+        // data->tau_knee[i + leg_0] = spine_data->tau_knee[i] / knee_side_sign[i + leg_0];
 
         data->flags[i + leg_0] = spine_data->flags[i];
 
