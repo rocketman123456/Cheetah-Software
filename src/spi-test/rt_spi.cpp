@@ -40,8 +40,8 @@ const float hip_side_sign[4]  = {-1.f, 1.f, -1.f, 1.f};
 const float knee_side_sign[4] = {-.6429f, .6429f, -.6429f, .6429f};
 
 // only used for actual robot
-// const float abad_offset[4] = {0.f, 0.f, 0.f, 0.f};
-const float abad_offset[4] = {0.05f, -0.05f, -0.07f, 0.07f};
+const float abad_offset[4] = {0.f, 0.f, 0.f, 0.f};
+// const float abad_offset[4] = {0.05f, -0.05f, -0.07f, 0.07f};
 const float hip_offset[4]  = {M_PI / 2.f, -M_PI / 2.f, -M_PI / 2.f, M_PI / 2.f};
 const float knee_offset[4] = {K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS, K_KNEE_OFFSET_POS};
 
@@ -264,16 +264,16 @@ void spine_to_spi(spi_data_t* data, spine_data_t* spine_data, int leg_0)
 
         data->flags[i + leg_0] = spine_data->flags[i];
 
-        printf("%f %f %f, %f %f %f, %f %f %f, %d\n",
+        printf("%f %f %f, %f %f %f, %d\n",
                data->q_abad[i + leg_0],
                data->q_hip[i + leg_0],
                data->q_knee[i + leg_0],
                data->qd_abad[i + leg_0],
                data->qd_hip[i + leg_0],
                data->qd_knee[i + leg_0],
-               data->tau_abad[i + leg_0],
-               data->tau_hip[i + leg_0],
-               data->tau_knee[i + leg_0],
+               //data->tau_abad[i + leg_0],
+               //data->tau_hip[i + leg_0],
+               //data->tau_knee[i + leg_0],
                data->flags[i + leg_0]);
     }
 

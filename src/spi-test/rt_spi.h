@@ -64,7 +64,7 @@ typedef struct // 132
 /*!
  * SPI data message
  */
-typedef struct // 84 /
+typedef struct // 84 / 60
 {
     float q_abad[2]  = {0};
     float q_hip[2]   = {0};
