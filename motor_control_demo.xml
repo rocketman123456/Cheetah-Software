@@ -1,0 +1,9 @@
+<library path="motor_control_demo">
+  <class name="motor_control_demo/MotorControlHardware"
+         type="motor_control_demo::MotorControlHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      The ros2_control motor control example using a system hardware interface-type. It uses velocity command and position state interface.
+    </description>
+  </class>
+</library>
