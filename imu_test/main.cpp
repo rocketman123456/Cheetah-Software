@@ -8,5 +8,9 @@ int main()
 
     init_vectornav();
 
+    while (1)
+    {
+    }
+
     return 0;
 }

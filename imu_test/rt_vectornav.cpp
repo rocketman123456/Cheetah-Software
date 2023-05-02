@@ -41,12 +41,6 @@ bool init_vectornav(VectorNavData* vn_data)
 {
     g_vn_data = vn_data;
     printf("[Simulation] Setup LCM...\n");
-    //vectornav_lcm = new lcm::LCM(getLcmUrl(255));
-    if (!vectornav_lcm->good())
-    {
-        printf("[ERROR] Failed to set up LCM\n");
-        throw std::runtime_error("lcm bad");
-    }
 
     VnError                           error;
     VpeBasicControlRegister           vpeReg;
