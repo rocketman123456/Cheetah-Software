@@ -28,8 +28,8 @@ extern "C"
 
 #define K_EXPECTED_COMMAND_SIZE 256
 #define K_WORDS_PER_MESSAGE 66
-#define K_EXPECTED_DATA_SIZE 116
-// #define K_EXPECTED_DATA_SIZE 164
+// #define K_EXPECTED_DATA_SIZE 116
+#define K_EXPECTED_DATA_SIZE 164
 #define K_KNEE_OFFSET_POS 4.35f
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
@@ -61,21 +61,19 @@ typedef struct // 132
     int32_t checksum;
 } spine_cmd_t;
 
-/*!
- * SPI data message
- */
-typedef struct // 84 / 60
+typedef struct // 84
 {
-    float q_abad[2]  = {0};
-    float q_hip[2]   = {0};
-    float q_knee[2]  = {0};
+    float q_abad[2] = {0};
+    float q_hip[2]  = {0};
+    float q_knee[2] = {0};
+
     float qd_abad[2] = {0};
     float qd_hip[2]  = {0};
     float qd_knee[2] = {0};
 
-    // float tau_abad[2] = {0};
-    // float tau_hip[2]  = {0};
-    // float tau_knee[2] = {0};
+    float tau_abad[2] = {0};
+    float tau_hip[2]  = {0};
+    float tau_knee[2] = {0};
 
     int32_t flags[2] = {0};
     int32_t checksum;
@@ -116,9 +114,9 @@ typedef struct // 164
     float qd_hip[4]  = {0};
     float qd_knee[4] = {0};
 
-    // float tau_abad[4] = {0};
-    // float tau_hip[4]  = {0};
-    // float tau_knee[4] = {0};
+    float tau_abad[4] = {0};
+    float tau_hip[4]  = {0};
+    float tau_knee[4] = {0};
 
     int32_t flags[4] = {0};
 
