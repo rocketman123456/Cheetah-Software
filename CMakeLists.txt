@@ -18,12 +18,9 @@ endif()
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-option(MINI_CHEETAH_BUILD "use compiler flags for mini cheetah computer" OFF)
-set(BUILD_TYPE_RELEASE TRUE)
+find_package(Eigen3 REQUIRED)
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake
-    ${CMAKE_SOURCE_DIR}/src/common/Configuration.h
-)
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 add_subdirectory(3rdparty)
 add_subdirectory(imu_test)
