@@ -296,7 +296,7 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
     uint16_t tx_buf[K_WORDS_PER_MESSAGE];
     uint16_t rx_buf[K_WORDS_PER_MESSAGE];
 
-    for (int spi_board = 0; spi_board < 2; spi_board++)
+    for (int spi_board = 0; spi_board < 1; spi_board++)
     {
         printf("[SPI] read spi_board : %d \n", spi_board);
 
