@@ -25,4 +25,5 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake
     ${CMAKE_SOURCE_DIR}/src/common/Configuration.h
 )
 
-add_subdirectory(src)
+add_subdirectory(3rdparty)
+add_subdirectory(imu_test)
