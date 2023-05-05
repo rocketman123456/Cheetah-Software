@@ -1,6 +1,8 @@
-#include <iostream>
-
 #include "rt_spi.h"
+
+#include <iostream>
+#include <unistd.h>
+#include <cmath>
 
 int main() {
     std::cout << "Hello World!" << std::endl;
@@ -24,7 +26,10 @@ int main() {
     spi_command_drv.kd_abad[2] = 0.5;
     spi_command_drv.kd_abad[3] = 0.5;
 
-    spi_driver_run();
+    while(1) {
+        spi_driver_run();
+        sleep(100);
+    }
 
     spi_close();
 
