@@ -136,6 +136,8 @@ extern spi_torque_t  spi_torque;
 
 void init_spi();
 
+void stop_spi();
+
 void spi_to_spine(spi_command_t* cmd, spine_cmd_t* spine_cmd, int leg_0);
 void spine_to_spi(spi_data_t* data, spine_data_t* spine_data, int leg_0);
 

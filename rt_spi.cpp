@@ -40,10 +40,12 @@ const float hip_side_sign[4]  = {-1.f, 1.f, -1.f, 1.f};
 const float knee_side_sign[4] = {-.6429f, .6429f, -.6429f, .6429f};
 
 // only used for actual robot
-const float abad_offset[4] = {0.f, 0.f, 0.f, 0.f};
 // const float abad_offset[4] = {0.05f, -0.05f, -0.07f, 0.07f};
-const float hip_offset[4]  = {M_PI / 2.f, -M_PI / 2.f, -M_PI / 2.f, M_PI / 2.f};
-const float knee_offset[4] = {K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS, K_KNEE_OFFSET_POS};
+const float abad_offset[4] = {0.f, 0.f, 0.f, 0.f};
+// const float hip_offset[4]  = {M_PI / 2.f, -M_PI / 2.f, -M_PI / 2.f, M_PI / 2.f};
+const float hip_offset[4] = {0.f, 0.f, 0.f, 0.f};
+// const float knee_offset[4] = {K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS, K_KNEE_OFFSET_POS};
+const float knee_offset[4] = {0.f, 0.f, 0.f, 0.f};
 
 int spi_open();
 
@@ -202,6 +204,12 @@ int spi_open()
         perror("[ERROR] ioctl spi_ioc_rd_lsb_first (2)");
 
     return rv;
+}
+
+void stop_spi()
+{
+    close(spi_1_fd);
+    close(spi_2_fd);
 }
 
 int spi_driver_iterations = 0;
