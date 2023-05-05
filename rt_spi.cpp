@@ -205,7 +205,7 @@ int spi_open()
     return rv;
 }
 
-void stop_spi()
+void spi_close()
 {
     close(spi_1_fd);
     close(spi_2_fd);
