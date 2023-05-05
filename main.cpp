@@ -7,6 +7,8 @@ int main() {
 
     init_spi();
 
+    spi_open();
+
     spi_command_drv.flags[0] = 1;
     spi_command_drv.flags[1] = 1;
     spi_command_drv.flags[2] = 1;
@@ -24,7 +26,7 @@ int main() {
 
     spi_driver_run();
 
-    
+    spi_close();
 
     return 0;
 }

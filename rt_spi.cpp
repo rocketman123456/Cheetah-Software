@@ -47,8 +47,6 @@ const float hip_offset[4] = {0.f, 0.f, 0.f, 0.f};
 // const float knee_offset[4] = {K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS, K_KNEE_OFFSET_POS};
 const float knee_offset[4] = {0.f, 0.f, 0.f, 0.f};
 
-int spi_open();
-
 /*!
  * Compute SPI message checksum
  * @param data : input
@@ -134,8 +132,8 @@ void init_spi()
     else
         printf("[RT SPI] data size good\n");
     // 打开spi
-    printf("[RT SPI] Open\n");
-    spi_open();
+    
+    
 }
 
 /*!
@@ -144,6 +142,7 @@ void init_spi()
  */
 int spi_open()
 {
+    printf("[RT SPI] Open\n");
     int rv = 0; // receive value
     // 通过打开文件的方式打开设备吗? fd=file device
     spi_1_fd = open("/dev/spidev2.0", O_RDWR); // O_RDWR :文件可读可写
