@@ -9,9 +9,9 @@
 #include <unistd.h>
 #include <cmath>
 
-#include "Utilities/PeriodicTask.h"
-#include "Utilities/Timer.h"
-#include "Utilities/Utilities_print.h"
+#include "PeriodicTask.h"
+#include "Timer.h"
+#include "Utilities_print.h"
 
 
 /*!
