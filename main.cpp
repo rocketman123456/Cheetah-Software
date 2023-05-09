@@ -1,12 +1,25 @@
 #include "rt_spi.h"
 
+#include "PeriodicTask.h"
+
 #include <cmath>
 #include <iostream>
 #include <unistd.h>
 
+class SpiLoop
+{
+public:
+    void runSpi()
+    {
+        spi_driver_run();
+    }
+};
+
 int main()
 {
     std::cout << "Hello World!" << std::endl;
+
+    PeriodicTaskManager taskManager;
 
     init_spi();
 
@@ -27,14 +40,13 @@ int main()
     spi_command_drv.kd_abad[2] = 0.5;
     spi_command_drv.kd_abad[3] = 0.5;
 
-    int i = 0;
-    while (i < 10)
-    {
-        ++i;
-        spi_driver_run();
-        //sleep(1);
+    SpiLoop loop;
+    PeriodicMemberFunction<SpiLoop> spiTask(&taskManager, .002, "spi", &SpiLoop::runSpi, &loop);
+    spiTask.start();
 
-        for(int i = 0; i < 1000 * 10; ++i) {}
+    while (1)
+    {
+        sleep(1);
     }
 
     spi_close();

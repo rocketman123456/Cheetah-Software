@@ -18,4 +18,4 @@ endif()
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-add_executable(spi_test main.cpp rt_spi.cpp)
+add_executable(spi_test main.cpp rt_spi.cpp PeriodicTask.cpp)
