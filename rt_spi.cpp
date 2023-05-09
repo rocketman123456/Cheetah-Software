@@ -345,7 +345,7 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
 
         // flip bytes the other way
         // data_d[i] = __bswap_16(rx_buf[i]);
-        for (int i = 0; i < 42; i++)
+        for (int i = 0; i < sizeof(spine_data_t) / 2; i++)
             data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
 
         // copy back to data
@@ -359,10 +359,10 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
 void spi_driver_run()
 {
     // do spi board calculations  模拟计算一下spiboard咋计算的?好像没什么用啊
-    for (int i = 0; i < 4; i++)
-    {
-        fake_spine_control(&spi_command_drv, &spi_data_drv, &spi_torque, i);
-    }
+    //for (int i = 0; i < 4; i++)
+    //{
+    //    fake_spine_control(&spi_command_drv, &spi_data_drv, &spi_torque, i);
+    //}
 
     // in here, the driver is good
     pthread_mutex_lock(&spi_mutex);

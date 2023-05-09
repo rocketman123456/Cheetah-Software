@@ -37,6 +37,7 @@ extern "C"
     (byte & 0x80 ? '1' : '0'), (byte & 0x40 ? '1' : '0'), (byte & 0x20 ? '1' : '0'), (byte & 0x10 ? '1' : '0'), (byte & 0x08 ? '1' : '0'), \
         (byte & 0x04 ? '1' : '0'), (byte & 0x02 ? '1' : '0'), (byte & 0x01 ? '1' : '0')
 
+#pragma pack(1)
 /*!
  * SPI command message
  */
@@ -76,7 +77,7 @@ typedef struct // 84
     float tau_knee[2] = {0};
 
     int32_t flags[2] = {0};
-    int32_t checksum;
+    int32_t checksum = 0;
 } spine_data_t;
 
 typedef struct // 256
@@ -129,6 +130,7 @@ typedef struct // 48
     float tau_hip[4];
     float tau_knee[4];
 } spi_torque_t;
+#pragma pack()
 
 extern spi_command_t spi_command_drv;
 extern spi_data_t    spi_data_drv;
@@ -136,7 +138,7 @@ extern spi_torque_t  spi_torque;
 
 void init_spi();
 
-int spi_open();
+int  spi_open();
 void spi_close();
 
 void spi_to_spine(spi_command_t* cmd, spine_cmd_t* spine_cmd, int leg_0);

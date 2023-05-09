@@ -26,10 +26,7 @@ int main() {
     spi_command_drv.kd_abad[2] = 0.5;
     spi_command_drv.kd_abad[3] = 0.5;
 
-    while(1) {
-        spi_driver_run();
-        sleep(100);
-    }
+    spi_driver_run();
 
     spi_close();
 
