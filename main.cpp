@@ -32,7 +32,9 @@ int main()
     {
         ++i;
         spi_driver_run();
-        sleep(1);
+        //sleep(1);
+
+        for(int i = 0; i < 1000 * 10; ++i) {}
     }
 
     spi_close();
