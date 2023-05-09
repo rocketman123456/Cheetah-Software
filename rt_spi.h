@@ -43,22 +43,27 @@ extern "C"
  */
 typedef struct // 132
 {
-    float   q_des_abad[2]  = {0};
-    float   q_des_hip[2]   = {0};
-    float   q_des_knee[2]  = {0};
-    float   qd_des_abad[2] = {0};
-    float   qd_des_hip[2]  = {0};
-    float   qd_des_knee[2] = {0};
-    float   kp_abad[2]     = {0};
-    float   kp_hip[2]      = {0};
-    float   kp_knee[2]     = {0};
-    float   kd_abad[2]     = {0};
-    float   kd_hip[2]      = {0};
-    float   kd_knee[2]     = {0};
-    float   tau_abad_ff[2] = {0};
-    float   tau_hip_ff[2]  = {0};
-    float   tau_knee_ff[2] = {0};
-    int32_t flags[2]       = {0};
+    float q_des_abad[2] = {0};
+    float q_des_hip[2]  = {0};
+    float q_des_knee[2] = {0};
+
+    float qd_des_abad[2] = {0};
+    float qd_des_hip[2]  = {0};
+    float qd_des_knee[2] = {0};
+
+    float kp_abad[2] = {0};
+    float kp_hip[2]  = {0};
+    float kp_knee[2] = {0};
+
+    float kd_abad[2] = {0};
+    float kd_hip[2]  = {0};
+    float kd_knee[2] = {0};
+
+    float tau_abad_ff[2] = {0};
+    float tau_hip_ff[2]  = {0};
+    float tau_knee_ff[2] = {0};
+
+    int32_t flags[2] = {0};
     int32_t checksum;
 } spine_cmd_t;
 

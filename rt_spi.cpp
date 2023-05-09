@@ -10,6 +10,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 
 #include <linux/spi/spidev.h>
 
@@ -131,9 +132,6 @@ void init_spi()
     }
     else
         printf("[RT SPI] data size good\n");
-    // 打开spi
-    
-    
 }
 
 /*!
@@ -142,13 +140,14 @@ void init_spi()
  */
 int spi_open()
 {
+    // 打开spi
     printf("[RT SPI] Open\n");
     int rv = 0; // receive value
     // 通过打开文件的方式打开设备吗? fd=file device
-    spi_1_fd = open("/dev/spidev2.0", O_RDWR); // O_RDWR :文件可读可写
+    spi_1_fd = open("/dev/spidev0.0", O_RDWR); // O_RDWR :文件可读可写
     if (spi_1_fd < 0)
         perror("[ERROR] Couldn't open spidev 2.0");
-    spi_2_fd = open("/dev/spidev2.1", O_RDWR);
+    spi_2_fd = open("/dev/spidev0.1", O_RDWR);
     if (spi_2_fd < 0)
         perror("[ERROR] Couldn't open spidev 2.1");
     // ioctl:Input output control.设置一些io信息
@@ -246,6 +245,21 @@ void spi_to_spine(spi_command_t* cmd, spine_cmd_t* spine_cmd, int leg_0)
     spine_cmd->checksum = xor_checksum((uint32_t*)spine_cmd, 32);
 }
 
+std::string char2hexstr(const char* str, int len)
+{
+    static const char hexTable[17] = "0123456789ABCDEF";
+
+    std::string result;
+    for (int i = 0; i < len; ++i)
+    {
+        result += "0x";
+        result += hexTable[(unsigned char)str[i] / 16];
+        result += hexTable[(unsigned char)str[i] % 16];
+        result += " ";
+    }
+    return result;
+}
+
 /*!
  * convert spine_data_t to spi data
  * 考虑到实际的装配情况,电机方向与零点可能与数学模型不一致,因此从spine_data转换到data
@@ -268,7 +282,7 @@ void spine_to_spi(spi_data_t* data, spine_data_t* spine_data, int leg_0)
 
         data->flags[i + leg_0] = spine_data->flags[i];
 
-        printf("%f %f %f, %f %f %f, %f %f %f, %d\n",
+        printf("%f %f %f, %f %f %f, %f %f %f, %x\n",
                data->q_abad[i + leg_0],
                data->q_hip[i + leg_0],
                data->q_knee[i + leg_0],
@@ -359,7 +373,7 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
 void spi_driver_run()
 {
     // do spi board calculations  模拟计算一下spiboard咋计算的?好像没什么用啊
-    //for (int i = 0; i < 4; i++)
+    // for (int i = 0; i < 4; i++)
     //{
     //    fake_spine_control(&spi_command_drv, &spi_data_drv, &spi_torque, i);
     //}
