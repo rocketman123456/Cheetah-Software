@@ -16,7 +16,7 @@
 
 unsigned char spi_mode          = SPI_MODE_0; // 时钟极性0,时钟相位0
 unsigned char spi_bits_per_word = 8;          // 每个字8字节
-unsigned int  spi_speed         = 6000000;
+unsigned int  spi_speed         = 6000000;    // 6M
 uint8_t       lsb               = 0x01;
 
 int spi_1_fd = -1;
@@ -296,6 +296,26 @@ void spine_to_spi(spi_data_t* data, spine_data_t* spine_data, int leg_0)
         printf("SPI ERROR BAD CHECKSUM GOT 0x%hx EXPECTED 0x%hx\n", calc_checksum, spine_data->checksum);
 }
 
+int transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len)
+{
+    struct spi_ioc_transfer tr = {
+        .tx_buf = (uint64_t)tx,
+        .rx_buf = (uint64_t)rx,
+        .len = len,
+        .delay_usecs = 0,
+        .speed_hz = speed,
+        .cs_change = 1;
+        .bits_per_word = spi_bits_per_word,
+    };
+
+    int ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
+    if (ret < 1)
+        printf("can't send spi message\n");
+
+    return ret;
+}
+
+
 /*!
  * send receive data and command from spine
  * 发送与接受数据
@@ -307,8 +327,8 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
     data->spi_driver_status = spi_driver_iterations << 16;
 
     // transmit and receive buffers
-    uint16_t tx_buf[sizeof(spine_cmd_t)];
-    uint16_t rx_buf[sizeof(spine_cmd_t)];
+    uint16_t tx_buf[sizeof(spine_cmd_t) / 2];
+    uint16_t rx_buf[sizeof(spine_cmd_t) / 2];
 
     for (int spi_board = 0; spi_board < 2; spi_board++)
     {
@@ -330,27 +350,28 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
             tx_buf[i] = (cmd_d[i] >> 8) + ((cmd_d[i] & 0xff) << 8);
 
         // each word is two bytes long
-        const size_t word_len = 2; // 16 bit word
+        //const size_t word_len = 2; // 16 bit word
 
         // spi message struct
-        struct spi_ioc_transfer spi_message[1];
+        //struct spi_ioc_transfer spi_message[1];
 
         // zero message struct.
-        memset(spi_message, 0, 1 * sizeof(struct spi_ioc_transfer));
+        //memset(spi_message, 0, 1 * sizeof(struct spi_ioc_transfer));
 
         // set up message struct
-        for (int i = 0; i < 1; i++)
-        {
-            spi_message[i].bits_per_word = spi_bits_per_word;
-            spi_message[i].cs_change     = 1;
-            spi_message[i].delay_usecs   = 0;
-            spi_message[i].len           = sizeof(spine_cmd_t);
-            spi_message[i].rx_buf        = (uint64_t)rx_buf;
-            spi_message[i].tx_buf        = (uint64_t)tx_buf;
-        }
+        //for (int i = 0; i < 1; i++)
+        //{
+        //    spi_message[i].bits_per_word = spi_bits_per_word;
+        //    spi_message[i].cs_change     = 1;
+        //    spi_message[i].delay_usecs   = 0;
+        //    spi_message[i].len           = sizeof(spine_cmd_t);
+        //    spi_message[i].rx_buf        = (uint64_t)rx_buf;
+        //    spi_message[i].tx_buf        = (uint64_t)tx_buf;
+        //}
 
         // do spi communication
-        int rv = ioctl(spi_board == 0 ? spi_1_fd : spi_2_fd, SPI_IOC_MESSAGE(1), &spi_message);
+        int rv = transfer(spi_board == 0 ? spi_1_fd : spi_2_fd, tx_buf, rx_buf, sizeof(spine_cmd_t));
+        //int rv = ioctl(spi_board == 0 ? spi_1_fd : spi_2_fd, SPI_IOC_MESSAGE(1), &spi_message);
         (void)rv;
 
         // flip bytes the other way

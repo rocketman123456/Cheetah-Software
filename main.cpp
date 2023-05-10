@@ -19,7 +19,7 @@ int main()
 {
     std::cout << "Hello World!" << std::endl;
 
-    PeriodicTaskManager taskManager;
+    // PeriodicTaskManager taskManager;
 
     init_spi();
 
