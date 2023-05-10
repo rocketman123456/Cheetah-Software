@@ -302,10 +302,10 @@ int transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len)
         .tx_buf = (uint64_t)tx,
         .rx_buf = (uint64_t)rx,
         .len = len,
-        .delay_usecs = 0,
         .speed_hz = spi_speed,
-        .cs_change = 1;
+        .delay_usecs = 0,
         .bits_per_word = spi_bits_per_word,
+        .cs_change = 1,
     };
 
     int ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
