@@ -303,7 +303,7 @@ int transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len)
         .rx_buf = (uint64_t)rx,
         .len = len,
         .delay_usecs = 0,
-        .speed_hz = speed,
+        .speed_hz = spi_speed,
         .cs_change = 1;
         .bits_per_word = spi_bits_per_word,
     };
@@ -370,7 +370,7 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
         //}
 
         // do spi communication
-        int rv = transfer(spi_board == 0 ? spi_1_fd : spi_2_fd, tx_buf, rx_buf, sizeof(spine_cmd_t));
+        int rv = transfer(spi_board == 0 ? spi_1_fd : spi_2_fd, (uint8_t*)tx_buf, (uint8_t*)rx_buf, sizeof(spine_cmd_t));
         //int rv = ioctl(spi_board == 0 ? spi_1_fd : spi_2_fd, SPI_IOC_MESSAGE(1), &spi_message);
         (void)rv;
 
