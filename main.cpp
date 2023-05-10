@@ -1,6 +1,6 @@
 #include "rt_spi.h"
 
-#include "PeriodicTask.h"
+// #include "PeriodicTask.h"
 
 #include <cmath>
 #include <iostream>
@@ -41,13 +41,16 @@ int main()
     spi_command_drv.kd_abad[3] = 0.5;
 
     SpiLoop loop;
-    PeriodicMemberFunction<SpiLoop> spiTask(&taskManager, .002, "spi", &SpiLoop::runSpi, &loop);
-    spiTask.start();
+    loop.runSpi();
 
-    while (1)
-    {
-        sleep(1);
-    }
+    // SpiLoop loop;
+    // PeriodicMemberFunction<SpiLoop> spiTask(&taskManager, .002, "spi", &SpiLoop::runSpi, &loop);
+    // spiTask.start();
+
+    // while (1)
+    // {
+    //     sleep(1);
+    // }
 
     spi_close();
 

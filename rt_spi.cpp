@@ -120,16 +120,12 @@ void init_spi()
         printf("[ERROR: RT SPI] Failed to create spi data mutex\n");
     // 检查命令长度
     if (command_size != K_EXPECTED_COMMAND_SIZE)
-    {
         printf("[RT SPI] Error command size is %ld, expected %d\n", command_size, K_EXPECTED_COMMAND_SIZE);
-    }
     else
         printf("[RT SPI] command size good\n");
     // 检查数据长度
     if (data_size != K_EXPECTED_DATA_SIZE)
-    {
         printf("[RT SPI] Error data size is %ld, expected %d\n", data_size, K_EXPECTED_DATA_SIZE);
-    }
     else
         printf("[RT SPI] data size good\n");
 }
@@ -311,8 +307,8 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
     data->spi_driver_status = spi_driver_iterations << 16;
 
     // transmit and receive buffers
-    uint16_t tx_buf[K_WORDS_PER_MESSAGE];
-    uint16_t rx_buf[K_WORDS_PER_MESSAGE];
+    uint16_t tx_buf[sizeof(spine_cmd_t)];
+    uint16_t rx_buf[sizeof(spine_cmd_t)];
 
     for (int spi_board = 0; spi_board < 2; spi_board++)
     {
@@ -326,11 +322,11 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
         uint16_t* data_d = (uint16_t*)&g_spine_data;
 
         // zero rx buffer
-        memset(rx_buf, 0, K_WORDS_PER_MESSAGE * sizeof(uint16_t));
+        memset(rx_buf, 0, sizeof(spine_cmd_t));
 
         // copy into tx buffer flipping bytes
         // tx_buf[i] = __bswap_16(cmd_d[i]);
-        for (int i = 0; i < K_WORDS_PER_MESSAGE; i++)
+        for (int i = 0; i < sizeof(spine_cmd_t) / 2; i++)
             tx_buf[i] = (cmd_d[i] >> 8) + ((cmd_d[i] & 0xff) << 8);
 
         // each word is two bytes long
@@ -348,7 +344,7 @@ void spi_send_receive(spi_command_t* command, spi_data_t* data)
             spi_message[i].bits_per_word = spi_bits_per_word;
             spi_message[i].cs_change     = 1;
             spi_message[i].delay_usecs   = 0;
-            spi_message[i].len           = word_len * K_WORDS_PER_MESSAGE;
+            spi_message[i].len           = sizeof(spine_cmd_t);
             spi_message[i].rx_buf        = (uint64_t)rx_buf;
             spi_message[i].tx_buf        = (uint64_t)tx_buf;
         }
