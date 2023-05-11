@@ -112,7 +112,7 @@ void spi_close()
     close(spi_2_fd);
 }
 
-std::string char2hexstr(const char* str, int len)
+std::string hex2str(const uint8_t* str, int len)
 {
     static const char hexTable[17] = "0123456789ABCDEF";
 
