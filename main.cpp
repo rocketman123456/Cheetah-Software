@@ -20,11 +20,11 @@ int main()
 
     transfer(spi_1_fd, tx, rx, 16);
     auto str = hex2str(rx, 16);
-    std::cout << "[SPI1]" << str << endl;
+    std::cout << "[SPI1]" << str << std::endl;
 
     transfer(spi_2_fd, tx, rx, 16);
-    auto str = hex2str(rx, 16);
-    std::cout << "[SPI2]" << str << endl;
+    str = hex2str(rx, 16);
+    std::cout << "[SPI2]" << str << std::endl;
 
     spi_close();
 
