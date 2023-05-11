@@ -34,7 +34,7 @@ void spi_close();
 
 int transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len);
 
-std::string hex2str(const char* str, int len);
+std::string hex2str(const uint8_t* str, int len);
 
 extern int spi_1_fd;
 extern int spi_2_fd;
