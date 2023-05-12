@@ -6,9 +6,15 @@
 #include <iostream>
 #include <unistd.h>
 
+int spi_1_fd = -1;
+int spi_2_fd = -1;
+
+const char* name1 = "/dev/spidev0.0";
+const char* name2 = "/dev/spidev0.1";
+
 int main()
 {
-    spi_open();
+    spi_open(spi_1_fd, name1);
 
     uint8_t tx[16];
     uint8_t rx_1[16];
@@ -22,14 +28,9 @@ int main()
     int rv = transfer(spi_1_fd, tx, rx_1, 16);
     (void)rv;
     auto str = hex2str(rx_1, 16);
-    std::cout << "[SPI1]" << str << std::endl;
+    std::cout << name1 << ": "<< str << std::endl;
 
-    // rv = transfer(spi_2_fd, tx, rx_2, 16);
-    // (void)rv;
-    // str = hex2str(rx_2, 16);
-    // std::cout << "[SPI2]" << str << std::endl;
-
-    spi_close();
+    spi_close(spi_1_fd);
 
     return 0;
 }

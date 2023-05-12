@@ -27,10 +27,8 @@ extern "C"
 #include <string>
 #include <unistd.h> //Needed for SPI port
 
-void init_spi();
-
-int  spi_open();
-void spi_close();
+int  spi_open(int& fd);
+void spi_close(int fd);
 
 int transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len);
 
