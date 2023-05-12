@@ -14,18 +14,20 @@ int main()
     uint8_t rx_1[16];
     uint8_t rx_2[16];
 
-    for(int i = 0; i < 16; ++i)
+    for (int i = 0; i < 16; ++i)
     {
         tx[i] = i;
     }
 
-    transfer(spi_1_fd, tx, rx_1, 16);
+    int rv = transfer(spi_1_fd, tx, rx_1, 16);
+    (void)rv;
     auto str = hex2str(rx_1, 16);
     std::cout << "[SPI1]" << str << std::endl;
 
-    transfer(spi_2_fd, tx, rx_2, 16);
-    str = hex2str(rx_2, 16);
-    std::cout << "[SPI2]" << str << std::endl;
+    // rv = transfer(spi_2_fd, tx, rx_2, 16);
+    // (void)rv;
+    // str = hex2str(rx_2, 16);
+    // std::cout << "[SPI2]" << str << std::endl;
 
     spi_close();
 

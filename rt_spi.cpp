@@ -49,59 +49,59 @@ int spi_open()
     spi_1_fd = open("/dev/spidev0.0", O_RDWR); // O_RDWR :文件可读可写
     if (spi_1_fd < 0)
         perror("[ERROR] Couldn't open spidev 2.0");
-    spi_2_fd = open("/dev/spidev0.1", O_RDWR);
-    if (spi_2_fd < 0)
-        perror("[ERROR] Couldn't open spidev 2.1");
+    // spi_2_fd = open("/dev/spidev0.1", O_RDWR);
+    // if (spi_2_fd < 0)
+    //     perror("[ERROR] Couldn't open spidev 2.1");
     // ioctl:Input output control.设置一些io信息
     // spi_mode 设置极性与相位
     rv = ioctl(spi_1_fd, SPI_IOC_WR_MODE, &spi_mode);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_wr_mode (1)");
-    rv = ioctl(spi_2_fd, SPI_IOC_WR_MODE, &spi_mode);
-    if (rv < 0)
-        perror("[ERROR] ioctl spi_ioc_wr_mode (2)");
+    // rv = ioctl(spi_2_fd, SPI_IOC_WR_MODE, &spi_mode);
+    // if (rv < 0)
+    //     perror("[ERROR] ioctl spi_ioc_wr_mode (2)");
 
     rv = ioctl(spi_1_fd, SPI_IOC_RD_MODE, &spi_mode);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_mode (1)");
-    rv = ioctl(spi_2_fd, SPI_IOC_RD_MODE, &spi_mode);
-    if (rv < 0)
-        perror("[ERROR] ioctl spi_ioc_rd_mode (2)");
+    // rv = ioctl(spi_2_fd, SPI_IOC_RD_MODE, &spi_mode);
+    // if (rv < 0)
+    //     perror("[ERROR] ioctl spi_ioc_rd_mode (2)");
     // 设置每个字有几个字节
     rv = ioctl(spi_1_fd, SPI_IOC_WR_BITS_PER_WORD, &spi_bits_per_word);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_wr_bits_per_word (1)");
-    rv = ioctl(spi_2_fd, SPI_IOC_WR_BITS_PER_WORD, &spi_bits_per_word);
-    if (rv < 0)
-        perror("[ERROR] ioctl spi_ioc_wr_bits_per_word (2)");
+    // rv = ioctl(spi_2_fd, SPI_IOC_WR_BITS_PER_WORD, &spi_bits_per_word);
+    // if (rv < 0)
+    //     perror("[ERROR] ioctl spi_ioc_wr_bits_per_word (2)");
 
     rv = ioctl(spi_1_fd, SPI_IOC_RD_BITS_PER_WORD, &spi_bits_per_word);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_bits_per_word (1)");
-    rv = ioctl(spi_2_fd, SPI_IOC_RD_BITS_PER_WORD, &spi_bits_per_word);
-    if (rv < 0)
-        perror("[ERROR] ioctl spi_ioc_rd_bits_per_word (2)");
+    // rv = ioctl(spi_2_fd, SPI_IOC_RD_BITS_PER_WORD, &spi_bits_per_word);
+    // if (rv < 0)
+    //     perror("[ERROR] ioctl spi_ioc_rd_bits_per_word (2)");
     // 设置spi通信速度 6M
     rv = ioctl(spi_1_fd, SPI_IOC_WR_MAX_SPEED_HZ, &spi_speed);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_wr_max_speed_hz (1)");
-    rv = ioctl(spi_2_fd, SPI_IOC_WR_MAX_SPEED_HZ, &spi_speed);
-    if (rv < 0)
-        perror("[ERROR] ioctl spi_ioc_wr_max_speed_hz (2)");
+    // rv = ioctl(spi_2_fd, SPI_IOC_WR_MAX_SPEED_HZ, &spi_speed);
+    // if (rv < 0)
+    //     perror("[ERROR] ioctl spi_ioc_wr_max_speed_hz (2)");
 
     rv = ioctl(spi_1_fd, SPI_IOC_RD_MAX_SPEED_HZ, &spi_speed);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_max_speed_hz (1)");
-    rv = ioctl(spi_2_fd, SPI_IOC_RD_MAX_SPEED_HZ, &spi_speed);
-    if (rv < 0)
-        perror("[ERROR] ioctl spi_ioc_rd_max_speed_hz (2)");
+    // rv = ioctl(spi_2_fd, SPI_IOC_RD_MAX_SPEED_HZ, &spi_speed);
+    // if (rv < 0)
+    //     perror("[ERROR] ioctl spi_ioc_rd_max_speed_hz (2)");
     // 采用lsb模式
     rv = ioctl(spi_1_fd, SPI_IOC_RD_LSB_FIRST, &lsb);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_lsb_first (1)");
-    rv = ioctl(spi_2_fd, SPI_IOC_RD_LSB_FIRST, &lsb);
-    if (rv < 0)
-        perror("[ERROR] ioctl spi_ioc_rd_lsb_first (2)");
+    // rv = ioctl(spi_2_fd, SPI_IOC_RD_LSB_FIRST, &lsb);
+    // if (rv < 0)
+    //     perror("[ERROR] ioctl spi_ioc_rd_lsb_first (2)");
 
     return rv;
 }
@@ -109,7 +109,7 @@ int spi_open()
 void spi_close()
 {
     close(spi_1_fd);
-    close(spi_2_fd);
+    // close(spi_2_fd);
 }
 
 std::string hex2str(const uint8_t* str, int len)
