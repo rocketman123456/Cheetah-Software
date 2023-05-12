@@ -15,6 +15,7 @@ const char* name2 = "/dev/spidev0.1";
 int main()
 {
     spi_open(spi_1_fd, name1);
+    spi_open(spi_2_fd, name2);
 
     uint8_t tx[16];
     uint8_t rx_1[16];
@@ -30,7 +31,13 @@ int main()
     auto str = hex2str(rx_1, 16);
     std::cout << name1 << ": "<< str << std::endl;
 
+    rv = transfer(spi_2_fd, tx, rx_2, 16);
+    (void)rv;
+    auto str = hex2str(rx_2, 16);
+    std::cout << name2 << ": "<< str << std::endl;
+
     spi_close(spi_1_fd);
+    spi_close(spi_2_fd);
 
     return 0;
 }
