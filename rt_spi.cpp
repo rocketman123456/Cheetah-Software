@@ -38,7 +38,8 @@ const float disabled_torque[3] = {0.f, 0.f, 0.f};
 // only used for actual robot
 const float abad_side_sign[4] = {-1.f, -1.f, 1.f, 1.f};
 const float hip_side_sign[4]  = {-1.f, 1.f, -1.f, 1.f};
-const float knee_side_sign[4] = {-.6429f, .6429f, -.6429f, .6429f};
+//const float knee_side_sign[4] = {-.6429f, .6429f, -.6429f, .6429f};
+const float knee_side_sign[4] = {-1.f, 1.f, -1.f, 1.f};
 
 // only used for actual robot
 // const float abad_offset[4] = {0.05f, -0.05f, -0.07f, 0.07f};
@@ -60,6 +61,21 @@ uint32_t xor_checksum(uint32_t* data, size_t len)
     for (size_t i = 0; i < len; i++)
         t = t ^ data[i];
     return t;
+}
+
+std::string char2hexstr(const char* str, int len)
+{
+    static const char hexTable[17] = "0123456789ABCDEF";
+
+    std::string result;
+    for (int i = 0; i < len; ++i)
+    {
+        result += "0x";
+        result += hexTable[(unsigned char)str[i] / 16];
+        result += hexTable[(unsigned char)str[i] % 16];
+        result += " ";
+    }
+    return result;
 }
 
 /*!
@@ -119,15 +135,15 @@ void init_spi()
     if (pthread_mutex_init(&spi_mutex, NULL) != 0)
         printf("[ERROR: RT SPI] Failed to create spi data mutex\n");
     // 检查命令长度
-    if (command_size != K_EXPECTED_COMMAND_SIZE)
-        printf("[RT SPI] Error command size is %ld, expected %d\n", command_size, K_EXPECTED_COMMAND_SIZE);
-    else
-        printf("[RT SPI] command size good\n");
+    //if (command_size != K_EXPECTED_COMMAND_SIZE)
+    //    printf("[RT SPI] Error command size is %ld, expected %d\n", command_size, K_EXPECTED_COMMAND_SIZE);
+    //else
+    //    printf("[RT SPI] command size good\n");
     // 检查数据长度
-    if (data_size != K_EXPECTED_DATA_SIZE)
-        printf("[RT SPI] Error data size is %ld, expected %d\n", data_size, K_EXPECTED_DATA_SIZE);
-    else
-        printf("[RT SPI] data size good\n");
+    //if (data_size != K_EXPECTED_DATA_SIZE)
+    //    printf("[RT SPI] Error data size is %ld, expected %d\n", data_size, K_EXPECTED_DATA_SIZE);
+    //else
+    //    printf("[RT SPI] data size good\n");
 }
 
 /*!
@@ -239,21 +255,6 @@ void spi_to_spine(spi_command_t* cmd, spine_cmd_t* spine_cmd, int leg_0)
         spine_cmd->flags[i] = cmd->flags[i + leg_0];
     }
     spine_cmd->checksum = xor_checksum((uint32_t*)spine_cmd, 32);
-}
-
-std::string char2hexstr(const char* str, int len)
-{
-    static const char hexTable[17] = "0123456789ABCDEF";
-
-    std::string result;
-    for (int i = 0; i < len; ++i)
-    {
-        result += "0x";
-        result += hexTable[(unsigned char)str[i] / 16];
-        result += hexTable[(unsigned char)str[i] % 16];
-        result += " ";
-    }
-    return result;
 }
 
 /*!

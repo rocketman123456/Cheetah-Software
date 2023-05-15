@@ -19,8 +19,6 @@ int main()
 {
     std::cout << "Hello World!" << std::endl;
 
-    // PeriodicTaskManager taskManager;
-
     init_spi();
 
     spi_open();
@@ -42,15 +40,6 @@ int main()
 
     SpiLoop loop;
     loop.runSpi();
-
-    // SpiLoop loop;
-    // PeriodicMemberFunction<SpiLoop> spiTask(&taskManager, .002, "spi", &SpiLoop::runSpi, &loop);
-    // spiTask.start();
-
-    // while (1)
-    // {
-    //     sleep(1);
-    // }
 
     spi_close();
 

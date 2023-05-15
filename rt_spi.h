@@ -84,6 +84,7 @@ typedef struct // 84
     int32_t flags[2] = {0};
     int32_t checksum = 0;
 } spine_data_t;
+#pragma pack()
 
 typedef struct // 256
 {
@@ -135,7 +136,6 @@ typedef struct // 48
     float tau_hip[4];
     float tau_knee[4];
 } spi_torque_t;
-#pragma pack()
 
 extern spi_command_t spi_command_drv;
 extern spi_data_t    spi_data_drv;
