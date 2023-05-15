@@ -1,6 +1,6 @@
 #include "rt_spi.h"
-
-// #include "PeriodicTask.h"
+#include "motor_control.h"
+#include "crc.h"
 
 #include <cmath>
 #include <iostream>
@@ -12,32 +12,54 @@ int spi_2_fd = -1;
 const char* name1 = "/dev/spidev0.0";
 const char* name2 = "/dev/spidev0.1";
 
+spine_cmd_t   cmd[2];
+spine_state_t state[2];
+
+using namespace std;
+
 int main()
 {
+    cout << "spine_cmd_t: " << sizeof(spine_cmd_t) << endl;
+    cout << "spine_state_t: " << sizeof(spine_state_t) << endl;
+
+    create_lookup_table();
+
     spi_open(spi_1_fd, name1);
-    spi_open(spi_2_fd, name2);
 
-    uint8_t tx[16];
-    uint8_t rx_1[16];
-    uint8_t rx_2[16];
+    uint8_t tx[sizeof(spine_cmd_t)];
+    uint8_t rx[sizeof(spine_cmd_t)];
 
-    for (int i = 0; i < 16; ++i)
+    cmd[0].crc = calculate((uint8_t*)&cmd[0], sizeof(spine_cmd_t) - 4);
+
+    memcpy(tx, &cmd[0], sizeof(spine_cmd_t));
+
+    int rv = transfer(spi_1_fd, tx, rx, sizeof(spine_cmd_t));
+    (void)rv;
+
+    memcpy(&state[0], rx, sizeof(spine_state_t));
+
+    uint32_t crc = calculate((uint8_t*)&state[0], sizeof(spine_state_t) - 4);
+
+    if(crc == state[0].crc)
     {
-        tx[i] = i;
+        cout << "[CRC] crc correct" << endl;
+    }
+    else
+    {
+        cout << "[CRC] crc error" << endl;
     }
 
-    int rv = transfer(spi_1_fd, tx, rx_1, 16);
-    (void)rv;
-    auto str = hex2str(rx_1, 16);
-    std::cout << name1 << ": "<< str << std::endl;
-
-    rv = transfer(spi_2_fd, tx, rx_2, 16);
-    (void)rv;
-    auto str = hex2str(rx_2, 16);
-    std::cout << name2 << ": "<< str << std::endl;
+    for(int i = 0; i < 2; ++i)
+    {
+        leg_state_t& s = state[0].state[i];
+        for(int j = 0; j < 3; ++j)
+        {
+            motor_data_t& m = s.state[j];
+            cout << "leg: " << i << " id: " << j << " : " << m.p << ", " << m.v << ", " << m.t << endl;
+        }
+    }
 
     spi_close(spi_1_fd);
-    spi_close(spi_2_fd);
 
     return 0;
 }

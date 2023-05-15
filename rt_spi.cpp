@@ -19,8 +19,6 @@ unsigned char spi_bits_per_word = 8;          // 每个字8字节
 unsigned int  spi_speed         = 6000000;    // 6M
 uint8_t       lsb               = 0x01;
 
-
-
 /*!
  * Compute SPI message checksum
  * @param data : input
