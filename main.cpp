@@ -45,7 +45,7 @@ int main()
     //    tx_buf[i] = (cmd_d[i] >> 8) + ((cmd_d[i] & 0xff) << 8);
 
     str = hex2str(tx, sizeof(spine_cmd_t));
-    cout << str << endl;
+    cout << str << endl << endl;
 
     int rv = transfer(spi_1_fd, tx, rx, sizeof(spine_cmd_t));
     (void)rv;
@@ -53,6 +53,9 @@ int main()
     memcpy(&state[0], rx, sizeof(spine_state_t));
     //for (int i = 0; i < sizeof(spine_state_t) / 2; i++)
     //    data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
+
+    str = hex2str((uint8_t*)&state[0], sizeof(spine_state_t));
+    cout << str << endl;
 
     uint32_t crc = calculate((uint8_t*)&state[0], sizeof(spine_state_t) - 4);
 
