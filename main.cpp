@@ -29,14 +29,24 @@ int main()
     uint8_t tx[sizeof(spine_cmd_t)];
     uint8_t rx[sizeof(spine_cmd_t)];
 
+    uint16_t* tx_buf = (uint16_t *)tx;
+    uint16_t* rx_buf = (uint16_t *)rx;
+
+    uint16_t *cmd_d = (uint16_t *)&cmd[0];
+    uint16_t *data_d = (uint16_t *)&state[0];
+
     cmd[0].crc = calculate((uint8_t*)&cmd[0], sizeof(spine_cmd_t) - 4);
 
-    memcpy(tx, &cmd[0], sizeof(spine_cmd_t));
+    //memcpy(tx, &cmd[0], sizeof(spine_cmd_t));
+    for (int i = 0; i < sizeof(spine_cmd_t); i++)
+        tx[i] = (cmd_d[i] >> 8) + ((cmd_d[i] & 0xff) << 8);
 
     int rv = transfer(spi_1_fd, tx, rx, sizeof(spine_cmd_t));
     (void)rv;
 
-    memcpy(&state[0], rx, sizeof(spine_state_t));
+    //memcpy(&state[0], rx, sizeof(spine_state_t));
+    for (int i = 0; i < 30; i++)
+        data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
 
     uint32_t crc = calculate((uint8_t*)&state[0], sizeof(spine_state_t) - 4);
 
