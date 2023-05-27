@@ -35,6 +35,9 @@ int main()
     uint16_t *cmd_d = (uint16_t *)&cmd[0];
     uint16_t *data_d = (uint16_t *)&state[0];
 
+    cmd[0].cmd[0].flag = 1;
+    cmd[0].cmd[0].cmd[0].kp = 5;
+
     cmd[0].crc = calculate((uint8_t*)&cmd[0], sizeof(spine_cmd_t) - 4);
 
     auto str = hex2str((uint8_t*)&cmd[0], sizeof(spine_cmd_t));
