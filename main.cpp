@@ -57,9 +57,6 @@ int main()
     //for (int i = 0; i < sizeof(spine_state_t) / 2; i++)
     //    data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
 
-    str = hex2str((uint8_t*)&state[0], sizeof(spine_state_t));
-    cout << str << endl;
-
     uint32_t crc = calculate((uint8_t*)&state[0], sizeof(spine_state_t) - 4);
 
     if(crc == state[0].crc)
