@@ -36,7 +36,14 @@ int main()
     uint16_t *data_d = (uint16_t *)&state[0];
 
     cmd[0].cmd[0].flag = 1;
-    cmd[0].cmd[0].cmd[0].kp = 5;
+    cmd[0].cmd[0].cmd[0].kp = 10;
+    cmd[0].cmd[1].flag = 1;
+    cmd[0].cmd[1].cmd[0].kp = 10;
+
+    cmd[1].cmd[0].flag = 1;
+    cmd[1].cmd[0].cmd[0].kp = 10;
+    cmd[1].cmd[1].flag = 1;
+    cmd[1].cmd[1].cmd[0].kp = 10;
 
     cmd[0].crc = calculate((uint8_t*)&cmd[0], sizeof(spine_cmd_t) - 4);
 
@@ -44,8 +51,6 @@ int main()
     cout << str << endl << endl;
 
     memcpy(tx, &cmd[0], sizeof(spine_cmd_t));
-    //for (int i = 0; i < sizeof(spine_cmd_t) / 2; i++)
-    //    tx_buf[i] = (cmd_d[i] >> 8) + ((cmd_d[i] & 0xff) << 8);
 
     str = hex2str(tx, sizeof(spine_cmd_t));
     cout << str << endl << endl;
@@ -54,11 +59,8 @@ int main()
     (void)rv;
 
     memcpy(&state[0], rx, sizeof(spine_state_t));
-    //for (int i = 0; i < sizeof(spine_state_t) / 2; i++)
-    //    data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
 
     uint32_t crc = calculate((uint8_t*)&state[0], sizeof(spine_state_t) - 4);
-
     if(crc == state[0].crc)
     {
         cout << "[CRC] crc correct" << endl;
