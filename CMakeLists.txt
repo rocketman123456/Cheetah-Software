@@ -20,8 +20,8 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 add_executable(spi_test 
     main.cpp 
-    motor_control/rt_spi.cpp 
-    motor_control/motor_control.cpp
+    hardware/rt_spi.cpp 
+    bridge/hardware_bridge.cpp
     util/crc.cpp
 )
 

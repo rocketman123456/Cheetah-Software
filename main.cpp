@@ -19,68 +19,68 @@ using namespace std;
 
 int main()
 {
-    cout << "spine_cmd_t: " << sizeof(spine_cmd_t) << endl;
-    cout << "spine_state_t: " << sizeof(spine_state_t) << endl;
+    // cout << "spine_cmd_t: " << sizeof(spine_cmd_t) << endl;
+    // cout << "spine_state_t: " << sizeof(spine_state_t) << endl;
 
-    create_lookup_table();
+    // create_lookup_table();
 
-    spi_open(spi_1_fd, name1);
+    // spi_open(spi_1_fd, name1);
 
-    uint8_t tx[sizeof(spine_cmd_t)] = {0};
-    uint8_t rx[sizeof(spine_cmd_t)] = {0};
+    // uint8_t tx[sizeof(spine_cmd_t)] = {0};
+    // uint8_t rx[sizeof(spine_cmd_t)] = {0};
 
-    uint16_t* tx_buf = (uint16_t *)tx;
-    uint16_t* rx_buf = (uint16_t *)rx;
+    // uint16_t* tx_buf = (uint16_t *)tx;
+    // uint16_t* rx_buf = (uint16_t *)rx;
 
-    uint16_t *cmd_d = (uint16_t *)&cmd[0];
-    uint16_t *data_d = (uint16_t *)&state[0];
+    // uint16_t *cmd_d = (uint16_t *)&cmd[0];
+    // uint16_t *data_d = (uint16_t *)&state[0];
 
-    cmd[0].cmd[0].flag = 1;
-    cmd[0].cmd[0].cmd[0].kp = 10;
-    cmd[0].cmd[1].flag = 1;
-    cmd[0].cmd[1].cmd[0].kp = 10;
+    // cmd[0].cmd[0].flag = 1;
+    // cmd[0].cmd[0].cmd[0].kp = 10;
+    // cmd[0].cmd[1].flag = 1;
+    // cmd[0].cmd[1].cmd[0].kp = 10;
 
-    cmd[1].cmd[0].flag = 1;
-    cmd[1].cmd[0].cmd[0].kp = 10;
-    cmd[1].cmd[1].flag = 1;
-    cmd[1].cmd[1].cmd[0].kp = 10;
+    // cmd[1].cmd[0].flag = 1;
+    // cmd[1].cmd[0].cmd[0].kp = 10;
+    // cmd[1].cmd[1].flag = 1;
+    // cmd[1].cmd[1].cmd[0].kp = 10;
 
-    cmd[0].crc = calculate((uint8_t*)&cmd[0], sizeof(spine_cmd_t) - 4);
+    // cmd[0].crc = calculate((uint8_t*)&cmd[0], sizeof(spine_cmd_t) - 4);
 
     //auto str = hex2str((uint8_t*)&cmd[0], sizeof(spine_cmd_t));
     //cout << str << endl << endl;
 
-    memcpy(tx, &cmd[0], sizeof(spine_cmd_t));
+    // memcpy(tx, &cmd[0], sizeof(spine_cmd_t));
 
     //str = hex2str(tx, sizeof(spine_cmd_t));
     //cout << str << endl << endl;
 
-    int rv = transfer(spi_1_fd, tx, rx, sizeof(spine_cmd_t));
-    (void)rv;
+    // int rv = transfer(spi_1_fd, tx, rx, sizeof(spine_cmd_t));
+    // (void)rv;
 
-    memcpy(&state[0], rx, sizeof(spine_state_t));
+    // memcpy(&state[0], rx, sizeof(spine_state_t));
 
-    uint32_t crc = calculate((uint8_t*)&state[0], sizeof(spine_state_t) - 4);
-    if(crc == state[0].crc)
-    {
-        cout << "[CRC] crc correct" << endl;
-    }
-    else
-    {
-        cout << "[CRC] crc error" << endl;
-    }
+    // uint32_t crc = calculate((uint8_t*)&state[0], sizeof(spine_state_t) - 4);
+    // if(crc == state[0].crc)
+    // {
+    //     cout << "[CRC] crc correct" << endl;
+    // }
+    // else
+    // {
+    //     cout << "[CRC] crc error" << endl;
+    // }
 
-    for(int i = 0; i < 2; ++i)
-    {
-        leg_state_t& s = state[0].state[i];
-        for(int j = 0; j < 3; ++j)
-        {
-            motor_data_t& m = s.state[j];
-            cout << "leg: " << i << " id: " << j << " : " << m.p << ", " << m.v << ", " << m.t << endl;
-        }
-    }
+    // for(int i = 0; i < 2; ++i)
+    // {
+    //     leg_state_t& s = state[0].state[i];
+    //     for(int j = 0; j < 3; ++j)
+    //     {
+    //         motor_data_t& m = s.state[j];
+    //         cout << "leg: " << i << " id: " << j << " : " << m.p << ", " << m.v << ", " << m.t << endl;
+    //     }
+    // }
 
-    spi_close(spi_1_fd);
+    // spi_close(spi_1_fd);
 
     return 0;
 }
