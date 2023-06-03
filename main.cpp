@@ -1,6 +1,6 @@
-#include "rt_spi.h"
-#include "motor_control.h"
-#include "crc.h"
+#include "motor_control/motor_spi.h"
+#include "motor_control/motor_control.h"
+#include "util/crc.h"
 
 #include <cmath>
 #include <iostream>

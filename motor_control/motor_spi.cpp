@@ -3,7 +3,7 @@
  * @brief SPI communication to spine board
  */
 
-#include "rt_spi.h"
+#include "motor_control/motor_spi.h"
 
 #include <byteswap.h>
 #include <math.h>

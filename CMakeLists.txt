@@ -18,6 +18,11 @@ endif()
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-add_executable(spi_test main.cpp rt_spi.cpp crc.cpp)
+add_executable(spi_test 
+    main.cpp 
+    motor_control/rt_spi.cpp 
+    motor_control/motor_control.cpp
+    util/crc.cpp
+)
 
 #target_link_libraries(spi_test pthread)
