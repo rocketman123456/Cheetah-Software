@@ -19,21 +19,21 @@ void HardwareBridge::initialize()
     spi_open(m_spi_fd[1], name[1]);
 
     // init a very soft behavior
-    bridge.setJoint(LEFT, FRONT, ABAD, 0, 0, 5, 0, 0);
-    bridge.setJoint(LEFT, FRONT, HIP, 0, 0, 5, 0, 0);
-    bridge.setJoint(LEFT, FRONT, KNEE, 0, 0, 5, 0, 0);
+    this->setJoint(LEFT, FRONT, ABAD, 0, 0, 5, 0, 0);
+    this->setJoint(LEFT, FRONT, HIP, 0, 0, 5, 0, 0);
+    this->setJoint(LEFT, FRONT, KNEE, 0, 0, 5, 0, 0);
 
-    bridge.setJoint(LEFT, REAR, ABAD, 0, 0, 5, 0, 0);
-    bridge.setJoint(LEFT, REAR, HIP, 0, 0, 5, 0, 0);
-    bridge.setJoint(LEFT, REAR, KNEE, 0, 0, 5, 0, 0);
+    this->setJoint(LEFT, REAR, ABAD, 0, 0, 5, 0, 0);
+    this->setJoint(LEFT, REAR, HIP, 0, 0, 5, 0, 0);
+    this->setJoint(LEFT, REAR, KNEE, 0, 0, 5, 0, 0);
 
-    bridge.setJoint(RIGHT, FRONT, ABAD, 0, 0, 5, 0, 0);
-    bridge.setJoint(RIGHT, FRONT, HIP, 0, 0, 5, 0, 0);
-    bridge.setJoint(RIGHT, FRONT, KNEE, 0, 0, 5, 0, 0);
+    this->setJoint(RIGHT, FRONT, ABAD, 0, 0, 5, 0, 0);
+    this->setJoint(RIGHT, FRONT, HIP, 0, 0, 5, 0, 0);
+    this->setJoint(RIGHT, FRONT, KNEE, 0, 0, 5, 0, 0);
 
-    bridge.setJoint(RIGHT, REAR, ABAD, 0, 0, 5, 0, 0);
-    bridge.setJoint(RIGHT, REAR, HIP, 0, 0, 5, 0, 0);
-    bridge.setJoint(RIGHT, REAR, KNEE, 0, 0, 5, 0, 0);
+    this->setJoint(RIGHT, REAR, ABAD, 0, 0, 5, 0, 0);
+    this->setJoint(RIGHT, REAR, HIP, 0, 0, 5, 0, 0);
+    this->setJoint(RIGHT, REAR, KNEE, 0, 0, 5, 0, 0);
 }
 
 void HardwareBridge::finalize()
