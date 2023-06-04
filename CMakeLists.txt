@@ -18,6 +18,8 @@ endif()
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+include_directories(${CMAKE_SOURCE_DIR})
+
 add_subdirectory(3rd_party)
 
 add_executable(simple_control 
