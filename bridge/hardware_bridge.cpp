@@ -59,10 +59,10 @@ void HardwareBridge::update()
         int rv = transfer(m_spi_fd[i], tx, rx, sizeof(spine_cmd_t));
         (void)rv;
 
-        memcpy(&temp_state[i], rx, sizeof(spine_state_t));
+        memcpy(&temp_state, rx, sizeof(spine_state_t));
 
         uint32_t crc = calculate((uint8_t*)&temp_state, sizeof(spine_state_t) - 4);
-        if(crc == state[i].crc)
+        if(crc == temp_state.crc)
         {
             memcpy(&m_state[i], rx, sizeof(spine_state_t));
             std::cout << "[CRC] crc correct" << std::endl;
