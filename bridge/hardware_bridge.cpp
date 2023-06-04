@@ -15,13 +15,25 @@ const uint32_t motor_count = 3;
 // init communication
 void HardwareBridge::initialize()
 {
-    //prefaultStack();
-    //setupScheduler();
-
-    //create_lookup_table();
-
     spi_open(m_spi_fd[0], name[0]);
     spi_open(m_spi_fd[1], name[1]);
+
+    // init a very soft behavior
+    bridge.setJoint(LEFT, FRONT, ABAD, 0, 0, 5, 0, 0);
+    bridge.setJoint(LEFT, FRONT, HIP, 0, 0, 5, 0, 0);
+    bridge.setJoint(LEFT, FRONT, KNEE, 0, 0, 5, 0, 0);
+
+    bridge.setJoint(LEFT, REAR, ABAD, 0, 0, 5, 0, 0);
+    bridge.setJoint(LEFT, REAR, HIP, 0, 0, 5, 0, 0);
+    bridge.setJoint(LEFT, REAR, KNEE, 0, 0, 5, 0, 0);
+
+    bridge.setJoint(RIGHT, FRONT, ABAD, 0, 0, 5, 0, 0);
+    bridge.setJoint(RIGHT, FRONT, HIP, 0, 0, 5, 0, 0);
+    bridge.setJoint(RIGHT, FRONT, KNEE, 0, 0, 5, 0, 0);
+
+    bridge.setJoint(RIGHT, REAR, ABAD, 0, 0, 5, 0, 0);
+    bridge.setJoint(RIGHT, REAR, HIP, 0, 0, 5, 0, 0);
+    bridge.setJoint(RIGHT, REAR, KNEE, 0, 0, 5, 0, 0);
 }
 
 void HardwareBridge::finalize()

@@ -78,6 +78,13 @@
         "xlocbuf": "cpp",
         "xlocmes": "cpp",
         "xlocmon": "cpp",
-        "xloctime": "cpp"
+        "xloctime": "cpp",
+        "bitset": "cpp",
+        "condition_variable": "cpp",
+        "cstdarg": "cpp",
+        "future": "cpp",
+        "numeric": "cpp",
+        "shared_mutex": "cpp",
+        "unordered_set": "cpp"
     }
 }

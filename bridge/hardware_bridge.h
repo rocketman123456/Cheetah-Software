@@ -13,6 +13,21 @@ const uint32_t KNEE = 2;
 
 class HardwareBridge
 {
+    struct convert_motor
+    {
+        float sign;
+        float offset;
+    };
+
+    struct convert_leg
+    {
+        convert_motor motor[3];
+    };
+
+    struct convert_spi
+    {
+        convert_leg leg[2];
+    };
 public:
     void initialize();    // init communication
     void finalize();
@@ -32,4 +47,6 @@ public:
 
     spine_cmd_t m_cmd[2];
     spine_state_t m_state[2];
+
+    convert_spi m_converter[2];
 };
