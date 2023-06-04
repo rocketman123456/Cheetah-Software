@@ -1,86 +1,40 @@
-#include "motor_control/motor_spi.h"
-#include "motor_control/motor_control.h"
+#include "hardware/motor_spi.h"
+#include "bridge/hardware_bridge.h"
 #include "util/crc.h"
 
 #include <cmath>
 #include <iostream>
 #include <unistd.h>
 
-int spi_1_fd = -1;
-int spi_2_fd = -1;
-
-const char* name1 = "/dev/spidev0.0";
-const char* name2 = "/dev/spidev0.1";
-
-spine_cmd_t   cmd[2];
-spine_state_t state[2];
-
-using namespace std;
-
 int main()
 {
-    // cout << "spine_cmd_t: " << sizeof(spine_cmd_t) << endl;
-    // cout << "spine_state_t: " << sizeof(spine_state_t) << endl;
+    HardwareBridge bridge;
 
-    // create_lookup_table();
+    bridge.initialize();
 
-    // spi_open(spi_1_fd, name1);
+    bridge.setJoint(LEFT, FRONT, ABAD, 0, 0, 5, 0, 0);
+    bridge.setJoint(LEFT, FRONT, HIP, 0, 0, 5, 0, 0);
+    bridge.setJoint(LEFT, FRONT, KNEE, 0, 0, 5, 0, 0);
 
-    // uint8_t tx[sizeof(spine_cmd_t)] = {0};
-    // uint8_t rx[sizeof(spine_cmd_t)] = {0};
+    bridge.setJoint(LEFT, REAR, ABAD, 0, 0, 5, 0, 0);
+    bridge.setJoint(LEFT, REAR, HIP, 0, 0, 5, 0, 0);
+    bridge.setJoint(LEFT, REAR, KNEE, 0, 0, 5, 0, 0);
 
-    // uint16_t* tx_buf = (uint16_t *)tx;
-    // uint16_t* rx_buf = (uint16_t *)rx;
+    bridge.setJoint(RIGHT, FRONT, ABAD, 0, 0, 5, 0, 0);
+    bridge.setJoint(RIGHT, FRONT, HIP, 0, 0, 5, 0, 0);
+    bridge.setJoint(RIGHT, FRONT, KNEE, 0, 0, 5, 0, 0);
 
-    // uint16_t *cmd_d = (uint16_t *)&cmd[0];
-    // uint16_t *data_d = (uint16_t *)&state[0];
+    bridge.setJoint(RIGHT, REAR, ABAD, 0, 0, 5, 0, 0);
+    bridge.setJoint(RIGHT, REAR, HIP, 0, 0, 5, 0, 0);
+    bridge.setJoint(RIGHT, REAR, KNEE, 0, 0, 5, 0, 0);
 
-    // cmd[0].cmd[0].flag = 1;
-    // cmd[0].cmd[0].cmd[0].kp = 10;
-    // cmd[0].cmd[1].flag = 1;
-    // cmd[0].cmd[1].cmd[0].kp = 10;
+    bridge.start();
 
-    // cmd[1].cmd[0].flag = 1;
-    // cmd[1].cmd[0].cmd[0].kp = 10;
-    // cmd[1].cmd[1].flag = 1;
-    // cmd[1].cmd[1].cmd[0].kp = 10;
+    bridge.update();
 
-    // cmd[0].crc = calculate((uint8_t*)&cmd[0], sizeof(spine_cmd_t) - 4);
+    bridge.printInfo();
 
-    //auto str = hex2str((uint8_t*)&cmd[0], sizeof(spine_cmd_t));
-    //cout << str << endl << endl;
-
-    // memcpy(tx, &cmd[0], sizeof(spine_cmd_t));
-
-    //str = hex2str(tx, sizeof(spine_cmd_t));
-    //cout << str << endl << endl;
-
-    // int rv = transfer(spi_1_fd, tx, rx, sizeof(spine_cmd_t));
-    // (void)rv;
-
-    // memcpy(&state[0], rx, sizeof(spine_state_t));
-
-    // uint32_t crc = calculate((uint8_t*)&state[0], sizeof(spine_state_t) - 4);
-    // if(crc == state[0].crc)
-    // {
-    //     cout << "[CRC] crc correct" << endl;
-    // }
-    // else
-    // {
-    //     cout << "[CRC] crc error" << endl;
-    // }
-
-    // for(int i = 0; i < 2; ++i)
-    // {
-    //     leg_state_t& s = state[0].state[i];
-    //     for(int j = 0; j < 3; ++j)
-    //     {
-    //         motor_data_t& m = s.state[j];
-    //         cout << "leg: " << i << " id: " << j << " : " << m.p << ", " << m.v << ", " << m.t << endl;
-    //     }
-    // }
-
-    // spi_close(spi_1_fd);
+    bridge.finalize();
 
     return 0;
 }

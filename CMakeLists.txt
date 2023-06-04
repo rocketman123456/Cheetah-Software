@@ -18,7 +18,9 @@ endif()
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-add_executable(spi_test 
+add_subdirectory(3rd_party)
+
+add_executable(simple_control 
     main.cpp 
     hardware/rt_spi.cpp 
     bridge/hardware_bridge.cpp

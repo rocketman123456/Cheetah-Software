@@ -60,20 +60,30 @@ void HardwareBridge::update()
             std::cout << "[CRC] crc error" << std::endl;
         }
     }
-
-    
 }
 
 // enable motor
 void HardwareBridge::start()
 {
-
+    for(int i = 0; i < spi_count; ++i)
+    {
+        for(int j = 0; j < leg_count; ++j)
+        {
+            m_cmd[i].leg[j].flag = 1;
+        }
+    }
 }
 
 // disable motor
 void HardwareBridge::stop()
 {
-
+    for(int i = 0; i < spi_count; ++i)
+    {
+        for(int j = 0; j < leg_count; ++j)
+        {
+            m_cmd[i].leg[j].flag = 0;
+        }
+    }
 }
 
 void HardwareBridge::printInfo()
