@@ -22,7 +22,7 @@ add_subdirectory(3rd_party)
 
 add_executable(simple_control 
     main.cpp 
-    hardware/rt_spi.cpp 
+    hardware/motor_spi.cpp 
     bridge/hardware_bridge.cpp
     util/crc.cpp
 )
