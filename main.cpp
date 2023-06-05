@@ -13,11 +13,9 @@ float angle = 0;
 
 void simple_control()
 {
-	std::cout << "trigger func1" << std::endl;
-
     angle += 0.1;
 
-    bridge.setJoint(LEFT, FRONT, ABAD, 0.5 * sin(angle), 0, 5, 0, 0);
+    bridge.setJoint(LEFT, FRONT, ABAD, 0, 0, 5, 0, 0);
     bridge.update();
     bridge.printInfo();
 }
