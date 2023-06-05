@@ -1,4 +1,4 @@
-#include "bridge/hardware_bridge.h"
+#include "bridge/motor_spi_bridge.h"
 #include "hardware/motor_spi.h"
 #include "hardware/bcm2835.h"
 
@@ -25,6 +25,17 @@ const uint32_t motor_count = 3;
 // init communication
 void MotorSpiBridge::initialize()
 {
+    bcm2835_init();
+    // bcm2835_spi_begin();
+    // bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_LSBFIRST);
+    // bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);
+    // bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
+
+    // bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
+    // bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
+    // bcm2835_spi_chipSelect(BCM2835_SPI_CS1);
+    // bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS1, LOW);
+
     spi_open(m_spi_fd[0], name[0]);
     spi_open(m_spi_fd[1], name[1]);
 
@@ -87,6 +98,8 @@ void MotorSpiBridge::initialize()
 
 void MotorSpiBridge::finalize()
 {
+    // bcm2835_spi_end();
+    bcm2835_close();
     spi_close(m_spi_fd[0]);
     spi_close(m_spi_fd[1]);
 }
