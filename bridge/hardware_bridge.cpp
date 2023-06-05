@@ -22,54 +22,58 @@ void HardwareBridge::initialize()
     // spi_open(m_spi_fd[0], name[0]);
     // spi_open(m_spi_fd[1], name[1]);
 
-    float angle = M_PI - 26.0 * M_PI / 180.0;
+    float angle1 = 0;//M_PI / 2.0;
+    float angle2 = 0;//M_PI - 26.0 * M_PI / 180.0;
 
     m_converter[LEFT].leg[FRONT].motor[ABAD].sign = -1.0;
     m_converter[LEFT].leg[FRONT].motor[ABAD].offset = 0;
     m_converter[LEFT].leg[FRONT].motor[HIP].sign = -1.0;
-    m_converter[LEFT].leg[FRONT].motor[HIP].offset = -M_PI / 2.0;
+    m_converter[LEFT].leg[FRONT].motor[HIP].offset = -angle1;
     m_converter[LEFT].leg[FRONT].motor[KNEE].sign = 1.0;
-    m_converter[LEFT].leg[FRONT].motor[KNEE].offset = -angle;
+    m_converter[LEFT].leg[FRONT].motor[KNEE].offset = -angle2;
 
     m_converter[LEFT].leg[REAR].motor[ABAD].sign = 1.0;
     m_converter[LEFT].leg[REAR].motor[ABAD].offset = 0;
     m_converter[LEFT].leg[REAR].motor[HIP].sign = -1.0;
-    m_converter[LEFT].leg[REAR].motor[HIP].offset = M_PI / 2.0;
+    m_converter[LEFT].leg[REAR].motor[HIP].offset = angle1;
     m_converter[LEFT].leg[REAR].motor[KNEE].sign = 1.0;
-    m_converter[LEFT].leg[REAR].motor[KNEE].offset = angle;
+    m_converter[LEFT].leg[REAR].motor[KNEE].offset = angle2;
 
     m_converter[RIGHT].leg[FRONT].motor[ABAD].sign = -1.0;
     m_converter[RIGHT].leg[FRONT].motor[ABAD].offset = 0;
     m_converter[RIGHT].leg[FRONT].motor[HIP].sign = 1.0;
-    m_converter[RIGHT].leg[FRONT].motor[HIP].offset = -M_PI / 2.0;
+    m_converter[RIGHT].leg[FRONT].motor[HIP].offset = -angle1;
     m_converter[RIGHT].leg[FRONT].motor[KNEE].sign = -1.0;
-    m_converter[RIGHT].leg[FRONT].motor[KNEE].offset = -angle;
+    m_converter[RIGHT].leg[FRONT].motor[KNEE].offset = -angle2;
 
     m_converter[RIGHT].leg[REAR].motor[ABAD].sign = 1.0;
     m_converter[RIGHT].leg[REAR].motor[ABAD].offset = 0;
     m_converter[RIGHT].leg[REAR].motor[HIP].sign = 1.0;
-    m_converter[RIGHT].leg[REAR].motor[HIP].offset = M_PI / 2.0;
+    m_converter[RIGHT].leg[REAR].motor[HIP].offset = angle1;
     m_converter[RIGHT].leg[REAR].motor[KNEE].sign = -1.0;
-    m_converter[RIGHT].leg[REAR].motor[KNEE].offset = angle;
+    m_converter[RIGHT].leg[REAR].motor[KNEE].offset = angle2;
 
     float default_kp = 0.4;
 
+    float angle1_d = 0;//M_PI / 2.0;
+    float angle2_d = 0;//M_PI / 1.5;
+
     // init a very soft behavior
     setJoint(LEFT, FRONT, ABAD, 0, 0, default_kp, 0, 0);
-    setJoint(LEFT, FRONT, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
-    setJoint(LEFT, FRONT, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
+    setJoint(LEFT, FRONT, HIP, angle1_d, 0, default_kp, 0, 0);
+    setJoint(LEFT, FRONT, KNEE, -angle2_d, 0, default_kp, 0, 0);
 
     setJoint(LEFT, REAR, ABAD, 0, 0, default_kp, 0, 0);
-    setJoint(LEFT, REAR, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
-    setJoint(LEFT, REAR, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
+    setJoint(LEFT, REAR, HIP, angle1_d, 0, default_kp, 0, 0);
+    setJoint(LEFT, REAR, KNEE, -angle2_d, 0, default_kp, 0, 0);
 
     setJoint(RIGHT, FRONT, ABAD, 0, 0, default_kp, 0, 0);
-    setJoint(RIGHT, FRONT, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
-    setJoint(RIGHT, FRONT, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
+    setJoint(RIGHT, FRONT, HIP, angle1_d, 0, default_kp, 0, 0);
+    setJoint(RIGHT, FRONT, KNEE, -angle2_d, 0, default_kp, 0, 0);
 
     setJoint(RIGHT, REAR, ABAD, 0, 0, default_kp, 0, 0);
-    setJoint(RIGHT, REAR, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
-    setJoint(RIGHT, REAR, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
+    setJoint(RIGHT, REAR, HIP, angle1_d, 0, default_kp, 0, 0);
+    setJoint(RIGHT, REAR, KNEE, -angle2_d, 0, default_kp, 0, 0);
 }
 
 void HardwareBridge::finalize()
