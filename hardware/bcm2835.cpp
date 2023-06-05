@@ -1693,7 +1693,7 @@ int bcm2835_close(void)
     if (debug) return 1; /* Success */
 
     unmapmem((void**) &bcm2835_peripherals, bcm2835_peripherals_size);
-    bcm2835_peripherals = (volatile uint32_t*)MAP_FAILED;
+    bcm2835_peripherals = (uint32_t*)MAP_FAILED;
     bcm2835_gpio = (volatile uint32_t*)MAP_FAILED;
     bcm2835_pwm  = (volatile uint32_t*)MAP_FAILED;
     bcm2835_clk  = (volatile uint32_t*)MAP_FAILED;
