@@ -19,8 +19,8 @@ const uint32_t motor_count = 3;
 // init communication
 void HardwareBridge::initialize()
 {
-    spi_open(m_spi_fd[0], name[0]);
-    spi_open(m_spi_fd[1], name[1]);
+    //spi_open(m_spi_fd[0], name[0]);
+    //spi_open(m_spi_fd[1], name[1]);
 
     float angle = M_PI / 2.0 - 26.0 * M_PI / 180.0;
 
@@ -92,10 +92,10 @@ void HardwareBridge::update()
 
         memcpy(tx, &m_cmd[i], sizeof(spine_cmd_t));
 
-        //spi_open(m_spi_fd[i], name[i]);
+        spi_open(m_spi_fd[i], name[i]);
         int rv = transfer(m_spi_fd[i], tx, rx, sizeof(spine_cmd_t));
         (void)rv;
-        //spi_close(m_spi_fd[i]);
+        spi_close(m_spi_fd[i]);
 
         memcpy(&temp_state, rx, sizeof(spine_state_t));
 
