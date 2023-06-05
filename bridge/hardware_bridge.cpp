@@ -19,38 +19,38 @@ const uint32_t motor_count = 3;
 // init communication
 void HardwareBridge::initialize()
 {
-    //spi_open(m_spi_fd[0], name[0]);
-    //spi_open(m_spi_fd[1], name[1]);
+    spi_open(m_spi_fd[0], name[0]);
+    spi_open(m_spi_fd[1], name[1]);
 
-    float angle = M_PI / 2.0 - 26.0 * M_PI / 180.0;
+    float angle = M_PI - 26.0 * M_PI / 180.0;
 
     m_converter[LEFT].leg[FRONT].motor[ABAD].sign = -1.0;
     m_converter[LEFT].leg[FRONT].motor[ABAD].offset = 0;
     m_converter[LEFT].leg[FRONT].motor[HIP].sign = -1.0;
-    m_converter[LEFT].leg[FRONT].motor[HIP].offset = - M_PI / 2.0;
+    m_converter[LEFT].leg[FRONT].motor[HIP].offset = M_PI / 2.0;
     m_converter[LEFT].leg[FRONT].motor[KNEE].sign = 1.0;
-    m_converter[LEFT].leg[FRONT].motor[KNEE].offset = -angle;
+    m_converter[LEFT].leg[FRONT].motor[KNEE].offset = angle;
 
     m_converter[LEFT].leg[REAR].motor[ABAD].sign = 1.0;
     m_converter[LEFT].leg[REAR].motor[ABAD].offset = 0;
     m_converter[LEFT].leg[REAR].motor[HIP].sign = -1.0;
-    m_converter[LEFT].leg[REAR].motor[HIP].offset = M_PI / 2.0;
+    m_converter[LEFT].leg[REAR].motor[HIP].offset = -M_PI / 2.0;
     m_converter[LEFT].leg[REAR].motor[KNEE].sign = 1.0;
-    m_converter[LEFT].leg[REAR].motor[KNEE].offset = angle;
+    m_converter[LEFT].leg[REAR].motor[KNEE].offset = -angle;
 
     m_converter[RIGHT].leg[FRONT].motor[ABAD].sign = -1.0;
     m_converter[RIGHT].leg[FRONT].motor[ABAD].offset = 0;
     m_converter[RIGHT].leg[FRONT].motor[HIP].sign = 1.0;
-    m_converter[RIGHT].leg[FRONT].motor[HIP].offset = - M_PI / 2.0;
+    m_converter[RIGHT].leg[FRONT].motor[HIP].offset = M_PI / 2.0;
     m_converter[RIGHT].leg[FRONT].motor[KNEE].sign = -1.0;
-    m_converter[RIGHT].leg[FRONT].motor[KNEE].offset = -angle;
+    m_converter[RIGHT].leg[FRONT].motor[KNEE].offset = angle;
 
     m_converter[RIGHT].leg[REAR].motor[ABAD].sign = 1.0;
     m_converter[RIGHT].leg[REAR].motor[ABAD].offset = 0;
     m_converter[RIGHT].leg[REAR].motor[HIP].sign = 1.0;
-    m_converter[RIGHT].leg[REAR].motor[HIP].offset = M_PI / 2.0;
+    m_converter[RIGHT].leg[REAR].motor[HIP].offset = -M_PI / 2.0;
     m_converter[RIGHT].leg[REAR].motor[KNEE].sign = -1.0;
-    m_converter[RIGHT].leg[REAR].motor[KNEE].offset = angle;
+    m_converter[RIGHT].leg[REAR].motor[KNEE].offset = -angle;
 
     float default_kp = 0.4;
 
@@ -92,10 +92,10 @@ void HardwareBridge::update()
 
         memcpy(tx, &m_cmd[i], sizeof(spine_cmd_t));
 
-        spi_open(m_spi_fd[i], name[i]);
+        //spi_open(m_spi_fd[i], name[i]);
         int rv = transfer(m_spi_fd[i], tx, rx, sizeof(spine_cmd_t));
         (void)rv;
-        spi_close(m_spi_fd[i]);
+        //spi_close(m_spi_fd[i]);
 
         memcpy(&temp_state, rx, sizeof(spine_state_t));
 
