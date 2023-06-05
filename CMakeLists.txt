@@ -26,7 +26,7 @@ add_executable(simple_control
     main.cpp 
     hardware/motor_spi.cpp 
     hardware/bcm2835.cpp 
-    bridge/hardware_bridge.cpp
+    bridge/motor_spi_bridge.cpp
     util/crc.cpp
 )
 

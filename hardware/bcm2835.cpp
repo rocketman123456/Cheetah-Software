@@ -1638,7 +1638,7 @@ int bcm2835_init(void)
 	}
       
       /* Base of the peripherals block is mapped to VM */
-      bcm2835_peripherals = mapmem("gpio", bcm2835_peripherals_size, memfd, (off_t)bcm2835_peripherals_base);
+      bcm2835_peripherals = (uint32_t*)mapmem("gpio", bcm2835_peripherals_size, memfd, (off_t)bcm2835_peripherals_base);
       if (bcm2835_peripherals == MAP_FAILED) goto exit;
       
       /* Now compute the base addresses of various peripherals, 
@@ -1694,16 +1694,16 @@ int bcm2835_close(void)
 
     unmapmem((void**) &bcm2835_peripherals, bcm2835_peripherals_size);
     bcm2835_peripherals = MAP_FAILED;
-    bcm2835_gpio = MAP_FAILED;
-    bcm2835_pwm  = MAP_FAILED;
-    bcm2835_clk  = MAP_FAILED;
-    bcm2835_pads = MAP_FAILED;
-    bcm2835_spi0 = MAP_FAILED;
-    bcm2835_bsc0 = MAP_FAILED;
-    bcm2835_bsc1 = MAP_FAILED;
-    bcm2835_st   = MAP_FAILED;
-    bcm2835_aux  = MAP_FAILED;
-    bcm2835_spi1 = MAP_FAILED;
+    bcm2835_gpio = (volatile uint32_t*)MAP_FAILED;
+    bcm2835_pwm  = (volatile uint32_t*)MAP_FAILED;
+    bcm2835_clk  = (volatile uint32_t*)MAP_FAILED;
+    bcm2835_pads = (volatile uint32_t*)MAP_FAILED;
+    bcm2835_spi0 = (volatile uint32_t*)MAP_FAILED;
+    bcm2835_bsc0 = (volatile uint32_t*)MAP_FAILED;
+    bcm2835_bsc1 = (volatile uint32_t*)MAP_FAILED;
+    bcm2835_st   = (volatile uint32_t*)MAP_FAILED;
+    bcm2835_aux  = (volatile uint32_t*)MAP_FAILED;
+    bcm2835_spi1 = (volatile uint32_t*)MAP_FAILED;
     return 1; /* Success */
 }    
 
