@@ -25,6 +25,7 @@ add_subdirectory(3rd_party)
 add_executable(simple_control 
     main.cpp 
     hardware/motor_spi.cpp 
+    hardware/bcm2835.cpp 
     bridge/hardware_bridge.cpp
     util/crc.cpp
 )
