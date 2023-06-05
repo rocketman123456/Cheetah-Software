@@ -112,7 +112,7 @@ void HardwareBridge::update()
 
         for(int j = 0; j < leg_count; ++j)
         {
-            for(int k = 0; k < motor_count; ++j)
+            for(int k = 0; k < motor_count; ++k)
             {
                 m_state[i].leg[j].motor[k].p = m_state[i].leg[j].motor[k].p * m_converter[i].leg[j].motor[k].sign + m_converter[i].leg[j].motor[k].offset;
                 m_state[i].leg[j].motor[k].v = m_state[i].leg[j].motor[k].v * m_converter[i].leg[j].motor[k].sign;
