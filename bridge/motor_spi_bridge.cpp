@@ -1,5 +1,9 @@
 #include "bridge/hardware_bridge.h"
 #include "hardware/motor_spi.h"
+#include "hardware/bcm2835.h"
+
+#define PIN_SPI_0 RPI_BPLUS_GPIO_J8_24
+#define PIN_SPI_1 RPI_BPLUS_GPIO_J8_26
 
 #include "rt/rt_util.h"
 #include "util/crc.h"
@@ -12,15 +16,20 @@
 
 const char* name[] = {"/dev/spidev0.0", "/dev/spidev0.1"};
 
+const int spi_pin[] = {PIN_SPI_0, PIN_SPI_1};
+
 const uint32_t spi_count = 2;
 const uint32_t leg_count = 2;
 const uint32_t motor_count = 3;
 
 // init communication
-void HardwareBridge::initialize()
+void MotorSpiBridge::initialize()
 {
-    // spi_open(m_spi_fd[0], name[0]);
-    // spi_open(m_spi_fd[1], name[1]);
+    spi_open(m_spi_fd[0], name[0]);
+    spi_open(m_spi_fd[1], name[1]);
+
+    bcm2835_gpio_fsel(spi_pin[0], BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(spi_pin[1], BCM2835_GPIO_FSEL_OUTP);
 
     float angle1 = 0;//M_PI / 2.0;
     float angle2 = 0;//M_PI - 26.0 * M_PI / 180.0;
@@ -76,14 +85,14 @@ void HardwareBridge::initialize()
     setJoint(RIGHT, REAR, KNEE, -angle2_d, 0, default_kp, 0, 0);
 }
 
-void HardwareBridge::finalize()
+void MotorSpiBridge::finalize()
 {
-    // spi_close(m_spi_fd[0]);
-    // spi_close(m_spi_fd[1]);
+    spi_close(m_spi_fd[0]);
+    spi_close(m_spi_fd[1]);
 }
 
 // send cmd to motor and get state
-void HardwareBridge::update()
+void MotorSpiBridge::update()
 {
     static uint8_t tx[sizeof(spine_cmd_t)] = {0};
     static uint8_t rx[sizeof(spine_cmd_t)] = {0};
@@ -96,10 +105,14 @@ void HardwareBridge::update()
 
         memcpy(tx, &m_cmd[i], sizeof(spine_cmd_t));
 
-        spi_open(m_spi_fd[i], name[i]);
+        bcm2835_gpio_write(spi_pin[i], LOW);
+
+        //spi_open(m_spi_fd[i], name[i]);
         int rv = transfer(m_spi_fd[i], tx, rx, sizeof(spine_cmd_t));
         (void)rv;
-        spi_close(m_spi_fd[i]);
+        //spi_close(m_spi_fd[i]);
+
+        bcm2835_gpio_write(spi_pin[i], HIGH);
 
         memcpy(&temp_state, rx, sizeof(spine_state_t));
 
@@ -127,7 +140,7 @@ void HardwareBridge::update()
 }
 
 // enable motor
-void HardwareBridge::start()
+void MotorSpiBridge::start()
 {
     for(int i = 0; i < spi_count; ++i)
     {
@@ -139,7 +152,7 @@ void HardwareBridge::start()
 }
 
 // disable motor
-void HardwareBridge::stop()
+void MotorSpiBridge::stop()
 {
     for(int i = 0; i < spi_count; ++i)
     {
@@ -150,7 +163,7 @@ void HardwareBridge::stop()
     }
 }
 
-void HardwareBridge::printInfo()
+void MotorSpiBridge::printInfo()
 {
     std::cout << "[Robot CMD]" << std::endl;
     for(int i = 0; i < 2; ++i)
@@ -181,7 +194,7 @@ void HardwareBridge::printInfo()
 }
 
 // i: spi, LEFT, RIGHT, j: leg, FRONT, REAR, k:motor, ABAD, HIP, KNEE, motor cmd
-void HardwareBridge::setJoint(int i, int j, int k, float p_des, float v_des, float kp, float kd, float t_ff)
+void MotorSpiBridge::setJoint(int i, int j, int k, float p_des, float v_des, float kp, float kd, float t_ff)
 {
     m_cmd[i].leg[j].motor[k].p_des = (p_des - m_converter[i].leg[j].motor[k].offset) / m_converter[i].leg[j].motor[k].sign;
     m_cmd[i].leg[j].motor[k].v_des = v_des / m_converter[i].leg[j].motor[k].sign;

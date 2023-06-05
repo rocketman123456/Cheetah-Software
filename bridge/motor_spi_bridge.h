@@ -11,7 +11,7 @@ const uint32_t ABAD = 0;
 const uint32_t HIP = 1;
 const uint32_t KNEE = 2;
 
-class HardwareBridge
+class MotorSpiBridge
 {
     struct convert_motor
     {

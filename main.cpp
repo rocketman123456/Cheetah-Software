@@ -1,5 +1,5 @@
 #include "hardware/motor_spi.h"
-#include "bridge/hardware_bridge.h"
+#include "bridge/motor_spi_bridge.h"
 #include "util/crc.h"
 #include "util/timer.h"
 
@@ -7,7 +7,7 @@
 #include <iostream>
 #include <unistd.h>
 
-HardwareBridge bridge;
+MotorSpiBridge bridge;
 
 float angle = 0;
 
