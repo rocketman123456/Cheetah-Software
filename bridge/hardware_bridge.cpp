@@ -5,6 +5,8 @@
 #include "util/crc.h"
 
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 const char* name[] = {"/dev/spidev0.0", "/dev/spidev0.1"};
 
@@ -15,8 +17,8 @@ const uint32_t motor_count = 3;
 // init communication
 void HardwareBridge::initialize()
 {
-    spi_open(m_spi_fd[0], name[0]);
-    spi_open(m_spi_fd[1], name[1]);
+    //spi_open(m_spi_fd[0], name[0]);
+    //spi_open(m_spi_fd[1], name[1]);
 
     // init a very soft behavior
     this->setJoint(LEFT, FRONT, ABAD, 0, 0, 5, 0, 0);
@@ -48,7 +50,7 @@ void HardwareBridge::update()
     static uint8_t tx[sizeof(spine_cmd_t)] = {0};
     static uint8_t rx[sizeof(spine_cmd_t)] = {0};
 
-    spine_state_t temp_state;
+    static spine_state_t temp_state;
 
     for(int i = 0; i < spi_count; ++i)
     {
@@ -56,21 +58,25 @@ void HardwareBridge::update()
 
         memcpy(tx, &m_cmd[i], sizeof(spine_cmd_t));
 
+        spi_open(m_spi_fd[i], name[i]);
         int rv = transfer(m_spi_fd[i], tx, rx, sizeof(spine_cmd_t));
         (void)rv;
+        spi_close(m_spi_fd[i]);
 
         memcpy(&temp_state, rx, sizeof(spine_state_t));
 
         uint32_t crc = calculate((uint8_t*)&temp_state, sizeof(spine_state_t) - 4);
         if(crc == temp_state.crc)
         {
-            memcpy(&m_state[i], rx, sizeof(spine_state_t));
             std::cout << "[CRC] crc correct" << std::endl;
         }
         else
         {
             std::cout << "[CRC] crc error" << std::endl;
         }
+        memcpy(&m_state[i], rx, sizeof(spine_state_t));
+
+        //std::this_thread::sleep_for(std::chrono::milliseconds(interval));
     }
 }
 
@@ -108,7 +114,7 @@ void HardwareBridge::printInfo()
             for(int k = 0; k < 3; ++k)
             {
                 motor_data_t& m = m_state[i].leg[j].motor[k];
-                std::cout << "spi: " << j << "leg: " << j << " id: " << k << " : " << m.p << ", " << m.v << ", " << m.t << std::endl;
+                std::cout << "spi: " << j << " leg: " << j << " id: " << k << " : " << m.p << ", " << m.v << ", " << m.t << std::endl;
             }
         }
     }
