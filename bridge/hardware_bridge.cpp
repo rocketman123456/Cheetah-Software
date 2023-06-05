@@ -148,6 +148,19 @@ void HardwareBridge::stop()
 
 void HardwareBridge::printInfo()
 {
+    std::cout << "[Robot CMD]" << std::endl;
+    for(int i = 0; i < 2; ++i)
+    {
+        for(int j = 0; j < 2; ++j)
+        {
+            for(int k = 0; k < 3; ++k)
+            {
+                motor_cmd_t& m = m_cmd[i].leg[j].motor[k];
+                std::cout << "spi: " << j << " leg: " << j << " id: " << k << " : " << m.p_des << ", " << m.v_des << ", " << m.kp << ", " << m.kd << ", " << m.t_ff << std::endl;
+            }
+        }
+    }
+
     std::cout << "[Robot State]" << std::endl;
     for(int i = 0; i < 2; ++i)
     {
