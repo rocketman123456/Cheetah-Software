@@ -15,10 +15,10 @@ void simple_control()
 {
     angle += 0.1;
 
-    bridge.setJoint(LEFT, FRONT, ABAD, 0, 0, 5, 0, 0);
-    bridge.setJoint(LEFT, REAR, ABAD, 0, 0, 5, 0, 0);
-    bridge.setJoint(RIGHT, FRONT, ABAD, 0, 0, 5, 0, 0);
-    bridge.setJoint(RIGHT, REAR, ABAD, 0, 0, 5, 0, 0);
+    bridge.setJoint(LEFT, FRONT, ABAD, 0, 0, 5.0, 0, 0);
+    bridge.setJoint(LEFT, REAR, ABAD, 0, 0, 5.0, 0, 0);
+    bridge.setJoint(RIGHT, FRONT, ABAD, 0, 0, 5.0, 0, 0);
+    bridge.setJoint(RIGHT, REAR, ABAD, 0, 0, 5.0, 0, 0);
     bridge.update();
     bridge.printInfo();
 }

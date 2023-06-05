@@ -55,21 +55,21 @@ void HardwareBridge::initialize()
     float default_kp = 0.4;
 
     // init a very soft behavior
-    this->setJoint(LEFT, FRONT, ABAD, 0, 0, default_kp, 0, 0);
-    this->setJoint(LEFT, FRONT, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
-    this->setJoint(LEFT, FRONT, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
+    setJoint(LEFT, FRONT, ABAD, 0, 0, default_kp, 0, 0);
+    setJoint(LEFT, FRONT, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
+    setJoint(LEFT, FRONT, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
 
-    this->setJoint(LEFT, REAR, ABAD, 0, 0, default_kp, 0, 0);
-    this->setJoint(LEFT, REAR, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
-    this->setJoint(LEFT, REAR, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
+    setJoint(LEFT, REAR, ABAD, 0, 0, default_kp, 0, 0);
+    setJoint(LEFT, REAR, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
+    setJoint(LEFT, REAR, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
 
-    this->setJoint(RIGHT, FRONT, ABAD, 0, 0, default_kp, 0, 0);
-    this->setJoint(RIGHT, FRONT, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
-    this->setJoint(RIGHT, FRONT, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
+    setJoint(RIGHT, FRONT, ABAD, 0, 0, default_kp, 0, 0);
+    setJoint(RIGHT, FRONT, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
+    setJoint(RIGHT, FRONT, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
 
-    this->setJoint(RIGHT, REAR, ABAD, 0, 0, default_kp, 0, 0);
-    this->setJoint(RIGHT, REAR, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
-    this->setJoint(RIGHT, REAR, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
+    setJoint(RIGHT, REAR, ABAD, 0, 0, default_kp, 0, 0);
+    setJoint(RIGHT, REAR, HIP, M_PI / 2.0, 0, default_kp, 0, 0);
+    setJoint(RIGHT, REAR, KNEE, -M_PI / 1.5, 0, default_kp, 0, 0);
 }
 
 void HardwareBridge::finalize()
