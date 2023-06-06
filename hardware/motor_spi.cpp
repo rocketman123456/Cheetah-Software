@@ -48,10 +48,10 @@ int spi_open(int& fd, const char* name)
         perror("[ERROR] Couldn't open spidev 2.0");
     // ioctl:Input output control.设置一些io信息
     // spi_mode 设置极性与相位
-    rv = ioctl(fd, SPI_IOC_WR_MODE, &spi_mode);
+    rv = ioctl(fd, SPI_IOC_WR_MODE32, &spi_mode);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_wr_mode (1)");
-    rv = ioctl(fd, SPI_IOC_RD_MODE, &spi_mode);
+    rv = ioctl(fd, SPI_IOC_RD_MODE32, &spi_mode);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_mode (1)");
     // 设置每个字有几个字节
