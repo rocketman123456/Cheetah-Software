@@ -121,7 +121,7 @@ void MotorSpiBridge::update()
 
         memcpy(tx, &m_cmd[i], sizeof(spine_cmd_t));
 
-        auto str = hex2str(&m_cmd[i], sizeof(spine_cmd_t));
+        auto str = hex2str((uint8_t*)&m_cmd[i], sizeof(spine_cmd_t));
         std::cout << str << std::endl;
 
         // bcm2835_gpio_write(spi_pin[i], LOW);
