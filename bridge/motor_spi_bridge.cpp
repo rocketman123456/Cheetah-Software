@@ -31,7 +31,7 @@ const uint32_t motor_count = 3;
 // init communication
 void MotorSpiBridge::initialize()
 {
-    // bcm2835_init();
+    bcm2835_init();
     // bcm2835_spi_begin();
     // bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_LSBFIRST);
     // bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);
@@ -42,18 +42,18 @@ void MotorSpiBridge::initialize()
     // bcm2835_spi_chipSelect(BCM2835_SPI_CS1);
     // bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS1, LOW);
 
-    // spi_open(m_spi_fd[0], name[0]);
-    // spi_open(m_spi_fd[1], name[1]);
+    spi_open(m_spi_fd[0], name[0]);
+    spi_open(m_spi_fd[1], name[1]);
+
+    bcm2835_gpio_fsel(spi_pin[0], BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(spi_pin[1], BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_write(spi_pin[0], HIGH);
+    bcm2835_gpio_write(spi_pin[1], HIGH);
 
     // gpioInitialise();
 
     // m_spi_fd[0] = spiOpen(0, 6000000, 0);
     // m_spi_fd[1] = spiOpen(1, 6000000, 0);
-
-    // bcm2835_gpio_fsel(spi_pin[0], BCM2835_GPIO_FSEL_OUTP);
-    // bcm2835_gpio_fsel(spi_pin[1], BCM2835_GPIO_FSEL_OUTP);
-    // bcm2835_gpio_write(spi_pin[0], HIGH);
-    // bcm2835_gpio_write(spi_pin[1], HIGH);
 
     float angle1 = 0;//M_PI / 2.0;
     float angle2 = 0;//M_PI - 26.0 * M_PI / 180.0;
@@ -112,9 +112,9 @@ void MotorSpiBridge::initialize()
 void MotorSpiBridge::finalize()
 {
     // bcm2835_spi_end();
-    // bcm2835_close();
-    // spi_close(m_spi_fd[0]);
-    // spi_close(m_spi_fd[1]);
+    bcm2835_close();
+    spi_close(m_spi_fd[0]);
+    spi_close(m_spi_fd[1]);
     // spiClose(m_spi_fd[0]);
     // spiClose(m_spi_fd[1]);
     // gpioTerminate();
@@ -141,10 +141,10 @@ void MotorSpiBridge::update()
         // bcm2835_spi_transfernb((char*)tx, (char*)rx, sizeof(spine_cmd_t));
 
         // bcm2835_gpio_write(spi_pin[i], LOW);
-        spi_open(m_spi_fd[i], name[i]);
+        // spi_open(m_spi_fd[i], name[i]);
         transfer(m_spi_fd[i], tx, rx, sizeof(spine_cmd_t));
-        spi_close(m_spi_fd[i]);
-        // bcm2835_gpio_write(spi_pin[i], HIGH);
+        // spi_close(m_spi_fd[i]);
+        bcm2835_gpio_write(spi_pin[i], HIGH);
 
         // spiXfer(m_spi_fd[i], (char*)tx, (char*)rx, sizeof(spine_cmd_t));
 
