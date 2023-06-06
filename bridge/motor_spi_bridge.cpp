@@ -45,6 +45,8 @@ void MotorSpiBridge::initialize()
     // spi_open(m_spi_fd[0], name[0]);
     // spi_open(m_spi_fd[1], name[1]);
 
+    gpioInitialise();
+
     m_spi_fd[0] = spiOpen(0, 6000000, 0);
     m_spi_fd[1] = spiOpen(1, 6000000, 0);
 
