@@ -144,6 +144,9 @@ void MotorSpiBridge::update()
         }
         memcpy(&m_state[i], rx, sizeof(spine_state_t));
 
+        str = hex2str((uint8_t*)&m_state[i], sizeof(spine_state_t));
+        std::cout << str << std::endl;
+
         for(int j = 0; j < leg_count; ++j)
         {
             for(int k = 0; k < motor_count; ++k)
