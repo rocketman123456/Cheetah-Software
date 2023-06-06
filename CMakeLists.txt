@@ -18,7 +18,7 @@ endif()
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-find_package(Threads REQUIRED)
+# find_package(Threads REQUIRED)
 # find_package(RT REQUIRED)
 
 include_directories(
@@ -37,7 +37,7 @@ add_executable(simple_control
 )
 
 target_link_libraries(simple_control
-    pigpio Threads::Threads
+    pigpio pthread
 )
 
 #target_link_libraries(spi_test pthread)
