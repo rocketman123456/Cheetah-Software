@@ -30,4 +30,8 @@ add_executable(simple_control
     util/crc.cpp
 )
 
+target_link_libraries(simple_control
+    pigpio
+)
+
 #target_link_libraries(spi_test pthread)
