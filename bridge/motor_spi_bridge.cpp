@@ -16,8 +16,8 @@
 
 const char* name[] = {"/dev/spidev0.0", "/dev/spidev0.1"};
 
-// const int spi_pin[] = {PIN_SPI_0, PIN_SPI_1};
-const int spi_pin[] = {BCM2835_SPI_CS0, BCM2835_SPI_CS1};
+const int spi_pin[] = {PIN_SPI_0, PIN_SPI_1};
+// const int spi_pin[] = {BCM2835_SPI_CS0, BCM2835_SPI_CS1};
 
 const uint32_t spi_count = 2;
 const uint32_t leg_count = 2;
@@ -27,23 +27,23 @@ const uint32_t motor_count = 3;
 void MotorSpiBridge::initialize()
 {
     bcm2835_init();
-    bcm2835_spi_begin();
-    bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_LSBFIRST);
-    bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);
-    bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
+    // bcm2835_spi_begin();
+    // bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_LSBFIRST);
+    // bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64);
+    // bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
 
     // bcm2835_spi_chipSelect(BCM2835_SPI_CS0);
-    bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
+    // bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS0, LOW);
     // bcm2835_spi_chipSelect(BCM2835_SPI_CS1);
-    bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS1, LOW);
+    // bcm2835_spi_setChipSelectPolarity(BCM2835_SPI_CS1, LOW);
 
-    // spi_open(m_spi_fd[0], name[0]);
-    // spi_open(m_spi_fd[1], name[1]);
+    spi_open(m_spi_fd[0], name[0]);
+    spi_open(m_spi_fd[1], name[1]);
 
-    // bcm2835_gpio_fsel(spi_pin[0], BCM2835_GPIO_FSEL_OUTP);
-    // bcm2835_gpio_fsel(spi_pin[1], BCM2835_GPIO_FSEL_OUTP);
-    // bcm2835_gpio_write(spi_pin[0], HIGH);
-    // bcm2835_gpio_write(spi_pin[1], HIGH);
+    bcm2835_gpio_fsel(spi_pin[0], BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_fsel(spi_pin[1], BCM2835_GPIO_FSEL_OUTP);
+    bcm2835_gpio_write(spi_pin[0], HIGH);
+    bcm2835_gpio_write(spi_pin[1], HIGH);
 
     float angle1 = 0;//M_PI / 2.0;
     float angle2 = 0;//M_PI - 26.0 * M_PI / 180.0;
@@ -101,10 +101,10 @@ void MotorSpiBridge::initialize()
 
 void MotorSpiBridge::finalize()
 {
-    bcm2835_spi_end();
+    // bcm2835_spi_end();
     bcm2835_close();
-    // spi_close(m_spi_fd[0]);
-    // spi_close(m_spi_fd[1]);
+    spi_close(m_spi_fd[0]);
+    spi_close(m_spi_fd[1]);
 }
 
 // send cmd to motor and get state
@@ -124,15 +124,12 @@ void MotorSpiBridge::update()
         auto str = hex2str((uint8_t*)&m_cmd[i], sizeof(spine_cmd_t));
         std::cout << str << std::endl;
 
+        // bcm2835_spi_chipSelect(spi_pin[i]);
+        // bcm2835_spi_transfernb((char*)tx, (char*)rx, sizeof(spine_cmd_t));
+
         // bcm2835_gpio_write(spi_pin[i], LOW);
-
-        bcm2835_spi_chipSelect(spi_pin[i]);
-        bcm2835_spi_transfernb((char*)tx, (char*)rx, sizeof(spine_cmd_t));
-
-        // int rv = transfer(m_spi_fd[i], tx, rx, sizeof(spine_cmd_t));
-        // (void)rv;
-
-        // bcm2835_gpio_write(spi_pin[i], HIGH);
+        transfer(m_spi_fd[i], tx, rx, sizeof(spine_cmd_t));
+        bcm2835_gpio_write(spi_pin[i], HIGH);
 
         memcpy(&temp_state, rx, sizeof(spine_state_t));
 
