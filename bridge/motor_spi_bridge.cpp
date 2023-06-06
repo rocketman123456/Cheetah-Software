@@ -45,10 +45,10 @@ void MotorSpiBridge::initialize()
     // spi_open(m_spi_fd[0], name[0]);
     // spi_open(m_spi_fd[1], name[1]);
 
-    gpioInitialise();
+    // gpioInitialise();
 
-    m_spi_fd[0] = spiOpen(0, 6000000, 0);
-    m_spi_fd[1] = spiOpen(1, 6000000, 0);
+    // m_spi_fd[0] = spiOpen(0, 6000000, 0);
+    // m_spi_fd[1] = spiOpen(1, 6000000, 0);
 
     // bcm2835_gpio_fsel(spi_pin[0], BCM2835_GPIO_FSEL_OUTP);
     // bcm2835_gpio_fsel(spi_pin[1], BCM2835_GPIO_FSEL_OUTP);
@@ -115,10 +115,9 @@ void MotorSpiBridge::finalize()
     // bcm2835_close();
     // spi_close(m_spi_fd[0]);
     // spi_close(m_spi_fd[1]);
-    spiClose(m_spi_fd[0]);
-    spiClose(m_spi_fd[1]);
-
-    gpioTerminate();
+    // spiClose(m_spi_fd[0]);
+    // spiClose(m_spi_fd[1]);
+    // gpioTerminate();
 }
 
 // send cmd to motor and get state
@@ -142,10 +141,12 @@ void MotorSpiBridge::update()
         // bcm2835_spi_transfernb((char*)tx, (char*)rx, sizeof(spine_cmd_t));
 
         // bcm2835_gpio_write(spi_pin[i], LOW);
-        // transfer(m_spi_fd[i], tx, rx, sizeof(spine_cmd_t));
+        spi_open(m_spi_fd[i], name[i]);
+        transfer(m_spi_fd[i], tx, rx, sizeof(spine_cmd_t));
+        spi_close(m_spi_fd[i]);
         // bcm2835_gpio_write(spi_pin[i], HIGH);
 
-        spiXfer(m_spi_fd[i], (char*)tx, (char*)rx, sizeof(spine_cmd_t));
+        // spiXfer(m_spi_fd[i], (char*)tx, (char*)rx, sizeof(spine_cmd_t));
 
         memcpy(&temp_state, rx, sizeof(spine_state_t));
 
