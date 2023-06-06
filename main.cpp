@@ -31,7 +31,7 @@ int main()
 
     bridge.initialize();
 
-    bridge.start();
+    // bridge.start();
 
     Timer timer;
 
