@@ -117,6 +117,8 @@ void MotorSpiBridge::finalize()
     // spi_close(m_spi_fd[1]);
     spiClose(m_spi_fd[0]);
     spiClose(m_spi_fd[1]);
+
+    gpioTerminate();
 }
 
 // send cmd to motor and get state
