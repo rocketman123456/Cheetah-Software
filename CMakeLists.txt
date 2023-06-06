@@ -18,7 +18,10 @@ endif()
 set(CMAKE_COLOR_MAKEFILE   ON)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-include_directories(${CMAKE_SOURCE_DIR})
+include_directories(
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/3rd_party/pigpio
+)
 
 add_subdirectory(3rd_party)
 
@@ -31,7 +34,7 @@ add_executable(simple_control
 )
 
 target_link_libraries(simple_control
-    pigpio
+    pigpio RT::RT Threads::Threads
 )
 
 #target_link_libraries(spi_test pthread)

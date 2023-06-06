@@ -2,6 +2,8 @@
 #include "hardware/motor_spi.h"
 #include "hardware/bcm2835.h"
 
+#include "pigpio.h"
+
 #define PIN_SPI_0 RPI_BPLUS_GPIO_J8_24
 #define PIN_SPI_1 RPI_BPLUS_GPIO_J8_26
 
