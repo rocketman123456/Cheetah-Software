@@ -23,6 +23,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/3rd_party/bcm2835
     ${CMAKE_SOURCE_DIR}/3rd_party/pigpio
 )
 
@@ -31,13 +32,12 @@ add_subdirectory(3rd_party)
 add_executable(simple_control 
     main.cpp 
     hardware/motor_spi.cpp 
-    hardware/bcm2835.cpp 
     bridge/motor_spi_bridge.cpp
     util/crc.cpp
 )
 
 target_link_libraries(simple_control
-    pigpio pthread
+    bcm2835 pigpio pthread
 )
 
 #target_link_libraries(spi_test pthread)

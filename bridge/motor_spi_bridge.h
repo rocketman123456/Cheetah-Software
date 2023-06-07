@@ -1,4 +1,5 @@
 #pragma once
+#include "bridge/bridge_interface.h"
 #include "hardware/motor_spi.h"
 
 #include <cstdint>
@@ -11,7 +12,7 @@ const uint32_t ABAD = 0;
 const uint32_t HIP = 1;
 const uint32_t KNEE = 2;
 
-class MotorSpiBridge
+class MotorSpiBridge : public BridgeInterface
 {
     struct convert_motor
     {
@@ -29,10 +30,10 @@ class MotorSpiBridge
         convert_leg leg[2];
     };
 public:
-    void initialize();    // init communication
-    void finalize();
+    void initialize() override;    // init communication
+    void finalize() override;
 
-    void update();  // send cmd to motor and get state
+    void update() override;  // send cmd to motor and get state
 
     void start();   // enable motor
     void stop();    // disable motor

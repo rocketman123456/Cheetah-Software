@@ -14,7 +14,7 @@
 
 #include <linux/spi/spidev.h>
 
-unsigned char spi_mode          = SPI_MODE_0; // 时钟极性0,时钟相位0
+unsigned char spi_mode          = SPI_MODE_3;//SPI_MODE_0; // 时钟极性0,时钟相位0
 unsigned char spi_bits_per_word = 8;          // 每个字8字节
 unsigned int  spi_speed         = 6000000;    // 6M
 uint8_t       lsb               = 0x01;
@@ -48,10 +48,10 @@ int spi_open(int& fd, const char* name)
         perror("[ERROR] Couldn't open spidev 2.0");
     // ioctl:Input output control.设置一些io信息
     // spi_mode 设置极性与相位
-    rv = ioctl(fd, SPI_IOC_WR_MODE32, &spi_mode);
+    rv = ioctl(fd, SPI_IOC_WR_MODE, &spi_mode);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_wr_mode (1)");
-    rv = ioctl(fd, SPI_IOC_RD_MODE32, &spi_mode);
+    rv = ioctl(fd, SPI_IOC_RD_MODE, &spi_mode);
     if (rv < 0)
         perror("[ERROR] ioctl spi_ioc_rd_mode (1)");
     // 设置每个字有几个字节
