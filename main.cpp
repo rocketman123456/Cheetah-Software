@@ -27,7 +27,7 @@ int main()
 {
     //prefaultStack();
     //setupScheduler();
-    create_lookup_table();
+    //create_lookup_table();
 
     bridge.initialize();
 

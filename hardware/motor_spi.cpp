@@ -14,7 +14,7 @@
 
 #include <linux/spi/spidev.h>
 
-unsigned char spi_mode          = SPI_MODE_3;//SPI_MODE_0; // 时钟极性0,时钟相位0
+unsigned char spi_mode          = SPI_MODE_0;//SPI_MODE_0; // 时钟极性0,时钟相位0
 unsigned char spi_bits_per_word = 8;          // 每个字8字节
 unsigned int  spi_speed         = 6000000;    // 6M
 uint8_t       lsb               = 0x01;
