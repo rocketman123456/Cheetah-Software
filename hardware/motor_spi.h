@@ -58,6 +58,7 @@ typedef struct
 {
     leg_cmd_t leg[2];
     uint32_t crc;
+    uint8_t __padding;
 } spine_cmd_t;
 
 // --------------------------------------

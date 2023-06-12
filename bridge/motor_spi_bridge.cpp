@@ -131,11 +131,11 @@ void MotorSpiBridge::update()
 
     for(int i = 0; i < spi_count; ++i)
     {
-        m_cmd[i].crc = calculate((uint8_t*)&m_cmd[i], sizeof(spine_cmd_t) - 4);
+        m_cmd[i].crc = calculate((uint8_t*)&m_cmd[i], sizeof(spine_cmd_t) - 4 - 1);
 
         memcpy(tx, &m_cmd[i], sizeof(spine_cmd_t));
 
-        auto str = hex2str((uint8_t*)&m_cmd[i], sizeof(spine_cmd_t));
+        auto str = hex2str((uint8_t*)&m_cmd[i], sizeof(spine_cmd_t) - 1);
         std::cout << str << std::endl;
 
         // bcm2835_spi_chipSelect(spi_pin[i]);
