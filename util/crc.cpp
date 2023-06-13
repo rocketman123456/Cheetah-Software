@@ -1,18 +1,18 @@
 #include "util/crc.h"
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define LUT_SIZE 256
 
 static uint32_t lookup_table[LUT_SIZE] = {0};
-static uint32_t polynomial = 0x04C11DB7;
-static uint32_t init_value = 0xFFFFFFFF;
-static uint32_t xor_output = 0xFFFFFFFF;
-static uint8_t  reflect_input = 1;
-static uint8_t  reflect_output = 1;
-static uint8_t  use_lut = 0;
+static uint32_t polynomial             = 0x04C11DB7;
+static uint32_t init_value             = 0xFFFFFFFF;
+static uint32_t xor_output             = 0xFFFFFFFF;
+static uint8_t  reflect_input          = 1;
+static uint8_t  reflect_output         = 1;
+static uint8_t  use_lut                = 0;
 
 static const uint8_t REFLECT_BIT_ORDER_TABLE[256] = {
     0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0, 0x10, 0x90, 0x50, 0xD0, 0x30, 0xB0, 0x70, 0xF0, 0x08, 0x88, 0x48, 0xC8, 0x28, 0xA8, 0x68, 0xE8, 0x18, 0x98,

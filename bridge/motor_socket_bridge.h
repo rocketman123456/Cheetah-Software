@@ -14,6 +14,7 @@ class MotorSocketBridge : public BridgeInterface
     {
         convert_motor motor[3];
     };
+
 public:
     // init communication
     void initialize() override;
@@ -25,7 +26,7 @@ public:
 private:
     int m_spi_fd[4];
 
-    leg_cmd_t m_cmd[4];
+    leg_cmd_t   m_cmd[4];
     leg_state_t m_state[4];
 
     convert_leg m_converter[4];

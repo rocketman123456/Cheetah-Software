@@ -30,7 +30,7 @@ extern "C"
 int  spi_open(int& fd, const char* name);
 void spi_close(int fd);
 
-int transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len);
+int transfer(int fd, uint8_t const* tx, uint8_t const* rx, size_t len);
 
 std::string hex2str(const uint8_t* str, int len);
 
@@ -50,15 +50,15 @@ typedef struct
 typedef struct
 {
     motor_cmd_t motor[3];
-    int32_t flag;
+    int32_t     flag;
 } leg_cmd_t;
 
 // 132 byte
 typedef struct
 {
     leg_cmd_t leg[2];
-    uint32_t crc;
-    uint8_t __padding;
+    uint32_t  crc;
+    uint8_t   __padding;
 } spine_cmd_t;
 
 // --------------------------------------
@@ -68,7 +68,7 @@ typedef struct
 // --------------------------------------
 
 // 12 byte
-typedef struct 
+typedef struct
 {
     float p;
     float v;
@@ -79,14 +79,14 @@ typedef struct
 typedef struct
 {
     motor_data_t motor[3];
-    int32_t flag;
+    int32_t      flag;
 } leg_state_t;
 
 // 84 byte
 typedef struct
 {
     leg_state_t leg[2];
-    uint32_t crc;
+    uint32_t    crc;
 } spine_state_t;
 
 #pragma pack()

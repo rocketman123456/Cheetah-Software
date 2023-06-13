@@ -14,7 +14,7 @@
 
 #include <linux/spi/spidev.h>
 
-unsigned char spi_mode          = SPI_MODE_0;//SPI_MODE_0; // 时钟极性0,时钟相位0
+unsigned char spi_mode          = SPI_MODE_0; // SPI_MODE_0; // 时钟极性0,时钟相位0
 unsigned char spi_bits_per_word = 8;          // 每个字8字节
 unsigned int  spi_speed         = 6000000;    // 6M
 uint8_t       lsb               = 0x01;
@@ -96,16 +96,16 @@ std::string hex2str(const uint8_t* str, int len)
     return result;
 }
 
-int transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len)
+int transfer(int fd, uint8_t const* tx, uint8_t const* rx, size_t len)
 {
     struct spi_ioc_transfer tr = {
-        .tx_buf = (uint64_t)tx,
-        .rx_buf = (uint64_t)rx,
-        .len = len,
-        .speed_hz = spi_speed,
-        .delay_usecs = 0,
+        .tx_buf        = (uint64_t)tx,
+        .rx_buf        = (uint64_t)rx,
+        .len           = len,
+        .speed_hz      = spi_speed,
+        .delay_usecs   = 0,
         .bits_per_word = spi_bits_per_word,
-        .cs_change = 1,
+        .cs_change     = 1,
     };
 
     int ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);

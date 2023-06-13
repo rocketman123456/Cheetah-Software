@@ -7,8 +7,8 @@
 #include "rt/rt_util.h"
 #include "util/crc.h"
 
-#include <iostream>
 #include <chrono>
+#include <iostream>
 #include <thread>
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -25,8 +25,8 @@ const char* name[] = {"/dev/spidev0.0", "/dev/spidev0.1"};
 const int spi_pin[] = {PIN_SPI_0, PIN_SPI_1};
 // const int spi_pin[] = {BCM2835_SPI_CS0, BCM2835_SPI_CS1};
 
-const uint32_t spi_count = 2;
-const uint32_t leg_count = 2;
+const uint32_t spi_count   = 2;
+const uint32_t leg_count   = 2;
 const uint32_t motor_count = 3;
 
 // init communication
@@ -56,41 +56,41 @@ void MotorSpiBridge::initialize()
     // m_spi_fd[0] = spiOpen(0, 6000000, 0);
     // m_spi_fd[1] = spiOpen(1, 6000000, 0);
 
-    float angle1 = 0;//M_PI / 2.0;
-    float angle2 = 0;//M_PI - 26.0 * M_PI / 180.0;
+    float angle1 = 0; // M_PI / 2.0;
+    float angle2 = 0; // M_PI - 26.0 * M_PI / 180.0;
 
-    m_converter[LEFT].leg[FRONT].motor[ABAD].sign = -1.0;
+    m_converter[LEFT].leg[FRONT].motor[ABAD].sign   = -1.0;
     m_converter[LEFT].leg[FRONT].motor[ABAD].offset = 0;
-    m_converter[LEFT].leg[FRONT].motor[HIP].sign = -1.0;
-    m_converter[LEFT].leg[FRONT].motor[HIP].offset = -angle1;
-    m_converter[LEFT].leg[FRONT].motor[KNEE].sign = 1.0;
+    m_converter[LEFT].leg[FRONT].motor[HIP].sign    = -1.0;
+    m_converter[LEFT].leg[FRONT].motor[HIP].offset  = -angle1;
+    m_converter[LEFT].leg[FRONT].motor[KNEE].sign   = 1.0;
     m_converter[LEFT].leg[FRONT].motor[KNEE].offset = -angle2;
 
-    m_converter[LEFT].leg[REAR].motor[ABAD].sign = 1.0;
+    m_converter[LEFT].leg[REAR].motor[ABAD].sign   = 1.0;
     m_converter[LEFT].leg[REAR].motor[ABAD].offset = 0;
-    m_converter[LEFT].leg[REAR].motor[HIP].sign = -1.0;
-    m_converter[LEFT].leg[REAR].motor[HIP].offset = angle1;
-    m_converter[LEFT].leg[REAR].motor[KNEE].sign = 1.0;
+    m_converter[LEFT].leg[REAR].motor[HIP].sign    = -1.0;
+    m_converter[LEFT].leg[REAR].motor[HIP].offset  = angle1;
+    m_converter[LEFT].leg[REAR].motor[KNEE].sign   = 1.0;
     m_converter[LEFT].leg[REAR].motor[KNEE].offset = angle2;
 
-    m_converter[RIGHT].leg[FRONT].motor[ABAD].sign = -1.0;
+    m_converter[RIGHT].leg[FRONT].motor[ABAD].sign   = -1.0;
     m_converter[RIGHT].leg[FRONT].motor[ABAD].offset = 0;
-    m_converter[RIGHT].leg[FRONT].motor[HIP].sign = 1.0;
-    m_converter[RIGHT].leg[FRONT].motor[HIP].offset = -angle1;
-    m_converter[RIGHT].leg[FRONT].motor[KNEE].sign = -1.0;
+    m_converter[RIGHT].leg[FRONT].motor[HIP].sign    = 1.0;
+    m_converter[RIGHT].leg[FRONT].motor[HIP].offset  = -angle1;
+    m_converter[RIGHT].leg[FRONT].motor[KNEE].sign   = -1.0;
     m_converter[RIGHT].leg[FRONT].motor[KNEE].offset = -angle2;
 
-    m_converter[RIGHT].leg[REAR].motor[ABAD].sign = 1.0;
+    m_converter[RIGHT].leg[REAR].motor[ABAD].sign   = 1.0;
     m_converter[RIGHT].leg[REAR].motor[ABAD].offset = 0;
-    m_converter[RIGHT].leg[REAR].motor[HIP].sign = 1.0;
-    m_converter[RIGHT].leg[REAR].motor[HIP].offset = angle1;
-    m_converter[RIGHT].leg[REAR].motor[KNEE].sign = -1.0;
+    m_converter[RIGHT].leg[REAR].motor[HIP].sign    = 1.0;
+    m_converter[RIGHT].leg[REAR].motor[HIP].offset  = angle1;
+    m_converter[RIGHT].leg[REAR].motor[KNEE].sign   = -1.0;
     m_converter[RIGHT].leg[REAR].motor[KNEE].offset = angle2;
 
     float default_kp = 0.4;
 
-    float angle1_d = 0;//M_PI / 2.0;
-    float angle2_d = 0;//M_PI / 1.5;
+    float angle1_d = 0; // M_PI / 2.0;
+    float angle2_d = 0; // M_PI / 1.5;
 
     // init a very soft behavior
     setJoint(LEFT, FRONT, ABAD, 0, 0, default_kp, 0, 0);
@@ -129,7 +129,7 @@ void MotorSpiBridge::update()
 
     static spine_state_t temp_state;
 
-    for(int i = 0; i < spi_count; ++i)
+    for (int i = 0; i < spi_count; ++i)
     {
         m_cmd[i].crc = calculate((uint8_t*)&m_cmd[i], sizeof(spine_cmd_t) - 4 - 1);
 
@@ -152,7 +152,7 @@ void MotorSpiBridge::update()
         memcpy(&temp_state, rx, sizeof(spine_state_t));
 
         uint32_t crc = calculate((uint8_t*)&temp_state, sizeof(spine_state_t) - 4);
-        if(crc == temp_state.crc)
+        if (crc == temp_state.crc)
         {
             std::cout << "[CRC] crc correct" << std::endl;
         }
@@ -165,9 +165,9 @@ void MotorSpiBridge::update()
         str = hex2str((uint8_t*)&m_state[i], sizeof(spine_state_t));
         std::cout << str << std::endl;
 
-        for(int j = 0; j < leg_count; ++j)
+        for (int j = 0; j < leg_count; ++j)
         {
-            for(int k = 0; k < motor_count; ++k)
+            for (int k = 0; k < motor_count; ++k)
             {
                 m_state[i].leg[j].motor[k].p = m_state[i].leg[j].motor[k].p * m_converter[i].leg[j].motor[k].sign + m_converter[i].leg[j].motor[k].offset;
                 m_state[i].leg[j].motor[k].v = m_state[i].leg[j].motor[k].v * m_converter[i].leg[j].motor[k].sign;
@@ -180,9 +180,9 @@ void MotorSpiBridge::update()
 // enable motor
 void MotorSpiBridge::start()
 {
-    for(int i = 0; i < spi_count; ++i)
+    for (int i = 0; i < spi_count; ++i)
     {
-        for(int j = 0; j < leg_count; ++j)
+        for (int j = 0; j < leg_count; ++j)
         {
             m_cmd[i].leg[j].flag = 1;
         }
@@ -192,9 +192,9 @@ void MotorSpiBridge::start()
 // disable motor
 void MotorSpiBridge::stop()
 {
-    for(int i = 0; i < spi_count; ++i)
+    for (int i = 0; i < spi_count; ++i)
     {
-        for(int j = 0; j < leg_count; ++j)
+        for (int j = 0; j < leg_count; ++j)
         {
             m_cmd[i].leg[j].flag = 0;
         }
@@ -204,24 +204,25 @@ void MotorSpiBridge::stop()
 void MotorSpiBridge::printInfo()
 {
     std::cout << "[Robot CMD]" << std::endl;
-    for(int i = 0; i < 2; ++i)
+    for (int i = 0; i < 2; ++i)
     {
-        for(int j = 0; j < 2; ++j)
+        for (int j = 0; j < 2; ++j)
         {
-            for(int k = 0; k < 3; ++k)
+            for (int k = 0; k < 3; ++k)
             {
                 motor_cmd_t& m = m_cmd[i].leg[j].motor[k];
-                std::cout << "spi: " << j << " leg: " << j << " id: " << k << " : " << m.p_des << ", " << m.v_des << ", " << m.kp << ", " << m.kd << ", " << m.t_ff << std::endl;
+                std::cout << "spi: " << j << " leg: " << j << " id: " << k << " : " << m.p_des << ", " << m.v_des << ", " << m.kp << ", " << m.kd << ", "
+                          << m.t_ff << std::endl;
             }
         }
     }
 
     std::cout << "[Robot State]" << std::endl;
-    for(int i = 0; i < 2; ++i)
+    for (int i = 0; i < 2; ++i)
     {
-        for(int j = 0; j < 2; ++j)
+        for (int j = 0; j < 2; ++j)
         {
-            for(int k = 0; k < 3; ++k)
+            for (int k = 0; k < 3; ++k)
             {
                 motor_data_t& m = m_state[i].leg[j].motor[k];
                 std::cout << "spi: " << j << " leg: " << j << " id: " << k << " : " << m.p << ", " << m.v << ", " << m.t << std::endl;
@@ -236,7 +237,7 @@ void MotorSpiBridge::setJoint(int i, int j, int k, float p_des, float v_des, flo
 {
     m_cmd[i].leg[j].motor[k].p_des = (p_des - m_converter[i].leg[j].motor[k].offset) / m_converter[i].leg[j].motor[k].sign;
     m_cmd[i].leg[j].motor[k].v_des = v_des / m_converter[i].leg[j].motor[k].sign;
-    m_cmd[i].leg[j].motor[k].kp = kp;
-    m_cmd[i].leg[j].motor[k].kd = kd;
-    m_cmd[i].leg[j].motor[k].t_ff = t_ff / m_converter[i].leg[j].motor[k].sign;
+    m_cmd[i].leg[j].motor[k].kp    = kp;
+    m_cmd[i].leg[j].motor[k].kd    = kd;
+    m_cmd[i].leg[j].motor[k].t_ff  = t_ff / m_converter[i].leg[j].motor[k].sign;
 }

@@ -15,7 +15,7 @@
 int open_socketcan(const char* name)
 {
     struct sockaddr_can addr;
-    struct ifreq ifr;
+    struct ifreq        ifr;
 
     printf("Start CAN Socket %s\n", name);
 
@@ -29,10 +29,10 @@ int open_socketcan(const char* name)
     ioctl(s, SIOCGIFINDEX, &ifr);
 
     memset(&addr, 0, sizeof(addr));
-    addr.can_family = AF_CAN;
+    addr.can_family  = AF_CAN;
     addr.can_ifindex = ifr.ifr_ifindex;
 
-    if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+    if (bind(s, (struct sockaddr*)&addr, sizeof(addr)) < 0)
     {
         perror("[Error] Socket Bind Error");
         return 1;
@@ -53,7 +53,7 @@ int close_socketcan(int s)
 int transfer_socketcan(int s, int id, const char* msg, int len)
 {
     struct can_frame frame;
-    frame.can_id = id;
+    frame.can_id  = id;
     frame.can_dlc = len;
     sprintf(frame.data, msg);
 

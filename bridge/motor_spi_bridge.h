@@ -4,13 +4,13 @@
 
 #include <cstdint>
 
-const uint32_t LEFT = 0;
+const uint32_t LEFT  = 0;
 const uint32_t RIGHT = 1;
 const uint32_t FRONT = 0;
-const uint32_t REAR = 1;
-const uint32_t ABAD = 0;
-const uint32_t HIP = 1;
-const uint32_t KNEE = 2;
+const uint32_t REAR  = 1;
+const uint32_t ABAD  = 0;
+const uint32_t HIP   = 1;
+const uint32_t KNEE  = 2;
 
 class MotorSpiBridge : public BridgeInterface
 {
@@ -29,14 +29,15 @@ class MotorSpiBridge : public BridgeInterface
     {
         convert_leg leg[2];
     };
+
 public:
-    void initialize() override;    // init communication
+    void initialize() override; // init communication
     void finalize() override;
 
-    void update() override;  // send cmd to motor and get state
+    void update() override; // send cmd to motor and get state
 
-    void start();   // enable motor
-    void stop();    // disable motor
+    void start(); // enable motor
+    void stop();  // disable motor
 
     void printInfo();
 
@@ -46,7 +47,7 @@ public:
 public:
     int m_spi_fd[2];
 
-    spine_cmd_t m_cmd[2];
+    spine_cmd_t   m_cmd[2];
     spine_state_t m_state[2];
 
     convert_spi m_converter[2];

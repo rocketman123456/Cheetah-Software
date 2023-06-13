@@ -21,7 +21,7 @@
 void prefaultStack()
 {
     printf("[Init] Prefault stack...\n");
-    volatile char stack[MAX_STACK_SIZE];     //MAX_STACK_SIZE=16384 16kb
+    volatile char stack[MAX_STACK_SIZE]; // MAX_STACK_SIZE=16384 16kb
     memset(const_cast<char*>(stack), 0, MAX_STACK_SIZE);
     if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1)
     {
@@ -38,11 +38,11 @@ void prefaultStack()
 void setupScheduler()
 {
     printf("[Init] Setup RT Scheduler...\n");
-    pid_t pid = getpid();
+    pid_t              pid = getpid();
     struct sched_param params;
-    params.sched_priority = sched_get_priority_max(SCHED_FIFO);  //TASK_PRIORITY  = 49
+    params.sched_priority = sched_get_priority_max(SCHED_FIFO); // TASK_PRIORITY  = 49
     if (sched_setscheduler(pid, SCHED_FIFO, &params) == -1)
-    {  
+    {
         printf("[ERROR] sched_setscheduler failed.\n");
         exit(-1);
     }
