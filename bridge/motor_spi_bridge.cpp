@@ -15,14 +15,14 @@
 
 #include <bcm2835.h>
 
-#include <pigpio.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+// #include <pigpio.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <unistd.h>
 
 const char* name[] = {"/dev/spidev0.0", "/dev/spidev0.1"};
 
-const int spi_pin[] = {PIN_SPI_0, PIN_SPI_1};
+// const int spi_pin[] = {PIN_SPI_0, PIN_SPI_1};
 // const int spi_pin[] = {BCM2835_SPI_CS0, BCM2835_SPI_CS1};
 
 const uint32_t spi_count   = 2;
