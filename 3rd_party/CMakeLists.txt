@@ -1,4 +1,5 @@
-add_subdirectory(bcm2835)
+# add_subdirectory(bcm2835)
 # add_subdirectory(pigpio)
-add_subdirectory(SOEM)
-add_subdirectory(vectornav)
+# add_subdirectory(SOEM)
+# add_subdirectory(lord_imu)
+# add_subdirectory(vectornav)

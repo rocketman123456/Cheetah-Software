@@ -1,5 +1,5 @@
 #pragma once
-#include "bridge/bridge_interface.h"
+#include "hardware/bridge/bridge_interface.h"
 #include "hardware/motor_spi.h"
 
 #include <cstdint>
@@ -12,7 +12,7 @@ const uint32_t ABAD  = 0;
 const uint32_t HIP   = 1;
 const uint32_t KNEE  = 2;
 
-class MotorSpiBridge : public BridgeInterface
+class MotorSpiBridge : public MotorBridgeInterface
 {
     struct convert_motor
     {
@@ -36,13 +36,15 @@ public:
 
     void update() override; // send cmd to motor and get state
 
+    void publish() override;
+
     void start(); // enable motor
     void stop();  // disable motor
 
     void printInfo();
 
     // i: spi, LEFT, RIGHT, j: leg, FRONT, REAR, k:motor, ABAD, HIP, KNEE, motor cmd
-    void setJoint(int i, int j, int k, float p_des, float v_des, float kp, float kd, float t_ff);
+    void setJoint(int i, int j, int k, float p_des, float v_des, float kp, float kd, float t_ff) override;
 
 public:
     int m_spi_fd[2];

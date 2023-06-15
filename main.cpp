@@ -1,5 +1,5 @@
-#include "hardware/motor_spi.h"
-#include "bridge/motor_spi_bridge.h"
+// #include "hardware/motor_spi.h"
+// #include "bridge/motor_spi_bridge.h"
 #include "util/crc.h"
 #include "util/timer.h"
 
@@ -7,20 +7,20 @@
 #include <iostream>
 #include <unistd.h>
 
-MotorSpiBridge bridge;
+// MotorSpiBridge bridge;
 
-float angle = 0;
 
 void simple_control()
 {
-    angle += 0.1;
+    // static float angle = 0;
+    // angle += 0.1;
 
-    bridge.setJoint(LEFT, FRONT, ABAD, 0, 0, 5.0, 0, 0);
-    bridge.setJoint(LEFT, REAR, ABAD, 0, 0, 5.0, 0, 0);
-    bridge.setJoint(RIGHT, FRONT, ABAD, 0, 0, 5.0, 0, 0);
-    bridge.setJoint(RIGHT, REAR, ABAD, 0, 0, 5.0, 0, 0);
-    bridge.update();
-    bridge.printInfo();
+    // bridge.setJoint(LEFT, FRONT, ABAD, 0, 0, 5.0, 0, 0);
+    // bridge.setJoint(LEFT, REAR, ABAD, 0, 0, 5.0, 0, 0);
+    // bridge.setJoint(RIGHT, FRONT, ABAD, 0, 0, 5.0, 0, 0);
+    // bridge.setJoint(RIGHT, REAR, ABAD, 0, 0, 5.0, 0, 0);
+    // bridge.update();
+    // bridge.printInfo();
 }
 
 int main()
@@ -29,8 +29,7 @@ int main()
     //setupScheduler();
     //create_lookup_table();
 
-    bridge.initialize();
-
+    // bridge.initialize();
     // bridge.start();
 
     Timer timer;
@@ -41,7 +40,7 @@ int main()
 	timer.stop();
 	std::cout << "--- stop period timer ----" << std::endl;
 
-    bridge.finalize();
+    // bridge.finalize();
 
     return 0;
 }

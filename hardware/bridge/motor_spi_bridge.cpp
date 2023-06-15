@@ -1,4 +1,4 @@
-#include "bridge/motor_spi_bridge.h"
+#include "hardware/bridge/motor_spi_bridge.h"
 #include "hardware/motor_spi.h"
 
 #define PIN_SPI_0 RPI_BPLUS_GPIO_J8_24
@@ -176,6 +176,8 @@ void MotorSpiBridge::update()
         }
     }
 }
+
+void MotorSpiBridge::publish() {}
 
 // enable motor
 void MotorSpiBridge::start()

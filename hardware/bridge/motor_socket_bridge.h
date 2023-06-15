@@ -1,8 +1,8 @@
 #pragma once
-#include "bridge/bridge_interface.h"
+#include "hardware/bridge/bridge_interface.h"
 #include "hardware/motor_socketcan.h"
 
-class MotorSocketBridge : public BridgeInterface
+class MotorSocketBridge : public MotorBridgeInterface
 {
     struct convert_motor
     {
@@ -22,6 +22,10 @@ public:
 
     // send cmd to motor and get state
     void update() override;
+
+    void publish() override;
+
+    void setJoint(int i, int j, int k, float p_des, float v_des, float kp, float kd, float t_ff) override;
 
 private:
     int m_spi_fd[4];

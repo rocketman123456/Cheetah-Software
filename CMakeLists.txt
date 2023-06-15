@@ -31,12 +31,16 @@ add_subdirectory(3rd_party)
 
 add_executable(simple_control 
     main.cpp 
-    hardware/motor_spi.cpp 
-    bridge/motor_spi_bridge.cpp
+    # hardware/motor_spi.cpp 
+    # hardware/bridge/motor_spi_bridge.cpp
+    robot/robot.cpp
     util/crc.cpp
     util/timer.cpp
 )
 
+# target_link_libraries(simple_control
+#     bcm2835 pthread
+# )
 target_link_libraries(simple_control
-    bcm2835 pigpio pthread
+    pthread
 )
