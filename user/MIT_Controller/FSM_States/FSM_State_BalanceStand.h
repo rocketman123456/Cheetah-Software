@@ -16,7 +16,7 @@ class FSM_State_BalanceStand : public FSM_State<T> {
   FSM_State_BalanceStand(ControlFSMData<T>* _controlFSMData);
 
   // Behavior to be carried out when entering a state
-  void onEnter() override;
+  void onEnter();// override;
 
   // Run the normal behavior for the state
   void run();
@@ -29,6 +29,7 @@ class FSM_State_BalanceStand : public FSM_State<T> {
 
   // Behavior to be carried out when exiting a state
   void onExit();
+
 
  private:
   // Keep track of the control iterations
@@ -44,7 +45,9 @@ class FSM_State_BalanceStand : public FSM_State<T> {
 
   Vec3<T> _ini_body_pos;
   Vec3<T> _ini_body_ori_rpy;
+    Mat3 <T> kpMat,kdMat;
   T _body_weight;
+
 };
 
 #endif  // FSM_STATE_BALANCESTAND_H

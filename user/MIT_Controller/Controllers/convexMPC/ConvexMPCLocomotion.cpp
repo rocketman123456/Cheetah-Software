@@ -8,10 +8,6 @@
 
 #include "Gait.h"
 
-//#define DRAW_DEBUG_SWINGS
-//#define DRAW_DEBUG_PATH
-
-
 ////////////////////
 // Controller
 ////////////////////
@@ -21,17 +17,26 @@ ConvexMPCLocomotion::ConvexMPCLocomotion(float _dt, int _iterations_between_mpc,
   horizonLength(10),
   dt(_dt),
   trotting(horizonLength, Vec4<int>(0,5,5,0), Vec4<int>(5,5,5,5),"Trotting"),
-  bounding(horizonLength, Vec4<int>(5,5,0,0),Vec4<int>(4,4,4,4),"Bounding"),
+//  trotting(horizonLength, Vec4<int>(0,horizonLength/2,horizonLength/2,0), Vec4<int>(horizonLength/2,horizonLength/2,horizonLength/2,horizonLength/2),"Trotting"),
+  slowtrotting(int(horizonLength*1.2), Vec4<int>(0,6,6,0), Vec4<int>(6,6,6,6),"SlowTrotting"),
+//  slowtrotting(int(horizonLength*1.4), Vec4<int>(0,7,7,0), Vec4<int>(7,7,7,7),"SlowTrotting"),
+  bounding(horizonLength, Vec4<int>(5,5,0,0),Vec4<int>(5,5,5,5),"Bounding"),
   //bounding(horizonLength, Vec4<int>(5,5,0,0),Vec4<int>(3,3,3,3),"Bounding"),
-  pronking(horizonLength, Vec4<int>(0,0,0,0),Vec4<int>(4,4,4,4),"Pronking"),
+  pronking(horizonLength*1.2, Vec4<int>(0,0,0,0),Vec4<int>(6,6,6,6),"Pronking"),
   jumping(horizonLength, Vec4<int>(0,0,0,0), Vec4<int>(2,2,2,2), "Jumping"),
   //galloping(horizonLength, Vec4<int>(0,2,7,9),Vec4<int>(6,6,6,6),"Galloping"),
   //galloping(horizonLength, Vec4<int>(0,2,7,9),Vec4<int>(3,3,3,3),"Galloping"),
-  galloping(horizonLength, Vec4<int>(0,2,7,9),Vec4<int>(4,4,4,4),"Galloping"),
+  galloping(horizonLength, Vec4<int>(0,3,6,9),Vec4<int>(4,4,4,4),"Galloping"),
   standing(horizonLength, Vec4<int>(0,0,0,0),Vec4<int>(10,10,10,10),"Standing"),
   //trotRunning(horizonLength, Vec4<int>(0,5,5,0),Vec4<int>(3,3,3,3),"Trot Running"),
   trotRunning(horizonLength, Vec4<int>(0,5,5,0),Vec4<int>(4,4,4,4),"Trot Running"),
-  walking(horizonLength, Vec4<int>(0,3,5,8), Vec4<int>(5,5,5,5), "Walking"),
+//  walking(horizonLength, Vec4<int>(0,3,5,8), Vec4<int>(5,5,5,5), "Walking"),
+//  walking(horizonLength, Vec4<int>(0,5,3,8), Vec4<int>(5,5,5,5), "Walking"),
+//  walking(int(horizonLength*1.2), Vec4<int>(0,6,4,10), Vec4<int>(6,6,6,6), "Walking"),
+  walking(int(horizonLength*2), Vec4<int>(15,0,5,10), Vec4<int>(16,16,16,16), "Walking"),
+//walking(int(horizonLength*1.6), Vec4<int>(0,8,4,12), Vec4<int>(12,12,12,12), "Walking"),
+//  walking(int(horizonLength*1.2), Vec4<int>(0,6,3,10), Vec4<int>(6,6,6,6), "Walking"),
+//  walking(int(horizonLength*1.6), Vec4<int>(0,4,8,12), Vec4<int>(12,12,12,12), "Walking"),
   walking2(horizonLength, Vec4<int>(0,5,5,0), Vec4<int>(7,7,7,7), "Walking2"),
   pacing(horizonLength, Vec4<int>(5,0,5,0),Vec4<int>(5,5,5,5),"Pacing"),
   random(horizonLength, Vec4<int>(9,13,13,9), 0.4, "Flying nine thirteenths trot"),
@@ -61,8 +66,12 @@ ConvexMPCLocomotion::ConvexMPCLocomotion(float _dt, int _iterations_between_mpc,
 }
 
 void ConvexMPCLocomotion::initialize(){
-  for(int i = 0; i < 4; i++) firstSwing[i] = true;
+  for(int i = 0; i < 4; i++) {firstSwing[i] = true;}
   firstRun = true;
+  flag[0]=flag[3]=1;flag[1]=flag[2]=-1;
+  flag_count=0;
+  printf("...............enter \n");
+  iterationCounter=0;
 }
 
 void ConvexMPCLocomotion::recompute_timing(int iterations_per_mpc) {
@@ -72,7 +81,7 @@ void ConvexMPCLocomotion::recompute_timing(int iterations_per_mpc) {
 
 void ConvexMPCLocomotion::_SetupCommand(ControlFSMData<float> & data){
   if(data._quadruped->_robotType == RobotType::MINI_CHEETAH){
-    _body_height = 0.29;
+    _body_height = 0.27;  
   }else if(data._quadruped->_robotType == RobotType::CHEETAH_3){
     _body_height = 0.45;
   }else{
@@ -80,19 +89,28 @@ void ConvexMPCLocomotion::_SetupCommand(ControlFSMData<float> & data){
   }
 
   float x_vel_cmd, y_vel_cmd;
-  float filter(0.1);
+  float filter(0.03);
   if(data.controlParameters->use_rc){
     const rc_control_settings* rc_cmd = data._desiredStateCommand->rcCommand;
     data.userParameters->cmpc_gait = rc_cmd->variable[0];
+
     _yaw_turn_rate = -rc_cmd->omega_des[2];
-    x_vel_cmd = rc_cmd->v_des[0];
-    y_vel_cmd = rc_cmd->v_des[1] * 0.5;
-    _body_height += rc_cmd->height_variation * 0.08;
+
+    x_vel_cmd = rc_cmd->v_des[0]*0.7;
+
+    if (gaitNumber==5)  x_vel_cmd = rc_cmd->v_des[0]*1.0;
+
+    y_vel_cmd = rc_cmd->v_des[1] * 0.3;
+    
+    step_height=rc_cmd->step_height*0.1;
+
+
   }else{
-    _yaw_turn_rate = data._desiredStateCommand->rightAnalogStick[0];
-    x_vel_cmd = data._desiredStateCommand->leftAnalogStick[1];
+    _yaw_turn_rate = data._desiredStateCommand->rightAnalogStick[0]*1.5;
+    x_vel_cmd = data._desiredStateCommand->leftAnalogStick[1]*1.5;
     y_vel_cmd = data._desiredStateCommand->leftAnalogStick[0];
   }
+
   _x_vel_des = _x_vel_des*(1-filter) + x_vel_cmd*filter;
   _y_vel_des = _y_vel_des*(1-filter) + y_vel_cmd*filter;
 
@@ -104,17 +122,15 @@ void ConvexMPCLocomotion::_SetupCommand(ControlFSMData<float> & data){
 
 template<>
 void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
+
   bool omniMode = false;
 
   // Command Setup
   _SetupCommand(data);
   gaitNumber = data.userParameters->cmpc_gait;
-  if(gaitNumber >= 10) {
-    gaitNumber -= 10;
-    omniMode = true;
-  }
 
   auto& seResult = data._stateEstimator->getResult();
+  data._stateEstimator->setRemoterVelocityResult(Vec3<float>(_x_vel_des,_y_vel_des,_yaw_turn_rate));
 
   // Check if transition to standing
   if(((gaitNumber == 4) && current_gait != 4) || firstRun)
@@ -136,17 +152,21 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   else if(gaitNumber == 2)
     gait = &pronking;
   else if(gaitNumber == 3)
-    gait = &random;
+    gait = &slowtrotting;
   else if(gaitNumber == 4)
     gait = &standing;
   else if(gaitNumber == 5)
-    gait = &trotRunning;
+    gait = &trotRunning; //
   else if(gaitNumber == 6)
-    gait = &random2;
+    gait = &walking;
   else if(gaitNumber == 7)
     gait = &random2;
   else if(gaitNumber == 8)
     gait = &pacing;
+  else if(gaitNumber == 101)
+      gait = &trotting; //
+  else if(gaitNumber == 102)
+      gait = &trotting; //
   current_gait = gaitNumber;
 
   gait->setIterations(iterationsBetweenMPC, iterationCounter);
@@ -155,14 +175,10 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
 
   jumping.setIterations(27/2, iterationCounter);
 
-  //printf("[%d] [%d]\n", jumping.get_current_gait_phase(), gait->get_current_gait_phase());
-  // check jump trigger
   jump_state.trigger_pressed(jump_state.should_jump(jumping.getCurrentGaitPhase()),
       data._desiredStateCommand->trigger_pressed);
 
 
-  // bool too_high = seResult.position[2] > 0.29;
-  // check jump action
   if(jump_state.should_jump(jumping.getCurrentGaitPhase())) {
     gait = &jumping;
     recompute_timing(27/2);
@@ -175,11 +191,15 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   }
 
   if(_body_height < 0.02) {
-    _body_height = 0.29;
+    _body_height = 0.27;
   }
+  if(gaitNumber == 5)
+      _body_height = 0.27;
 
   // integrate position setpoint
   Vec3<float> v_des_robot(_x_vel_des, _y_vel_des, 0);
+
+
   Vec3<float> v_des_world = 
     omniMode ? v_des_robot : seResult.rBody.transpose() * v_des_robot;
   Vec3<float> v_robot = seResult.vWorld;
@@ -187,11 +207,11 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   //pretty_print(v_des_world, std::cout, "v des world");
 
   //Integral-esque pitche and roll compensation
-  if(fabs(v_robot[0]) > .2)   //avoid dividing by zero
+  if(fabs(v_robot[0]) > .02)   //avoid dividing by zero
   {
-    rpy_int[1] += dt*(_pitch_des - seResult.rpy[1])/v_robot[0];
+    rpy_int[1] += 5*dt*(_pitch_des - seResult.rpy[1])/v_robot[0];
   }
-  if(fabs(v_robot[1]) > 0.1)
+  if(fabs(v_robot[1]) > 0.01)
   {
     rpy_int[0] += dt*(_roll_des - seResult.rpy[0])/v_robot[1];
   }
@@ -199,7 +219,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   rpy_int[0] = fminf(fmaxf(rpy_int[0], -.25), .25);
   rpy_int[1] = fminf(fmaxf(rpy_int[1], -.25), .25);
   rpy_comp[1] = v_robot[0] * rpy_int[1];
-  rpy_comp[0] = v_robot[1] * rpy_int[0] * (gaitNumber!=8);  //turn off for pronking
+  rpy_comp[0] = v_robot[1] * rpy_int[0] * (gaitNumber!=2);  //turn off for pronking
 
 
   for(int i = 0; i < 4; i++) {
@@ -235,23 +255,57 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     swingTimes[l] = gait->getCurrentSwingTime(dtMPC, l);
 
   float side_sign[4] = {-1, 1, -1, 1};
-  float interleave_y[4] = {-0.08, 0.08, 0.02, -0.02};
-  //float interleave_gain = -0.13;
-  float interleave_gain = -0.2;
+
+  float interleave_y[4] = {0.0, 0.0, 0.02, -0.02};
+  float interleave_gain = 0;//-0.2;
   //float v_abs = std::fabs(seResult.vBody[0]);
   float v_abs = std::fabs(v_des_robot[0]);
   for(int i = 0; i < 4; i++)
   {
-
     if(firstSwing[i]) {
       swingTimeRemaining[i] = swingTimes[i];
     } else {
       swingTimeRemaining[i] -= dt;
     }
-    //if(firstSwing[i]) {
-    //footSwingTrajectories[i].setHeight(.05);
-    footSwingTrajectories[i].setHeight(.06);
-    Vec3<float> offset(0, side_sign[i] * .065, 0);
+
+       footSwingTrajectories[i].setHeight(step_height);
+
+     Vec3<float> offset(0, side_sign[i] * 0.085, 0);
+
+
+
+
+     if(i<2)
+         offset[0]=0;
+     else
+         offset[0]=-0.01;
+    
+    if (flag_count<8 && gaitNumber==2){ 
+      offset[0]=-0.02;
+      offset[0]+=0.06*flag[i];
+      footSwingTrajectories[i].setHeight(0.03*flag[i]+0.04);
+    }
+
+
+      if(gaitNumber == 101)
+      {
+          if(i<2)
+              offset(0)=0.2;
+           else
+              offset(0)=-0.15;
+           if(i%2==0)
+               offset(1)=-0.15;
+           else
+               offset(1)=0.15;
+
+      }else if(gaitNumber == 102)
+      {
+          if(i<2)
+              offset(0)=-0.06;
+          else
+              offset(0)=0.06;
+      }
+
 
     Vec3<float> pRobotFrame = (data._quadruped->getHipLocation(i) + offset);
 
@@ -269,26 +323,26 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
     Vec3<float> Pf = seResult.position + seResult.rBody.transpose() * (pYawCorrected
           + des_vel * swingTimeRemaining[i]);
 
-    //+ seResult.vWorld * swingTimeRemaining[i];
 
-    //float p_rel_max = 0.35f;
-    float p_rel_max = 0.3f;
 
-    // Using the estimated velocity is correct
-    //Vec3<float> des_vel_world = seResult.rBody.transpose() * des_vel;
+    float p_rel_max = 0.35f;
+
     float pfx_rel = seResult.vWorld[0] * (.5 + _parameters->cmpc_bonus_swing) * stance_time +
-      .03f*(seResult.vWorld[0]-v_des_world[0]) +
+      0.03f*(seResult.vWorld[0]-v_des_world[0]) +
       (0.5f*seResult.position[2]/9.81f) * (seResult.vWorld[1]*_yaw_turn_rate);
 
-    float pfy_rel = seResult.vWorld[1] * .5 * stance_time * dtMPC +
-      .03f*(seResult.vWorld[1]-v_des_world[1]) +
+    if(fabs(pfx_rel)>p_rel_max)
+    printf("!!!!!!!!!!!!!!!!out of the max step\n");
+
+    float pfy_rel = seResult.vWorld[1] * .5 * stance_time +
+      0.03f*(seResult.vWorld[1]-v_des_world[1]) +
       (0.5f*seResult.position[2]/9.81f) * (-seResult.vWorld[0]*_yaw_turn_rate);
     pfx_rel = fminf(fmaxf(pfx_rel, -p_rel_max), p_rel_max);
     pfy_rel = fminf(fmaxf(pfy_rel, -p_rel_max), p_rel_max);
     Pf[0] +=  pfx_rel;
     Pf[1] +=  pfy_rel;
-    Pf[2] = -0.003;
-    //Pf[2] = 0.0;
+    Pf[2] = -0.008;
+    
     footSwingTrajectories[i].setFinalPosition(Pf);
 
   }
@@ -299,16 +353,18 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   // load LCM leg swing gains
   Kp << 700, 0, 0,
      0, 700, 0,
-     0, 0, 150;
+     0, 0, 250;
   Kp_stance = 0*Kp;
 
 
-  Kd << 7, 0, 0,
-     0, 7, 0,
-     0, 0, 7;
+
+    Kd << 14, 0, 0,
+            0, 14, 0,
+            0, 0, 14;
   Kd_stance = Kd;
   // gait
   Vec4<float> contactStates = gait->getContactState();
+//  std::cout<<"contactStates:"<<contactStates<<std::endl;
   Vec4<float> swingStates = gait->getSwingState();
   int* mpcTable = gait->getMpcTable();
   updateMPCIfNeeded(mpcTable, data, omniMode);
@@ -343,6 +399,10 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
       {
         firstSwing[foot] = false;
         footSwingTrajectories[foot].setInitialPosition(pFoot[foot]);
+        if ( gaitNumber==2){
+          if(foot==0){if(flag_count<8)flag_count++;flag[3]=flag[0];flag[1]=-flag[0];flag[2]=-flag[0];}
+          flag[foot]*=-1;
+        }
       }
 
 #ifdef DRAW_DEBUG_SWINGS
@@ -455,9 +515,11 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
 
   aBody_des.setZero();
 
-  pBody_RPY_des[0] = 0.;
-  pBody_RPY_des[1] = 0.; 
-  pBody_RPY_des[2] = _yaw_des;
+//  pBody_RPY_des[0] = 0.;
+//  pBody_RPY_des[1] = 0.;
+    pBody_RPY_des[0] = 0;//data._desiredStateCommand->data.stateDes(3); // pBody_RPY_des[0]*0.9+0.1*seResult.rpy[0]/2.0;//
+    pBody_RPY_des[1] = data._desiredStateCommand->data.stateDes(4); //pBody_RPY_des[1]*0.9+0.1*seResult.rpy[1]/2.0;//
+    pBody_RPY_des[2] = _yaw_des;
 
   vBody_Ori_des[0] = 0.;
   vBody_Ori_des[1] = 0.;
@@ -466,7 +528,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   //contact_state = gait->getContactState();
   contact_state = gait->getContactState();
   // END of WBC Update
-
+ 
 
 }
 
@@ -562,7 +624,7 @@ void ConvexMPCLocomotion::updateMPCIfNeeded(int *mpcTable, ControlFSMData<float>
     } else {
       solveDenseMPC(mpcTable, data);
     }
-    //printf("TOTAL SOLVE TIME: %.3f\n", solveTimer.getMs());
+//    printf("TOTAL SOLVE TIME: %.3f\n", solveTimer.getMs());
   }
 
 }
@@ -570,11 +632,8 @@ void ConvexMPCLocomotion::updateMPCIfNeeded(int *mpcTable, ControlFSMData<float>
 void ConvexMPCLocomotion::solveDenseMPC(int *mpcTable, ControlFSMData<float> &data) {
   auto seResult = data._stateEstimator->getResult();
 
-  //float Q[12] = {0.25, 0.25, 10, 2, 2, 20, 0, 0, 0.3, 0.2, 0.2, 0.2};
+  float Q[12] = {1.25, 1.25, 10, 2, 2, 50, 0, 0, 0.3, 1.5, 1.5, 0.2};
 
-  float Q[12] = {0.25, 0.25, 10, 2, 2, 50, 0, 0, 0.3, 0.2, 0.2, 0.1};
-
-  //float Q[12] = {0.25, 0.25, 10, 2, 2, 40, 0, 0, 0.3, 0.2, 0.2, 0.2};
   float yaw = seResult.rpy[2];
   float* weights = Q;
   float alpha = 4e-5; // make setting eventually
@@ -603,11 +662,10 @@ void ConvexMPCLocomotion::solveDenseMPC(int *mpcTable, ControlFSMData<float> &da
 
   Timer t1;
   dtMPC = dt * iterationsBetweenMPC;
-  setup_problem(dtMPC,horizonLength,0.4,120);
+  setup_problem(dtMPC,horizonLength,0.4,150);
   //setup_problem(dtMPC,horizonLength,0.4,650); //DH
   update_x_drag(x_comp_integral);
   if(vxy[0] > 0.3 || vxy[0] < -0.3) {
-    //x_comp_integral += _parameters->cmpc_x_drag * pxy_err[0] * dtMPC / vxy[0];
     x_comp_integral += _parameters->cmpc_x_drag * pz_err * dtMPC / vxy[0];
   }
 
@@ -631,7 +689,7 @@ void ConvexMPCLocomotion::solveDenseMPC(int *mpcTable, ControlFSMData<float> &da
 
     //printf("[%d] %7.3f %7.3f %7.3f\n", leg, f[0], f[1], f[2]);
 
-    f_ff[leg] = -seResult.rBody * f;
+    f_ff[leg] = -seResult.rBody * f ;
     // Update for WBC
     Fr_des[leg] = f;
   }

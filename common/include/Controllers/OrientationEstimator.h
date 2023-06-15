@@ -13,7 +13,10 @@
 #define PROJECT_ORIENTATIONESTIMATOR_H
 
 #include "Controllers/StateEstimatorContainer.h"
-
+#include "T265position_t.hpp"
+#include "lcm-cpp.hpp"
+#include <thread>
+//#include <librealsense2/rs.hpp>
 /*!
  * "Cheater" estimator for orientation which always returns the correct value in simulation
  */
@@ -33,10 +36,20 @@ class VectorNavOrientationEstimator : public GenericEstimator<T> {
  public:
   virtual void run();
   virtual void setup() {}
-  
+    VectorNavOrientationEstimator();
+    std::thread _t265OritationLcmThread;
+    void handleLCM();
+    volatile bool _interfaceLcmQuit = false;
+    lcm::LCM myOritationLCM;
+    void handleT265LCM ( const lcm::ReceiveBuffer* rbuf, const std::string& chan,
+                         const T265position_t* msg );
+    T t265_roll,t265_pitch,t265_yaw,t265_omega_x,t265_omega_y,t265_omega_z;
  protected:
   bool _b_first_visit = true;
   Quat<T> _ori_ini_inv;
+//    rs2::pipeline pipe;
+//    rs2::config cfg;
+//    long pipe_cout;
 };
 
 

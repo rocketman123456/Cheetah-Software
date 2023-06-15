@@ -12,7 +12,7 @@ if [ $# -eq 0 ]; then
     echo " xps-wifi   wlp2s0"
     echo " mc         enp1s0"
     echo " mc-usb     enxa0cec80424d3"
-    echo " mc-top     enxa0cec80e3ced"
+    echo " mc-top     enp1s0"
 fi
 
 if [ "$1" == "-I" ]; then
@@ -47,8 +47,8 @@ if [ "$1" == "mc-usb" ]; then
 fi
 
 if [ "$1" == "mc-top" ]; then
-    sudo ifconfig enxa0cec80e3ced multicast
-    sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev enxa0cec80e3ced
+    sudo ifconfig enp1s0 multicast
+    sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev enp1s0
 fi
 
 if [ "$1" == "dhkim" ]; then

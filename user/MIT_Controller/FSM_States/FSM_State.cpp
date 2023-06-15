@@ -44,6 +44,36 @@ void FSM_State<T>::jointPDControl(
   _data->_legController->commands[leg].qdDes = qdDes;
 }
 
+template <typename T>
+void FSM_State<T>::jointPDControl(
+    int leg, Vec3<T> qDes, Vec3<T> qdDes, int kp) {
+
+  int _kp=kp;
+  int _hip_kp=kp;
+  int _hip_kd=1;
+  if (kp>30000){
+    _kp=kp-30000;
+    if (leg<2) {
+      _hip_kp=_kp;
+      _hip_kd=1;
+    }else{
+      _hip_kp=0;
+      _hip_kd=0;
+    }
+  }
+  kpMat << _kp, 0, 0, 0,   _hip_kp  , 0, 0, 0, _hip_kp;
+  kdMat << 1, 0, 0, 0,    _hip_kd   , 0, 0, 0, _hip_kd;
+
+  
+ 
+  
+  _data->_legController->commands[leg].kpJoint = kpMat;
+  _data->_legController->commands[leg].kdJoint = kdMat;
+
+  _data->_legController->commands[leg].qDes = qDes;
+  _data->_legController->commands[leg].qdDes = qdDes;
+}
+
 /**
  * Cartesian impedance control for a given leg.
  *

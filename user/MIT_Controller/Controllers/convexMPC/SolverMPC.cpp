@@ -318,7 +318,7 @@ void solve_mpc(update_data_t* update, problem_setup* setup)
   //initial state (13 state representation)
   x_0 << rpy(2), rpy(1), rpy(0), rs.p , rs.w, rs.v, -9.8f;
   I_world = rs.R_yaw * rs.I_body * rs.R_yaw.transpose(); //original
-  //I_world = rs.R_yaw.transpose() * rs.I_body * rs.R_yaw;
+//  I_world = rs.R_yaw.transpose() * rs.I_body * rs.R_yaw;
   //cout<<rs.R_yaw<<endl;
   ct_ss_mats(I_world,rs.m,rs.r_feet,rs.R_yaw,A_ct,B_ct_r, update->x_drag);
 

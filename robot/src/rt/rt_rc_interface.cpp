@@ -31,6 +31,117 @@ EdgeTrigger<TaranisSwitchState> backflip_prep_edge_trigger(SWITCH_UP);
 EdgeTrigger<TaranisSwitchState> experiment_prep_edge_trigger(SWITCH_UP);
 TaranisSwitchState initial_mode_go_switch = SWITCH_DOWN;
 
+
+
+void sbus_packet_complete_at9s(){
+    AT9s_data data;
+    update_taranis_at9s(&data);
+    float v_scale = 1.5;
+    float w_scale=2*v_scale;
+
+    auto estop_switch = data.SWE;
+    auto QP_Locomotion_switch =data.SWA;
+    //auto Locomotion_switch=data.SWB;
+
+    auto left_select=data.SWC;
+    auto right_select=data.SWD;
+
+    auto normal_jump_flip_switch=data.SWG;
+    auto roll_show=0.0;//data.varB*1.1;
+    auto step_height=data.varB+1.0;
+    int selected_mode = 0;
+//printf("at9s in\n");
+    switch(estop_switch) {
+        case AT9S_TRI_UP:
+            selected_mode = RC_mode::OFF;
+            break;
+
+        case AT9S_TRI_MIDDLE:
+            selected_mode = RC_mode::RECOVERY_STAND;
+            break;
+
+        case AT9S_TRI_DOWN:
+            //selected_mode = RC_mode::LOCOMOTION;
+            if(normal_jump_flip_switch==AT9S_TRI_MIDDLE)
+            {
+                if(QP_Locomotion_switch==AT9S_BOOL_UP)
+                {
+                    selected_mode = RC_mode::LOCOMOTION;
+                    // Deadband
+                    data.left_stick_x = deadband(data.left_stick_x, 0.1, -1., 1.);
+                    data.left_stick_y = deadband(data.left_stick_y, 0.1, -1., 1.);
+                    data.right_stick_x = deadband(data.right_stick_x, 0.1, -1., 1.);
+                    data.right_stick_y = deadband(data.right_stick_y, 0.1, -1., 1.);
+
+                    int gait_id=9;
+                    if(right_select==AT9S_BOOL_UP)
+                    {
+                        if (left_select==AT9S_TRI_UP)
+                            gait_id=9; // trot
+                        else if(left_select==AT9S_TRI_MIDDLE)
+                            gait_id=3;// slow trot
+                        else if(left_select==AT9S_TRI_DOWN) //walk
+                            gait_id=6;
+                    }else if(right_select==AT9S_BOOL_DOWN)
+                    {
+                        if (left_select==AT9S_TRI_UP)
+                            gait_id=5; // flying trot
+                        else if(left_select==AT9S_TRI_MIDDLE)
+                            gait_id=1;// bound
+                        else if(left_select==AT9S_TRI_DOWN)
+                            gait_id=2; // pronk
+                    }
+
+
+                    rc_control.variable[0] =gait_id;
+                    rc_control.v_des[0] = data.right_stick_x>0? v_scale * data.right_stick_x: v_scale/2.0 * data.right_stick_x;
+                    rc_control.v_des[1] = -1.0 * data.right_stick_y;// -v_scale * data.right_stick_y;
+                    rc_control.v_des[2] = 0;
+
+                    rc_control.omega_des[0] = 0;
+                    rc_control.omega_des[1] = data.left_stick_x;//0;//pitch
+                    rc_control.omega_des[2] = w_scale * data.left_stick_y;
+
+                    rc_control.rpy_des[0] =roll_show;
+                    rc_control.step_height=step_height;
+
+                    rc_control.height_variation = data.knobs[1]; 
+                    rc_control.variable[1] = data.knobs[4];
+                    rc_control.variable[2] = data.knobs[5]; 
+
+                }
+                else if(QP_Locomotion_switch==AT9S_BOOL_DOWN)
+                {
+                    selected_mode = RC_mode::QP_STAND;
+                    rc_control.rpy_des[0] = data.left_stick_y;
+                    rc_control.rpy_des[1] = data.left_stick_x;
+                    rc_control.rpy_des[2] = data.right_stick_y;
+
+                    rc_control.height_variation = data.right_stick_x;
+
+                    rc_control.omega_des[0] = 0;
+                    rc_control.omega_des[1] = 0;
+                    rc_control.omega_des[2] = 0;
+                }
+            }
+            else if(normal_jump_flip_switch==AT9S_TRI_UP)
+            {
+                selected_mode = RC_mode::BACKFLIP;
+            }
+            else if(normal_jump_flip_switch==AT9S_TRI_DOWN)
+            {
+                selected_mode = RC_mode::FRONT_JUMP;
+            }
+
+            break;
+
+    }
+    rc_control.mode = selected_mode;
+}
+
+
+
+
 void sbus_packet_complete() {
   Taranis_X7_data data;
   update_taranis_x7(&data);
@@ -125,27 +236,20 @@ void sbus_packet_complete() {
     data.right_stick[i] = deadband(data.right_stick[i], 0.1, -1., 1.);
   }
 
-  if(selected_mode == RC_mode::LOCOMOTION 
-      || selected_mode == RC_mode::VISION) {
+  if(selected_mode == RC_mode::LOCOMOTION || selected_mode == RC_mode::VISION) {
     rc_control.variable[0] = gait_table[mode_id];
-    //rc_control.v_des[0] = v_scale * data.left_stick[1] * 0.5;
-    //rc_control.v_des[1] = v_scale * data.left_stick[0] * -1.;
     rc_control.v_des[0] = v_scale * data.left_stick[1];
     rc_control.v_des[1] = -v_scale * data.left_stick[0];
     rc_control.v_des[2] = 0;
 
     rc_control.height_variation = data.knobs[1];
-    //rc_control.p_des[2] = 0.27 + 0.08 * data.knobs[1]; // todo?
 
     rc_control.omega_des[0] = 0;
     rc_control.omega_des[1] = 0;
     rc_control.omega_des[2] = w_scale * data.right_stick[0];
-    //rc_control.omega_des[2] = -v_scale * data.right_stick[0];
 
-  } else if(selected_mode == RC_mode::QP_STAND || 
-      selected_mode == RC_mode::TWO_LEG_STANCE) {
-    //rc_control.rpy_des[0] = data.left_stick[0] * 1.4;
-    //rc_control.rpy_des[1] = data.right_stick[1] * 0.46;
+  } else if(selected_mode == RC_mode::QP_STAND || selected_mode == RC_mode::TWO_LEG_STANCE) {
+
     rc_control.rpy_des[0] = data.left_stick[0];
     rc_control.rpy_des[1] = data.right_stick[1];
     rc_control.rpy_des[2] = data.right_stick[0];
@@ -155,12 +259,11 @@ void sbus_packet_complete() {
     rc_control.omega_des[0] = 0;
     rc_control.omega_des[1] = 0;
     rc_control.omega_des[2] = 0;
-    //rc_control.p_des[1] = -0.667 * rc_control.rpy_des[0];
-    //rc_control.p_des[2] = data.left_stick[1] * .12;
+
   } 
   break;
 }
-
+//模式切换时候将模式给定到rc_control.mode上
 bool trigger = mode_edge_trigger.trigger(selected_mode);
 if(trigger || selected_mode == RC_mode::OFF || selected_mode == RC_mode::RECOVERY_STAND) {
   if(trigger) {

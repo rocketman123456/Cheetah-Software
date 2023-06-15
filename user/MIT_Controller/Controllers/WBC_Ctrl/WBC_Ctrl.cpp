@@ -78,7 +78,8 @@ void WBC_Ctrl<T>::run(void* input, ControlFSMData<T> & data){
 
   // WBC Computation
   _ComputeWBC();
-  
+
+
   // TEST
   //T dt(0.002);
   //for(size_t i(0); i<12; ++i){
@@ -113,7 +114,11 @@ void WBC_Ctrl<T>::_UpdateLegCMD(ControlFSMData<T> & data){
 
         cmd[leg].kpJoint(jidx, jidx) = _Kp_joint[jidx];
         cmd[leg].kdJoint(jidx, jidx) = _Kd_joint[jidx];
-       
+
+        if(data.userParameters->cmpc_gait==1 ||data.userParameters->cmpc_gait==2 ) // bound and pronk gaits
+        {
+            cmd[leg].tauFeedForward[jidx]*=0.8;
+        }
        //if(contact[leg] > 0.){ // Contact
         //cmd[leg].kpJoint(jidx, jidx) = _Kp_joint[jidx];
         //cmd[leg].kdJoint(jidx, jidx) = _Kd_joint[jidx];

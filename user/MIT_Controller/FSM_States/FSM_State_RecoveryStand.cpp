@@ -28,20 +28,20 @@ FSM_State_RecoveryStand<T>::FSM_State_RecoveryStand(ControlFSMData<T>* _controlF
   zero_vec3.setZero();
   // goal configuration
   // Folding
-  fold_jpos[0] << -0.0f, -1.4f, 2.7f;
-  fold_jpos[1] << 0.0f, -1.4f, 2.7f;
-  fold_jpos[2] << -0.0f, -1.4f, 2.7f;
-  fold_jpos[3] << 0.0f, -1.4f, 2.7f;
+  fold_jpos[0] << -0.0f, -1.28f, 2.46f;//-1.28,2.56
+  fold_jpos[1] << 0.0f, -1.28f, 2.46f;
+  fold_jpos[2] << -0.0f, -1.28f, 2.46f;
+  fold_jpos[3] << 0.0f, -1.28f, 2.46f;
   // Stand Up
   for(size_t i(0); i<4; ++i){
     //stand_jpos[i] << 0.f, -.9425f, 1.885f;
-    stand_jpos[i] << 0.f, -.8f, 1.6f;
+    stand_jpos[i] << 0.f, -.9f, 1.7f;
   }
   // Rolling
-  rolling_jpos[0] << 1.5f, -1.6f, 2.77f;
-  rolling_jpos[1] << 1.3f, -3.1f, 2.77f;
-  rolling_jpos[2] << 1.5f, -1.6f, 2.77f;
-  rolling_jpos[3] << 1.3f, -3.1f, 2.77f;
+  rolling_jpos[0] << 1.5f, -1.6f, 2.16f;
+  rolling_jpos[1] << 1.3f, -3.1f, 2.16f;
+  rolling_jpos[2] << 1.5f, -1.6f, 2.16f;
+  rolling_jpos[3] << 1.3f, -3.1f, 2.16f;
 
   f_ff << 0.f, 0.f, -25.f;
 }
@@ -68,7 +68,7 @@ void FSM_State_RecoveryStand<T>::onEnter() {
 
   _flag = FoldLegs;
   if( !_UpsideDown() ) { // Proper orientation
-    if (  (0.2 < body_height) && (body_height < 0.45) ){
+    if (  (0.23 < body_height) && (body_height < 0.40) ){
       printf("[Recovery Balance] body height is %f; Stand Up \n", body_height);
       _flag = StandUp;
     }else{
@@ -82,8 +82,6 @@ void FSM_State_RecoveryStand<T>::onEnter() {
 
 template <typename T>
 bool FSM_State_RecoveryStand<T>::_UpsideDown(){
-  //pretty_print(this->_data->_stateEstimator->getResult().rBody, std::cout, "Rot");
-  //if(this->_data->_stateEstimator->getResult().aBody[2] < 0){
   if(this->_data->_stateEstimator->getResult().rBody(2,2) < 0){
     return true;
   }

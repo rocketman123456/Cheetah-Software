@@ -33,6 +33,7 @@ class SimulationBridge {
     delete _robotRunner;
   }
   void run_sbus();
+  void at9s_sbus();
 
  private:
   PeriodicTaskManager taskManager;
@@ -47,6 +48,7 @@ class SimulationBridge {
   u64 _iterations = 0;
 
   std::thread* sbus_thread;
+    int at9s_port;
 };
 
 #endif  // PROJECT_SIMULATIONDRIVER_H

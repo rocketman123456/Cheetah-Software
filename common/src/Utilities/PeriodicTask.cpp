@@ -9,7 +9,6 @@
 
 #include <unistd.h>
 #include <cmath>
-
 #include "Utilities/PeriodicTask.h"
 #include "Utilities/Timer.h"
 #include "Utilities/Utilities_print.h"

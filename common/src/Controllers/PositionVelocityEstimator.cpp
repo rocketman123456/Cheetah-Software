@@ -47,15 +47,44 @@ void LinearKFPositionVelocityEstimator<T>::setup() {
   _P = T(100) * _P;
   _Q0.setIdentity();
   _Q0.block(0, 0, 3, 3) = (dt / 20.f) * Eigen::Matrix<T, 3, 3>::Identity();
-  _Q0.block(3, 3, 3, 3) =
-      (dt * 9.8f / 20.f) * Eigen::Matrix<T, 3, 3>::Identity();
+  _Q0.block(3, 3, 3, 3) = (dt * 9.8f / 20.f) * Eigen::Matrix<T, 3, 3>::Identity();
   _Q0.block(6, 6, 12, 12) = dt * Eigen::Matrix<T, 12, 12>::Identity();
   _R0.setIdentity();
+
+}
+
+//template <typename T>
+//LinearKFPositionVelocityEstimator<T>::LinearKFPositionVelocityEstimator() {}
+
+template <typename T>
+LinearKFPositionVelocityEstimator<T>::LinearKFPositionVelocityEstimator()//:myLCM ( getLcmUrl ( 255 ) )
+{
+    _t265LcmThread = std::thread ( &LinearKFPositionVelocityEstimator<T>::handleInterfaceLCM, this );
+    if ( !myLCM.good() ) {
+        printf ( "my lcm _interfaceLCM failed to initialize\n");
+    }
+
+    myLCM.subscribe ( "t265_position_msg", &LinearKFPositionVelocityEstimator<T>::handleT265LCM , this );
+}
+template <typename T>
+void LinearKFPositionVelocityEstimator<T>::handleInterfaceLCM()
+{
+    while ( !_interfaceLcmQuit ) {
+        myLCM.handle();
+    }
 }
 
 template <typename T>
-LinearKFPositionVelocityEstimator<T>::LinearKFPositionVelocityEstimator() {}
-
+void LinearKFPositionVelocityEstimator<T>::handleT265LCM ( const lcm::ReceiveBuffer* rbuf, const std::string& chan,
+                                                           const T265position_t* msg ){
+    ( void ) rbuf;
+    ( void ) chan;
+    t265_position_x = msg->posBody[0];
+    t265_position_y = msg->posBody[1];
+    t265_velocity_x = msg->velBody[0];
+    t265_velocity_y = msg->velBody[1];
+    printf("received t265: %.2f\t%.2f\n",t265_position_x,t265_position_y);
+}
 /*!
  * Run state estimator
  */
@@ -81,8 +110,7 @@ void LinearKFPositionVelocityEstimator<T>::run() {
 
   Eigen::Matrix<T, 28, 28> R = Eigen::Matrix<T, 28, 28>::Identity();
   R.block(0, 0, 12, 12) = _R0.block(0, 0, 12, 12) * sensor_noise_pimu_rel_foot;
-  R.block(12, 12, 12, 12) =
-      _R0.block(12, 12, 12, 12) * sensor_noise_vimu_rel_foot;
+  R.block(12, 12, 12, 12) = _R0.block(12, 12, 12, 12) * sensor_noise_vimu_rel_foot;
   R.block(24, 24, 4, 4) = _R0.block(24, 24, 4, 4) * sensor_noise_zfoot;
 
   int qindex = 0;
@@ -93,27 +121,26 @@ void LinearKFPositionVelocityEstimator<T>::run() {
   Vec3<T> g(0, 0, T(-9.81));
   Mat3<T> Rbod = this->_stateEstimatorData.result->rBody.transpose();
   // in old code, Rbod * se_acc + g
-  Vec3<T> a = this->_stateEstimatorData.result->aWorld + g; 
-  // std::cout << "A WORLD\n" << a << "\n";
+  Vec3<T> a = this->_stateEstimatorData.result->aWorld + g;
+//   std::cout << "A WORLD\n" << a << "\n";
   Vec4<T> pzs = Vec4<T>::Zero();
   Vec4<T> trusts = Vec4<T>::Zero();
   Vec3<T> p0, v0;
   p0 << _xhat[0], _xhat[1], _xhat[2];
   v0 << _xhat[3], _xhat[4], _xhat[5];
 
+
   for (int i = 0; i < 4; i++) {
     int i1 = 3 * i;
-    Quadruped<T>& quadruped =
-        *(this->_stateEstimatorData.legControllerData->quadruped);
-    Vec3<T> ph = quadruped.getHipLocation(i);  // hip positions relative to CoM
+    Quadruped<T>& quadruped = *(this->_stateEstimatorData.legControllerData->quadruped);
+    Vec3<T> ph = quadruped.getHipLocation(i);  // hip positions relative to CoM //hip位置
     // hw_i->leg_controller->leg_datas[i].p; 
     Vec3<T> p_rel = ph + this->_stateEstimatorData.legControllerData[i].p;
     // hw_i->leg_controller->leg_datas[i].v;
-    Vec3<T> dp_rel = this->_stateEstimatorData.legControllerData[i].v;  
+    Vec3<T> dp_rel = this->_stateEstimatorData.legControllerData[i].v;
     Vec3<T> p_f = Rbod * p_rel;
     Vec3<T> dp_f =
-        Rbod *
-        (this->_stateEstimatorData.result->omegaBody.cross(p_rel) + dp_rel);
+        Rbod *(this->_stateEstimatorData.result->omegaBody.cross(p_rel) + dp_rel);
 
     qindex = 6 + i1;
     rindex1 = i1;
@@ -130,7 +157,7 @@ void LinearKFPositionVelocityEstimator<T>::run() {
     } else if (phase > (T(1) - trust_window)) {
       trust = (T(1) - phase) / trust_window;
     }
-    //T high_suspect_number(1000);
+
     T high_suspect_number(100);
 
     // printf("Trust %d: %.3f\n", i, trust);
@@ -177,9 +204,8 @@ void LinearKFPositionVelocityEstimator<T>::run() {
 
   this->_stateEstimatorData.result->position = _xhat.block(0, 0, 3, 1);
   this->_stateEstimatorData.result->vWorld = _xhat.block(3, 0, 3, 1);
-  this->_stateEstimatorData.result->vBody =
-      this->_stateEstimatorData.result->rBody *
-      this->_stateEstimatorData.result->vWorld;
+  this->_stateEstimatorData.result->vBody = this->_stateEstimatorData.result->rBody * this->_stateEstimatorData.result->vWorld;
+
 }
 
 template class LinearKFPositionVelocityEstimator<float>;

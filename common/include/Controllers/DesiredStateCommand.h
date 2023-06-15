@@ -72,9 +72,16 @@ public:
   void printStateCommandInfo();
   float deadband(float command, T minVal, T maxVal);
 
+    //liu
+    GamepadCommand* returnBackGamepad()
+    {
+        return gamepadCommand;
+    }
+    //liu
+
   // These should come from the inferface
-  T maxRoll = 0.4;
-  T minRoll = -0.4;
+  T maxRoll = 0.4; //1.57;//
+  T minRoll = -0.4;//-1.57;//
   T maxPitch = 0.4;
   T minPitch = -0.4;
   T maxVelX = 3.0;
@@ -98,8 +105,8 @@ public:
   DesiredStateData<T> data;
 
   const rc_control_settings* rcCommand;
-  const GamepadCommand* gamepadCommand;
-
+  //const GamepadCommand* gamepadCommand;
+  GamepadCommand* gamepadCommand;
   bool trigger_pressed = false;
 
 private:

@@ -33,20 +33,22 @@ spi_torque_t spi_torque;
 
 pthread_mutex_t spi_mutex;
 
-const float max_torque[3] = {17.f, 17.f, 26.f};  // TODO CHECK WITH BEN
-const float wimp_torque[3] = {6.f, 6.f, 6.f};    // TODO CHECK WITH BEN
+const float max_torque[3] = {33.f, 33.f, 33.f};
+const float wimp_torque[3] = {6.f, 6.f, 6.f};
 const float disabled_torque[3] = {0.f, 0.f, 0.f};
 
 // only used for actual robot
 const float abad_side_sign[4] = {-1.f, -1.f, 1.f, 1.f};
 const float hip_side_sign[4] = {-1.f, 1.f, -1.f, 1.f};
-const float knee_side_sign[4] = {-.6429f, .6429f, -.6429f, .6429f};
+const float knee_side_sign[4] = {-1.f, 1.f, -1.f, 1.f};
 
-// only used for actual robot
 const float abad_offset[4] = {0.f, 0.f, 0.f, 0.f};
-const float hip_offset[4] = {M_PI / 2.f, -M_PI / 2.f, -M_PI / 2.f, M_PI / 2.f};
+
+
+const float hip_offset[4] = {M_PI / 2.f-0.08, -M_PI / 2.f+0.08, -M_PI / 2.f+0.08, M_PI / 2.f-0.08};
+
 const float knee_offset[4] = {K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS,
-                              -K_KNEE_OFFSET_POS, K_KNEE_OFFSET_POS};
+                              K_KNEE_OFFSET_POS, -K_KNEE_OFFSET_POS};
 
 /*!
  * Compute SPI message checksum
@@ -200,28 +202,14 @@ int spi_driver_iterations = 0;
  */
 void spi_to_spine(spi_command_t *cmd, spine_cmd_t *spine_cmd, int leg_0) {
   for (int i = 0; i < 2; i++) {
-    // spine_cmd->q_des_abad[i] = (cmd->q_des_abad[i+leg_0] +
-    // abad_offset[i+leg_0]) * abad_side_sign[i+leg_0]; spine_cmd->q_des_hip[i]
-    // = (cmd->q_des_hip[i+leg_0] + hip_offset[i+leg_0]) *
-    // hip_side_sign[i+leg_0]; spine_cmd->q_des_knee[i] =
-    // (cmd->q_des_knee[i+leg_0] + knee_offset[i+leg_0]) /
-    // knee_side_sign[i+leg_0];
-    spine_cmd->q_des_abad[i] =
-        (cmd->q_des_abad[i + leg_0] * abad_side_sign[i + leg_0]) +
-        abad_offset[i + leg_0];
-    spine_cmd->q_des_hip[i] =
-        (cmd->q_des_hip[i + leg_0] * hip_side_sign[i + leg_0]) +
-        hip_offset[i + leg_0];
-    spine_cmd->q_des_knee[i] =
-        (cmd->q_des_knee[i + leg_0] / knee_side_sign[i + leg_0]) +
-        knee_offset[i + leg_0];
 
-    spine_cmd->qd_des_abad[i] =
-        cmd->qd_des_abad[i + leg_0] * abad_side_sign[i + leg_0];
-    spine_cmd->qd_des_hip[i] =
-        cmd->qd_des_hip[i + leg_0] * hip_side_sign[i + leg_0];
-    spine_cmd->qd_des_knee[i] =
-        cmd->qd_des_knee[i + leg_0] / knee_side_sign[i + leg_0];
+    spine_cmd->q_des_abad[i] =(cmd->q_des_abad[i + leg_0] * abad_side_sign[i + leg_0]) + abad_offset[i + leg_0];
+    spine_cmd->q_des_hip[i] =(cmd->q_des_hip[i + leg_0] * hip_side_sign[i + leg_0]) +hip_offset[i + leg_0];
+    spine_cmd->q_des_knee[i] =(cmd->q_des_knee[i + leg_0] / knee_side_sign[i + leg_0]) +knee_offset[i + leg_0];
+
+    spine_cmd->qd_des_abad[i] = cmd->qd_des_abad[i + leg_0] * abad_side_sign[i + leg_0];
+    spine_cmd->qd_des_hip[i] = cmd->qd_des_hip[i + leg_0] * hip_side_sign[i + leg_0];
+    spine_cmd->qd_des_knee[i] = cmd->qd_des_knee[i + leg_0] / knee_side_sign[i + leg_0];
 
     spine_cmd->kp_abad[i] = cmd->kp_abad[i + leg_0];
     spine_cmd->kp_hip[i] = cmd->kp_hip[i + leg_0];
@@ -238,9 +226,10 @@ void spi_to_spine(spi_command_t *cmd, spine_cmd_t *spine_cmd, int leg_0) {
     spine_cmd->tau_knee_ff[i] =
         cmd->tau_knee_ff[i + leg_0] * knee_side_sign[i + leg_0];
 
-    spine_cmd->flags[i] = cmd->flags[i + leg_0];
+    spine_cmd->flags[0] = cmd->flags[0 + leg_0];
   }
   spine_cmd->checksum = xor_checksum((uint32_t *)spine_cmd, 32);
+
 }
 
 /*!
@@ -248,20 +237,20 @@ void spi_to_spine(spi_command_t *cmd, spine_cmd_t *spine_cmd, int leg_0) {
  */
 void spine_to_spi(spi_data_t *data, spine_data_t *spine_data, int leg_0) {
   for (int i = 0; i < 2; i++) {
-    data->q_abad[i + leg_0] = (spine_data->q_abad[i] - abad_offset[i + leg_0]) *
-                              abad_side_sign[i + leg_0];
-    data->q_hip[i + leg_0] = (spine_data->q_hip[i] - hip_offset[i + leg_0]) *
-                             hip_side_sign[i + leg_0];
-    data->q_knee[i + leg_0] = (spine_data->q_knee[i] - knee_offset[i + leg_0]) *
-                              knee_side_sign[i + leg_0];
+    data->q_abad[i + leg_0] = (spine_data->q_abad[i] - abad_offset[i + leg_0]) * abad_side_sign[i + leg_0];
+    data->q_hip[i + leg_0] = (spine_data->q_hip[i] - hip_offset[i + leg_0]) * hip_side_sign[i + leg_0];
+    data->q_knee[i + leg_0] = (spine_data->q_knee[i] - knee_offset[i + leg_0]) * knee_side_sign[i + leg_0];
 
-    data->qd_abad[i + leg_0] =
-        spine_data->qd_abad[i] * abad_side_sign[i + leg_0];
+    data->qd_abad[i + leg_0] = spine_data->qd_abad[i] * abad_side_sign[i + leg_0];
     data->qd_hip[i + leg_0] = spine_data->qd_hip[i] * hip_side_sign[i + leg_0];
-    data->qd_knee[i + leg_0] =
-        spine_data->qd_knee[i] * knee_side_sign[i + leg_0];
+    data->qd_knee[i + leg_0] = spine_data->qd_knee[i] * knee_side_sign[i + leg_0];
 
     data->flags[i + leg_0] = spine_data->flags[i];
+
+    data->tau_abad[i+leg_0]=spine_data->tau_abad[i]*abad_side_sign[i + leg_0];
+    data->tau_hip[i+leg_0]=spine_data->tau_hip[i]*hip_side_sign[i + leg_0];
+    data->tau_knee[i+leg_0]=spine_data->tau_knee[i]/knee_side_sign[i + leg_0];
+
   }
 
   uint32_t calc_checksum = xor_checksum((uint32_t *)spine_data, 14);
@@ -273,7 +262,7 @@ void spine_to_spi(spi_data_t *data, spine_data_t *spine_data, int leg_0) {
 /*!
  * send receive data and command from spine
  */
-void spi_send_receive(spi_command_t *command, spi_data_t *data) {
+void  spi_send_receive(spi_command_t *command, spi_data_t *data) {
   // update driver status flag
   spi_driver_iterations++;
   data->spi_driver_status = spi_driver_iterations << 16;
@@ -323,12 +312,11 @@ void spi_send_receive(spi_command_t *command, spi_data_t *data) {
     (void)rv;
 
     // flip bytes the other way
-    for (int i = 0; i < 30; i++)
-      data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
-    // data_d[i] = __bswap_16(rx_buf[i]);
+//    for (int i = 0; i < 30; i++)
+      for (int i = 0; i < 42; i++)
+         data_d[i] = (rx_buf[i] >> 8) + ((rx_buf[i] & 0xff) << 8);
 
-    // copy back to data
-    spine_to_spi(data, &g_spine_data, spi_board * 2);
+      spine_to_spi(data, &g_spine_data, spi_board * 2);
   }
 }
 

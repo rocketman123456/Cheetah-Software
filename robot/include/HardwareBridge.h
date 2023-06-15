@@ -26,6 +26,7 @@
 #include "microstrain_lcmt.hpp"
 #include "ecat_command_t.hpp"
 #include "ecat_data_t.hpp"
+#include "T265position_t.hpp"
 
 
 
@@ -48,6 +49,7 @@ class HardwareBridge {
   ~HardwareBridge() { delete _robotRunner; }
   void handleGamepadLCM(const lcm::ReceiveBuffer* rbuf, const std::string& chan,
                         const gamepad_lcmt* msg);
+  //void handleT265LCM(const lcm::ReceiveBuffer* rbuf, const std::string& chan, const T265position_t* msg);
 
   void handleInterfaceLCM();
   void handleControlParameter(const lcm::ReceiveBuffer* rbuf,
@@ -56,7 +58,7 @@ class HardwareBridge {
 
   void publishVisualizationLCM();
   void run_sbus();
-
+  void run_ai();
  protected:
   PeriodicTaskManager taskManager;
   PrintTaskStatus statusTask;
@@ -82,6 +84,7 @@ class HardwareBridge {
   ControlParameters* _userControlParameters = nullptr;
 
   int _port;
+  int _aiport;
 };
 
 /*!

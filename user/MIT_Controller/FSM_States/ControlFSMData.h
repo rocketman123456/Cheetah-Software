@@ -17,6 +17,7 @@ struct ControlFSMData {
   // EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Quadruped<T>* _quadruped;
   StateEstimatorContainer<T>* _stateEstimator;
+  StateEstimatorContainer<T>* _t265stateEstimator;
   LegController<T>* _legController;
   GaitScheduler<T>* _gaitScheduler;
   DesiredStateCommand<T>* _desiredStateCommand;

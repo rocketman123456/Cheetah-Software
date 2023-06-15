@@ -9,17 +9,17 @@
 // External dependencies:
 //
 //  mip.h
-// 
-//! @copyright 2011 Microstrain. 
+//
+//! @copyright 2011 Microstrain.
 //
 //!@section LICENSE
 //!
-//! THE PRESENT SOFTWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING 
-//! CUSTOMERS WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER 
-//! FOR THEM TO SAVE TIME. AS A RESULT, MICROSTRAIN SHALL NOT BE HELD LIABLE 
-//! FOR ANY DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY 
-//! CLAIMS ARISING FROM THE CONTENT OF SUCH SOFTWARE AND/OR THE USE MADE BY 
-//! CUSTOMERS OF THE CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH 
+//! THE PRESENT SOFTWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING
+//! CUSTOMERS WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER
+//! FOR THEM TO SAVE TIME. AS A RESULT, MICROSTRAIN SHALL NOT BE HELD LIABLE
+//! FOR ANY DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY
+//! CLAIMS ARISING FROM THE CONTENT OF SUCH SOFTWARE AND/OR THE USE MADE BY
+//! CUSTOMERS OF THE CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH
 //! THEIR PRODUCTS.
 //
 /////////////////////////////////////////////////////////////////////////////
@@ -107,10 +107,14 @@ u16 mip_sdk_port_open(void **port_handle, int port_num, int baudrate)
 
 //#ifdef USE_USB_CONNECTION
  
- //all USB connections appear on ttyACM# 
+ //all USB connections appear on ttyACM#
+#ifdef USE_LordIMU
  strcat(port_name, "/dev/ttyACM");
 //
-//#else
+#endif
+#ifdef USE_SelfIMU
+    strcat(port_name, "/dev/ttyUSB");
+#endif
 //
 // //USART connections occur on ttyS#
 // strcat(port_name, "/dev/ttyS");
@@ -130,9 +134,14 @@ u16 mip_sdk_port_open(void **port_handle, int port_num, int baudrate)
  //Check for an invalid handle
  if(local_port_handle == -1)
  {
-   printf("Unable to open com Port %s\n Errno = %i\n", port_name, errno);
 
-  return MIP_USER_FUNCTION_ERROR;
+   printf("Unable to open com Port %s\n Errno = %i\n", port_name, errno);
+   local_port_handle = open(port_name, O_RDWR | O_NOCTTY); //再尝试一次打开
+     if(local_port_handle == -1) //仍然失败
+     {
+         printf("Unable to open com Port twice %s\n Errno = %i\n", port_name, errno);
+         return MIP_USER_FUNCTION_ERROR;
+     }
  }
  printf("Port: %s opened successfully.\n",port_name);
  

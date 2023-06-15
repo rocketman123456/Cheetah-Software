@@ -44,9 +44,12 @@ struct LegControllerData {
 
   void zero();
 
-  Vec3<T> q, qd, p, v;
+  Vec3<T> q, qd, p, v,q_buffer,qd_buffer,qd_buffer_10[10],v_buffer,qd_numeric,qd_numeric_buffer;
   Mat3<T> J;
   Vec3<T> tauEstimate;
+  Vec3<T> tauActuatual;
+  Vec3<T> footforceActuatual;
+  Vec3<T> footforceDesired;
   Quadruped<T>* quadruped;
 };
 

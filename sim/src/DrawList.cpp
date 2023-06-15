@@ -145,10 +145,11 @@ size_t DrawList::addMiniCheetah(Vec4<float> color, bool useOld, bool canHide) {
   bodyOffset.setToIdentity();
 
   // abads (todo, check these)
+
   abadOffsets[0].setToIdentity();  // n
-  abadOffsets[0].rotate(-90, 0, 0, 1);
-  abadOffsets[0].translate(0, -.0565f, 0);
-  abadOffsets[0].rotate(180, 0, 1, 0);
+  abadOffsets[0].rotate(-90, 0, 0, 1); //
+  abadOffsets[0].translate(0, -.0565f, 0); //
+  abadOffsets[0].rotate(180, 0, 1, 0);    //
 
   abadOffsets[1].setToIdentity();  // p
   abadOffsets[1].rotate(-90, 0, 0, 1);

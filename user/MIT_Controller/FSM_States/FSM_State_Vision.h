@@ -28,7 +28,7 @@ class FSM_State_Vision : public FSM_State<T> {
 
   // Run the normal behavior for the state
   void run();
-
+  void runPointCloud();
   // Checks for any transition triggers
   FSM_StateName checkTransition();
 
@@ -51,11 +51,14 @@ class FSM_State_Vision : public FSM_State<T> {
   Vec3<T> _ini_body_ori_rpy;
   Vec3<T> zero_vec3;
   Vec3<T> _global_robot_loc;
+  Vec3<T> _global_robot_vel;
+  Vec3<T> _global_robot_omegaBody;
+
   Vec3<T> _robot_rpy;
 
   size_t x_size = 100;
   size_t y_size = 100;
-  double grid_size = 0.015;
+  double grid_size = 0.015; //0.01;//
 
   DMat<T> _height_map;
   DMat<int> _idx_map;

@@ -53,8 +53,8 @@ void HardwareBridge::initCommon() {
 
   printf("[HardwareBridge] Subscribe LCM\n");
   _interfaceLCM.subscribe("interface", &HardwareBridge::handleGamepadLCM, this);
-  _interfaceLCM.subscribe("interface_request",
-                          &HardwareBridge::handleControlParameter, this);
+  _interfaceLCM.subscribe("interface_request", &HardwareBridge::handleControlParameter, this);
+  //_interfaceLCM.subscribe ("t265_position_msg", &HardwareBridge::handleT265LCM , this );
 
   printf("[HardwareBridge] Start interface LCM handler\n");
   _interfaceLcmThread = std::thread(&HardwareBridge::handleInterfaceLCM, this);
@@ -109,7 +109,17 @@ void HardwareBridge::handleGamepadLCM(const lcm::ReceiveBuffer* rbuf,
   (void)chan;
   _gamepadCommand.set(msg);
 }
-
+//void HardwareBridge::handleT265LCM(const lcm::ReceiveBuffer* rbuf,
+//                                      const std::string& chan,
+//                                      const T265position_t* msg) {
+//    ( void ) rbuf;
+//    ( void ) chan;
+//    double t265_position_x = msg->velocity[0];
+//    double t265_position_y = msg->velocity[1];
+////    t265_velocity_x = msg->velocity[0];
+////    t265_velocity_y = msg->velocity[1];
+//    printf("hardware received t265: %.2f\t %.2f\n",t265_position_x,t265_position_y);
+//}
 /*!
  * LCM Handler for control parameters
  */
@@ -288,8 +298,7 @@ void MiniCheetahHardwareBridge::run() {
 
   printf("[Hardware Bridge] Got all parameters, starting up!\n");
 
-  _robotRunner =
-      new RobotRunner(_controller, &taskManager, _robotParams.controller_dt, "robot-control");
+  _robotRunner = new RobotRunner(_controller, &taskManager, _robotParams.controller_dt, "robot-control");
 
   _robotRunner->driverCommand = &_gamepadCommand;
   _robotRunner->spiData = &_spiData;
@@ -325,10 +334,12 @@ void MiniCheetahHardwareBridge::run() {
   visualizationLCMTask.start();
 
   // rc controller
-  _port = init_sbus(false);  // Not Simulation
+  _port = init_sbus(false);
   PeriodicMemberFunction<HardwareBridge> sbusTask(
       &taskManager, .005, "rc_controller", &HardwareBridge::run_sbus, this);
   sbusTask.start();
+
+
 
   // temporary hack: microstrain logger
   PeriodicMemberFunction<MiniCheetahHardwareBridge> microstrainLogger(
@@ -347,10 +358,19 @@ void MiniCheetahHardwareBridge::run() {
 void HardwareBridge::run_sbus() {
   if (_port > 0) {
     int x = receive_sbus(_port);
+
     if (x) {
+#ifdef RC_AT9s
+      sbus_packet_complete_at9s();
+#else
       sbus_packet_complete();
+#endif
     }
   }
+}
+
+void HardwareBridge::run_ai() {
+
 }
 
 void MiniCheetahHardwareBridge::runMicrostrain() {
@@ -389,7 +409,9 @@ void MiniCheetahHardwareBridge::initHardware() {
 #endif
 
   init_spi();
-  _microstrainInit = _microstrainImu.tryInit(0, 921600);
+
+  _microstrainInit = _microstrainImu.tryInit(0, 460800);//921600); // lord设置921600,        ttyUSB0
+
 }
 
 void Cheetah3HardwareBridge::initHardware() {
@@ -576,10 +598,11 @@ void Cheetah3HardwareBridge::run() {
   visualizationLCMTask.start();
 
   // rc controller disabled for now
-//  _port = init_sbus(false);  // Not Simulation
-//  PeriodicMemberFunction<HardwareBridge> sbusTask(
-//      &taskManager, .005, "rc_controller", &HardwareBridge::run_sbus, this);
-//  sbusTask.start();
+  //sbus remoter
+  _port = init_sbus(false);  // Not Simulation
+  PeriodicMemberFunction<HardwareBridge> sbusTask(
+      &taskManager, .005, "rc_controller", &HardwareBridge::run_sbus, this);
+  sbusTask.start();
 
 
   for (;;) {

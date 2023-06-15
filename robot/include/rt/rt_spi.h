@@ -34,7 +34,7 @@ extern "C" {
 #define K_EXPECTED_COMMAND_SIZE 256
 #define K_WORDS_PER_MESSAGE 66
 #define K_EXPECTED_DATA_SIZE 116
-#define K_KNEE_OFFSET_POS 4.35f
+#define K_KNEE_OFFSET_POS 2.52f
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
 #define BYTE_TO_BINARY(byte)                                \
@@ -87,6 +87,9 @@ typedef struct {
   float qd_knee[2];
   int32_t flags[2];
   int32_t checksum;
+    float tau_abad[2];
+    float tau_hip[2];
+    float tau_knee[2];
 
 } spine_data_t;
 

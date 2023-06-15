@@ -250,6 +250,7 @@ void SimulationBridge::runRobotControl() {
     _firstControllerRun = false;
 
     sbus_thread = new std::thread(&SimulationBridge::run_sbus, this);
+
   }
   _robotRunner->run();
 }
@@ -260,11 +261,14 @@ void SimulationBridge::runRobotControl() {
 void SimulationBridge::run_sbus() {
   printf("[run_sbus] starting...\n");
   int port = init_sbus(true);  // Simulation
-  while (true) {
+
+  while(true){
+      //printf("[run_sbus] run \n");
     if (port > 0) {
       int x = receive_sbus(port);
+//      printf("[sbus] receive sbus %d\n",x);
       if (x) {
-        sbus_packet_complete();
+          sbus_packet_complete_at9s();
       }
     }
     usleep(5000);

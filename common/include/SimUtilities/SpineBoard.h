@@ -48,6 +48,10 @@ struct SpiData {
   float qd_knee[4];
   int32_t flags[4];
   int32_t spi_driver_status;
+
+  float tau_abad[4];  //希望得到关节实际扭矩
+  float tau_hip[4];
+  float tau_knee[4];
 };
 
 /*!

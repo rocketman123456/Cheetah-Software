@@ -19,6 +19,8 @@
 #define K_VISION 8
 #define K_BACKFLIP 9
 #define K_FRONTJUMP 11
+#define K_FRONTFLIP 12
+#define K_FRONTJUMP2 13
 
 // Specific control states
 #define K_JOINT_PD 51
@@ -40,7 +42,9 @@ enum class FSM_StateName {
   RECOVERY_STAND,
   VISION,
   BACKFLIP,
-  FRONTJUMP
+  FRONTJUMP,
+  FRONTFLIP,
+  FRONTJUMP2
 };
 
 /**
@@ -72,6 +76,7 @@ class FSM_State {
 
   //
   void jointPDControl(int leg, Vec3<T> qDes, Vec3<T> qdDes);
+  void jointPDControl(int leg, Vec3<T> qDes, Vec3<T> qdDes, int kp);
   void cartesianImpedanceControl(int leg, Vec3<T> pDes, Vec3<T> vDes,
                                  Vec3<double> kp_cartesian,
                                  Vec3<double> kd_cartesian);
@@ -134,3 +139,4 @@ class FSM_State {
 };
 
 #endif  // FSM_State_H
+

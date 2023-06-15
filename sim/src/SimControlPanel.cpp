@@ -86,6 +86,12 @@ SimControlPanel::SimControlPanel(QWidget* parent)
   updateUiEnable();  // enable/disable buttons as needed.
   updateTerrainLabel(); // display name of loaded terrain file
 
+//lqh add 2020.12.16 set defalut checked
+  ui->miniCheetahButton->setChecked(true);
+  ui->simulatorButton->setChecked(true);
+//lqh add 2020.12.23
+  ui->hide_robot_checkbox->setChecked(true);
+//lqh add end
   // attempt to load default user settings.
   _loadedUserSettings = true;
 
@@ -121,7 +127,7 @@ SimControlPanel::SimControlPanel(QWidget* parent)
   _pointsLCM.subscribe("cf_pointcloud", &SimControlPanel::handlePointsLCM, this);
   _pointsLCMThread = std::thread(&SimControlPanel::pointsLCMThread, this); 
 
-  _heightmapLCM.subscribe("local_heightmap", &SimControlPanel::handleHeightmapLCM, this);
+  _heightmapLCM.subscribe("local_heightmap", &SimControlPanel::handleHeightmapLCM, this); //绿色网格
   _heightmapLCMThread = std::thread(&SimControlPanel::heightmapLCMThread, this);
 
   _indexmapLCM.subscribe("traversability", &SimControlPanel::handleIndexmapLCM, this);
@@ -368,7 +374,7 @@ void SimControlPanel::on_startButton_clicked() {
   printf("[SimControlPanel] Initialize Graphics...\n");
   _graphicsWindow = new Graphics3D();
   _graphicsWindow->show();
-  _graphicsWindow->resize(1280, 720);
+  _graphicsWindow->resize(680, 720);
 
   if (_simulationMode) {
     // run a simulation
@@ -432,6 +438,12 @@ void SimControlPanel::on_startButton_clicked() {
 
   _state = SimulationWindowState::RUNNING;
   updateUiEnable();
+//lqh 2020.12.22
+  int tm =system("gnome-terminal -x user/MIT_Controller/mit_ctrl m s");
+  std::cout<<"mit_ctrl run:"<<tm<<std::endl;
+//lqh 2020.12.23
+  on_hide_robot_checkbox_toggled(true);
+//lqh end
 }
 
 /*!

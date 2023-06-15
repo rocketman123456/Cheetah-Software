@@ -37,6 +37,7 @@ protected:
   FloatingBaseModel<float>* _model = nullptr;
   LegController<float>* _legController = nullptr;
   StateEstimatorContainer<float>* _stateEstimator = nullptr;
+  StateEstimatorContainer<float>* _t265stateEstimator = nullptr;
   StateEstimate<float>* _stateEstimate = nullptr;
   GamepadCommand* _driverCommand = nullptr;
   RobotControlParameters* _controlParameters = nullptr;

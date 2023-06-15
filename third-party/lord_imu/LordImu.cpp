@@ -24,6 +24,7 @@ bool LordImu::tryInit(u32 port, u32 baud_rate) {
 }
 
 void LordImu::init(u32 port, u32 baud_rate) {
+#ifdef USE_LordIMU
   printf("[Lord IMU] Open port %d, baud rate %d\n", port, baud_rate);
 
   if(mip_interface_init(port, baud_rate, &device_interface, IMU_PACKET_TIMEOUT_MS) != MIP_INTERFACE_OK) {
@@ -44,6 +45,30 @@ void LordImu::init(u32 port, u32 baud_rate) {
   setup_streaming();
   printf("[Lord IMU] Enable Data...\n");
   enable();
+#endif
+
+#ifdef USE_SelfIMU
+    printf("[Lord IMU] Open port %d, baud rate %d\n", port, baud_rate);
+
+    if(mip_interface_init(port, baud_rate, &device_interface, IMU_PACKET_TIMEOUT_MS) != MIP_INTERFACE_OK) {
+        throw std::runtime_error("Failed to initialize MIP interface for IMU\n");
+    }
+
+    printf("[Lord IMU] Port open. Mode setup...\n");
+    //mode_setup();
+    printf("[Lord IMU] Get info...\n");
+    //get_device_info();
+    printf("[Lord IMU] Self test...\n");
+    //self_test();
+    printf("[Lord IMU] Basic report...\n");
+    // basic_report();
+//  printf("[Lord IMU] Zero Gyro...\n");
+//  zero_gyro();
+    printf("[Lord IMU] Setup IMU...\n");
+    setup_streaming();
+    printf("[Lord IMU] Enable Data...\n");
+    //enable();
+#endif
 }
 
 void LordImu::mode_setup() {
@@ -225,6 +250,7 @@ static void filter_callback(void* user_ptr, u8* packet, u16 packet_size, u8 call
 
 
 static void ahrs_callback(void* user_ptr, u8* packet, u16 packet_size, u8 callback_type) {
+#ifdef USE_LordIMU
   (void)user_ptr;
   (void)packet_size;
 
@@ -280,10 +306,94 @@ static void ahrs_callback(void* user_ptr, u8* packet, u16 packet_size, u8 callba
       gLordImu->unknown_packets++;
       break;
   }
+#endif
+
+#ifdef USE_SelfIMU
+    (void)user_ptr;
+    (void)packet_size;
+
+    mip_field_header* field_header;
+    u8* field_data;
+    u16 field_offset = 0;
+    mip_ahrs_scaled_accel accel;
+    mip_ahrs_scaled_gyro gyro;
+    mip_filter_attitude_quaternion quat;
+
+
+    switch(callback_type) {
+        case MIP_INTERFACE_CALLBACK_VALID_PACKET:
+            //gLordImu->good_packets++;
+            while(mip_get_next_field(packet, &field_header,
+                                     &field_data, &field_offset) == MIP_OK) {
+                switch(field_header->descriptor) {
+                    case MIP_AHRS_DATA_ACCEL_SCALED:
+                        memcpy(&accel, field_data, sizeof(mip_ahrs_scaled_accel));
+                        mip_ahrs_scaled_accel_byteswap(&accel);
+                        //gLordImu->acc = Vec3<float>(accel.scaled_accel);
+                        dataMutex.lock();
+                        gLordImu->acc[0] = 9.81f * accel.scaled_accel[2];
+                        gLordImu->acc[1] = -9.81f * accel.scaled_accel[1];
+                        gLordImu->acc[2] = 9.81f * accel.scaled_accel[0];
+                        gLordImu->good_packets++;
+                        dataMutex.unlock();
+
+                        break;
+                    case MIP_AHRS_DATA_GYRO_SCALED:
+                        dataMutex.lock();
+                        memcpy(&gyro, field_data, sizeof(mip_ahrs_scaled_gyro));
+                        mip_ahrs_scaled_gyro_byteswap(&gyro);
+                        //gLordImu->gyro = Vec3<float>(gyro.scaled_gyro);
+                        gLordImu->gyro[0] = gyro.scaled_gyro[2];
+                        gLordImu->gyro[1] = -gyro.scaled_gyro[1];
+                        gLordImu->gyro[2] = gyro.scaled_gyro[0];
+                        gLordImu->good_packets++;
+                        dataMutex.unlock();
+
+                        break;
+
+                    case MIP_AHRS_DATA_QUATERNION:
+                    {
+                        memcpy(&quat, field_data, sizeof(mip_filter_attitude_quaternion));
+                        mip_filter_attitude_quaternion_byteswap(&quat);
+                        dataMutex.lock();
+                        gLordImu->quat = Vec4<float>(quat.q);
+                        Mat3<float> g_R_imu, r_R_imup;
+
+                        g_R_imu << 0, 1, 0, 1, 0, 0, 0, 0, -1;
+                        r_R_imup << 0, 0, 1, 0, -1, 0, 1, 0, 0;
+
+                        Vec4<float> ql = ori::rotationMatrixToQuaternion(g_R_imu.transpose());
+                        Vec4<float> qr = ori::rotationMatrixToQuaternion(r_R_imup);
+                        gLordImu->quat = ori::quatProduct(ql, ori::quatProduct(gLordImu->quat, qr));
+
+                        gLordImu->good_packets++;
+                        dataMutex.unlock();
+
+                    }
+                        break;
+
+                    default:
+                        printf("[Lord IMU] Unknown AHRS packet %d\n", field_header->descriptor);
+                        break;
+                }
+            }
+            break;
+        case MIP_INTERFACE_CALLBACK_CHECKSUM_ERROR:
+            gLordImu->invalid_packets++;
+            break;
+        case MIP_INTERFACE_CALLBACK_TIMEOUT:
+            gLordImu->timeout_packets++;
+            break;
+        default:
+            gLordImu->unknown_packets++;
+            break;
+    }
+#endif
 }
 
 
 void LordImu::setup_streaming() {
+#ifdef USE_LordIMU
   gLordImu = this;
 
   u8 enable = MIP_3DM_CONING_AND_SCULLING_DISABLE;
@@ -320,6 +430,20 @@ void LordImu::setup_streaming() {
        MIP_FUNCTION_SELECTOR_WRITE, &num_entries, data_types, data_downsampling) != MIP_INTERFACE_OK) {
     printf("fail\n");
   }
+#endif
+
+#ifdef USE_SelfIMU
+    gLordImu = this;
+    if(mip_interface_add_descriptor_set_callback(&device_interface,
+                                                 MIP_FILTER_DATA_SET, nullptr, filter_callback) != MIP_INTERFACE_OK) {
+        throw std::runtime_error("failed to set IMU filter callback");
+    }
+
+    if(mip_interface_add_descriptor_set_callback(&device_interface,
+                                                 MIP_AHRS_DATA_SET, nullptr, ahrs_callback) != MIP_INTERFACE_OK) {
+        throw std::runtime_error("failed to set IMU ahrs callback");
+    }
+#endif
 }
 
 void LordImu::enable() {

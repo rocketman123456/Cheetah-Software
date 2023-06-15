@@ -32,7 +32,10 @@ int main(int argc, char *argv[]) {
 
   // open simulator UI
   SimControlPanel panel;
+  
+  panel.resize(380, 720);
   panel.show();
+  panel.move(30, 30);//lqh 2020.12.23
 
   // run the Qt program
   a.exec();

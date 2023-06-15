@@ -65,4 +65,4 @@ else(NO_SIM)
 endif()
 
 add_subdirectory(user)
-add_subdirectory(rc_test)
+#add_subdirectory(rc_test)

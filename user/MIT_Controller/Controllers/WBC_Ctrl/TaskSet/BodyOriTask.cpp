@@ -1,7 +1,7 @@
 #include "BodyOriTask.hpp"
 // (Rx, Ry, Rz)
 
-#include <Configuration.h>
+//#include <Configuration.h>
 #include <Dynamics/FloatingBaseModel.h>
 #include <Dynamics/Quadruped.h>
 #include <Math/orientation_tools.h>
@@ -16,8 +16,8 @@ BodyOriTask<T>::BodyOriTask(const FloatingBaseModel<T>* robot)
   TK::JtDotQdot_ = DVec<T>::Zero(TK::dim_task_);
 
   _Kp_kin = DVec<T>::Constant(TK::dim_task_, 1.);
-  _Kp = DVec<T>::Constant(TK::dim_task_, 50.);
-  _Kd = DVec<T>::Constant(TK::dim_task_, 1.);
+  _Kp = DVec<T>::Constant(TK::dim_task_, 100.);//50.);//
+  _Kd = DVec<T>::Constant(TK::dim_task_, 10.);//1.);//
 }
 
 template <typename T>
@@ -49,7 +49,15 @@ bool BodyOriTask<T>::_UpdateCommand(const void* pos_des, const DVec<T>& vel_des,
   // Operational Space: Global
   Mat3<T> Rot = ori::quaternionToRotationMatrix(link_ori);
   Vec3<T> vel_err = Rot.transpose()*(TK::vel_des_ - curr_vel.head(3));
-
+    for(int m=0;m<3;m++)
+    {
+        if(fabs(vel_err[m])>1000)
+        {
+            std::cout<<"body Ori Task TK::vel_des_  "<<TK::vel_des_[m]<<"\toverflow, edit to  ";
+            vel_err[m]= 0 ;
+            std::cout<<vel_err[m]<<std::endl;
+        }
+    }
   // Rx, Ry, Rz
   for (int i(0); i < 3; ++i) {
     TK::pos_err_[i] = _Kp_kin[i] * ori_err_so3[i];
@@ -58,6 +66,14 @@ bool BodyOriTask<T>::_UpdateCommand(const void* pos_des, const DVec<T>& vel_des,
 
     TK::op_cmd_[i] = _Kp[i] * ori_err_so3[i] +
                      _Kd[i] * vel_err[i] + TK::acc_des_[i];
+      if(fabs(TK::op_cmd_[i])>100)
+      {
+          std::cout<<"-------------------big problem------------------------------"<<std::endl;
+          std::cout<<"bodyOriTask acc error"<<TK::op_cmd_[i]<<std::endl;
+          std::cout<<"ori_err_so3[i]"<<ori_err_so3[i]<<std::endl;
+          std::cout<<"vel_err[i]"<<vel_err[i]<<std::endl;
+          std::cout<<"TK::acc_des_[i]"<<TK::acc_des_[i]<<std::endl;
+      }
   }
    //printf("[Body Ori Task]\n");
    //pretty_print(TK::pos_err_, std::cout, "pos_err_");

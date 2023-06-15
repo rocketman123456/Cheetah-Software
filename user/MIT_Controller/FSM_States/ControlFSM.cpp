@@ -23,6 +23,7 @@
 template <typename T>
 ControlFSM<T>::ControlFSM(Quadruped<T>* _quadruped,
                           StateEstimatorContainer<T>* _stateEstimator,
+                          StateEstimatorContainer<T>* _t265stateEstimator,
                           LegController<T>* _legController,
                           GaitScheduler<T>* _gaitScheduler,
                           DesiredStateCommand<T>* _desiredStateCommand,
@@ -33,6 +34,7 @@ ControlFSM<T>::ControlFSM(Quadruped<T>* _quadruped,
   // Add the pointers to the ControlFSMData struct
   data._quadruped = _quadruped;
   data._stateEstimator = _stateEstimator;
+  data._t265stateEstimator = _t265stateEstimator;
   data._legController = _legController;
   data._gaitScheduler = _gaitScheduler;
   data._desiredStateCommand = _desiredStateCommand;
@@ -52,7 +54,8 @@ ControlFSM<T>::ControlFSM(Quadruped<T>* _quadruped,
   statesList.vision = new FSM_State_Vision<T>(&data);
   statesList.backflip = new FSM_State_BackFlip<T>(&data);
   statesList.frontJump = new FSM_State_FrontJump<T>(&data);
-
+  statesList.frontJump2 = new FSM_State_FrontJump2<T>(&data);
+  statesList.frontflip = new FSM_State_FrontFlip<T>(&data);
   safetyChecker = new SafetyChecker<T>(&data);
 
   // Initialize the FSM with the Passive FSM State
@@ -98,21 +101,39 @@ void ControlFSM<T>::runFSM() {
 
   if(data.controlParameters->use_rc){
     int rc_mode = data._desiredStateCommand->rcCommand->mode;
-    if(rc_mode == RC_mode::RECOVERY_STAND){
-      data.controlParameters->control_mode = K_RECOVERY_STAND;
+    if(rc_mode == RC_mode::OFF){
+        printf("K_PASSIVE\n");
+          data.controlParameters->control_mode = K_PASSIVE;
+      }
+    else if(rc_mode == RC_mode::RECOVERY_STAND){
+//        printf("K_RECOVERY_STAND\n");
+      data.controlParameters->control_mode =  K_RECOVERY_STAND;
+    }else if(rc_mode == RC_mode::READY){
+//        printf("K_JOINT_PD\n");
+        data.controlParameters->control_mode = K_JOINT_PD;
+    }
+    else if(rc_mode == RC_mode::STAND_UP){
+//        printf("K_STAND_UP\n");
+        data.controlParameters->control_mode = K_STAND_UP;
 
-    } else if(rc_mode == RC_mode::LOCOMOTION){
+    }else if(rc_mode == RC_mode::LOCOMOTION && data.controlParameters->testValue==23){
+//        printf("K_LOCOMOTION\n");
       data.controlParameters->control_mode = K_LOCOMOTION;
 
     } else if(rc_mode == RC_mode::QP_STAND){
+//        printf("K_BALANCE_STAND %.2f\t%.2f\n",data._stateEstimator->getResult().rpy(0),data._stateEstimator->getResult().rpy(1));
       data.controlParameters->control_mode = K_BALANCE_STAND;
-
+      data.controlParameters->testValue=23;
     } else if(rc_mode == RC_mode::VISION){
       data.controlParameters->control_mode = K_VISION;
 
     } else if(rc_mode == RC_mode::BACKFLIP || rc_mode == RC_mode::BACKFLIP_PRE){
-      data.controlParameters->control_mode = K_BACKFLIP;
-   }
+//        printf("BACKFLIP\n");
+      data.controlParameters->control_mode = K_JOINT_PD;
+
+    } else if(rc_mode == RC_mode::FRONT_JUMP){
+      data.controlParameters->control_mode =  K_FRONTJUMP2;
+    }
       //data.controlParameters->control_mode = K_FRONTJUMP;
     //std::cout<< "control mode: "<<data.controlParameters->control_mode<<std::endl;
   }
@@ -139,7 +160,8 @@ void ControlFSM<T>::runFSM() {
         // Run the iteration for the current state normally
         currentState->run();
       }
-    }
+    } else
+        printf("operatingMode not ESTOP, abnormal\n");
 
     // Run the transition code while transition is occuring
     if (operatingMode == FSM_OperatingMode::TRANSITIONING) {
@@ -171,6 +193,24 @@ void ControlFSM<T>::runFSM() {
     }
 
   } else { // if ESTOP
+      printf("BILLCHEN in ESTOP \n");
+//      nextState = getNextState(nextStateName);
+//      operatingMode = FSM_OperatingMode::NORMAL;
+//
+//      if(nextState ==statesList.passive)
+//        std::cout<<"statesList.passive"<<std::endl;
+//      else
+//          std::cout<<"statesList.others"<<nextState->stateString <<std::endl;
+//
+//      if(nextState==statesList.recoveryStand)
+//      {
+//          operatingMode = FSM_OperatingMode::NORMAL;
+//          currentState=statesList.recoveryStand;
+//          printf("ESTOP:force to statesList.recoveryStand\n ");
+//      }
+//      else
+//        currentState = statesList.passive;
+
     currentState = statesList.passive;
     currentState->onEnter();
     nextStateName = currentState->stateName;
@@ -270,8 +310,14 @@ FSM_State<T>* ControlFSM<T>::getNextState(FSM_StateName stateName) {
     case FSM_StateName::BACKFLIP:
       return statesList.backflip;
 
+    case FSM_StateName ::FRONTFLIP:
+        return statesList.frontflip;
+
     case FSM_StateName::FRONTJUMP:
       return statesList.frontJump;
+
+    case FSM_StateName::FRONTJUMP2:
+          return statesList.frontJump2;
 
     default:
       return statesList.invalid;

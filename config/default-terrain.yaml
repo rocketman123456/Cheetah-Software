@@ -1,11 +1,12 @@
 ground-plane:
     type: "infinite-plane"
-    mu: 0.5
+    mu: 0.7
     restitution: 0.0
     #height: -0.5
     height: 0.0
     graphicsSize: [20,20] # how large the plane appears
     checkers: [40,40]     # how many checkers are on the plane
+
 
 #mesh-1:
     type: "mesh"
@@ -34,12 +35,59 @@ ground-plane:
     type: "box"
     mu: 0.7
     restitution: 0
+    depth: 10  #In x direct
+    width: 7.0  #In y direct
+    height: .01
+    #position:  [5.5, 0, 2.392]
+    position:  [1, 0, 0]
+    orientation: [0,-0.3,0]  # roll pitch yaw
+    transparent: 1
+
+box-2:
+    type: "box"
+    mu: 0.7
+    restitution: 0
+    depth: 1  #In x direct
+    width: 10  #In y direct
+    height: .01
+    position:  [0, 5.5,1.477]
+    orientation: [0.3,0,0]  # roll pitch yaw
+    transparent: 1
+
+#box-3:
+    type: "box"
+    mu: 0.7
+    restitution: 0
+    depth: 10  #In x direct
+    width: 7  #In y direct
+    height: .01
+    position:  [ -5.5,0,0.494]
+    orientation: [0,0.3,0]  # roll pitch yaw
+    transparent: 1
+#box-1:
+    type: "box"
+    mu: 0.7
+    restitution: 0
     depth: 2.0
     width: 1.5
     height: .3
-    position:  [1.5, 0, 0.23]
+    #position:  [1.5, 0, 0.35]
+    position:  [1.5, 0, 0.15]
     orientation: [0,.0,0]  # roll pitch yaw
     transparent: 1
+
+#box-2:
+    type: "box"
+    mu: 0.7
+    restitution: 0
+    depth: 1.0
+    width: 1
+    height: .6
+    #position:  [1.5, 0, 0.025]
+    position:  [3, 0, 0.3]
+    orientation: [0,.0,0]  # roll pitch yaw
+    transparent: 1
+
 
 #box-2:
     #type: "box"
@@ -53,16 +101,18 @@ ground-plane:
     #transparent: 1
 
     
+
+
 #stairs-1:
     type: "stairs"
-    steps: 5
-    rise: 0.1 #0.1778 # 7 inches
-    run: 0.17 #0.2794 # 11 inches
+    steps: 10
+    rise: 0.09 #0.1778 # 7 inches
+    run: 0.20 #0.2794 # 11 inches
     width: 1.2
     mu: .7
     restitution: 0
     #position: [0.5, 0, -0.52]
-    position: [0.5, 0, 0.0]
+    position: [0.27, 0, 0.0]
     orientation: [0, 0, 0]
     transparent: 0
 
