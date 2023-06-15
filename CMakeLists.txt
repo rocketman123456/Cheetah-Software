@@ -5,7 +5,7 @@ project(CheetahCustom)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 set(CMAKE_DISABLE_SOURCE_CHANGES  OFF)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_C_STANDARD 99)
@@ -24,7 +24,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/3rd_party/bcm2835
-    ${CMAKE_SOURCE_DIR}/3rd_party/pigpio
+    # ${CMAKE_SOURCE_DIR}/3rd_party/pigpio
 )
 
 add_subdirectory(3rd_party)
@@ -34,10 +34,9 @@ add_executable(simple_control
     hardware/motor_spi.cpp 
     bridge/motor_spi_bridge.cpp
     util/crc.cpp
+    util/timer.cpp
 )
 
 target_link_libraries(simple_control
     bcm2835 pigpio pthread
 )
-
-#target_link_libraries(spi_test pthread)

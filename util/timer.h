@@ -8,15 +8,17 @@
 #include <mutex>
 #include <thread>
 
+int timer_loop(int interval, std::function<void()> task);
+
 class Timer
 {
 public:
-    Timer() : _expired(true), _try_to_expire(false) {}
+    Timer() : m_expired(true), m_try_to_expire(false) {}
 
     Timer(const Timer& timer)
     {
-        _expired       = timer._expired.load();
-        _try_to_expire = timer._try_to_expire.load();
+        m_expired       = timer.m_expired.load();
+        m_try_to_expire = timer.m_try_to_expire.load();
     }
 
     ~Timer() { stop(); }
@@ -24,13 +26,13 @@ public:
     void start(int interval, std::function<void()> task)
     {
         // is started, do not start again
-        if (_expired == false)
+        if (m_expired == false)
             return;
 
         // start async timer, launch thread and wait in that thread
-        _expired = false;
+        m_expired = false;
         std::thread([this, interval, task]() {
-            while (!_try_to_expire)
+            while (!m_try_to_expire)
             {
                 // sleep every interval and do the task again and again until times up
                 std::this_thread::sleep_for(std::chrono::milliseconds(interval));
@@ -39,9 +41,9 @@ public:
 
             {
                 // timer be stopped, update the condition variable expired and wake main thread
-                std::lock_guard<std::mutex> locker(_mutex);
-                _expired = true;
-                _expired_cond.notify_one();
+                std::lock_guard<std::mutex> locker(m_mutex);
+                m_expired = true;
+                m_expired_cond.notify_one();
             }
         }).detach();
     }
@@ -57,27 +59,27 @@ public:
     void stop()
     {
         // do not stop again
-        if (_expired)
+        if (m_expired)
             return;
 
-        if (_try_to_expire)
+        if (m_try_to_expire)
             return;
 
         // wait until timer
-        _try_to_expire = true; // change this bool value to make timer while loop stop
+        m_try_to_expire = true; // change this bool value to make timer while loop stop
         {
-            std::unique_lock<std::mutex> locker(_mutex);
-            _expired_cond.wait(locker, [this] { return _expired == true; });
+            std::unique_lock<std::mutex> locker(m_mutex);
+            m_expired_cond.wait(locker, [this] { return m_expired == true; });
 
             // reset the timer
-            if (_expired == true)
-                _try_to_expire = false;
+            if (m_expired == true)
+                m_try_to_expire = false;
         }
     }
 
 private:
-    std::atomic<bool>       _expired;       // timer stopped status
-    std::atomic<bool>       _try_to_expire; // timer is in stop process
-    std::mutex              _mutex;
-    std::condition_variable _expired_cond;
+    std::atomic<bool>       m_expired;       // timer stopped status
+    std::atomic<bool>       m_try_to_expire; // timer is in stop process
+    std::mutex              m_mutex;
+    std::condition_variable m_expired_cond;
 };
